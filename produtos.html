@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-br">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Produtos - VIRAR Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "on-surface": "#eae1db",
+              "surface-bright": "#3d3835",
+              "on-primary-fixed-variant": "#574500",
+              "on-secondary-fixed-variant": "#4d453e",
+              "surface-dim": "#161310",
+              "secondary-container": "#4d453e",
+              "outline": "#99907c",
+              "surface-tint": "#e9c349",
+              "secondary": "#d0c4bb",
+              "on-tertiary-fixed": "#231a0e",
+              "on-primary": "#3c2f00",
+              "on-secondary-fixed": "#211a15",
+              "tertiary-container": "#c0b09d",
+              "primary-fixed": "#ffe088",
+              "on-tertiary-fixed-variant": "#504536",
+              "on-primary-container": "#554300",
+              "surface-container-lowest": "#110d0b",
+              "surface-container-high": "#2e2926",
+              "on-tertiary": "#392f21",
+              "on-surface-variant": "#d0c5af",
+              "error-container": "#93000a",
+              "on-error": "#690005",
+              "on-secondary": "#362f29",
+              "tertiary-fixed-dim": "#d5c4b1",
+              "surface-container-low": "#1f1b18",
+              "on-secondary-container": "#bfb3aa",
+              "surface-variant": "#393430",
+              "surface-container": "#231f1c",
+              "background": "#161310",
+              "on-background": "#eae1db",
+              "tertiary-fixed": "#f1e0cc",
+              "inverse-on-surface": "#342f2c",
+              "secondary-fixed": "#ede0d6",
+              "inverse-primary": "#735c00",
+              "surface": "#161310",
+              "outline-variant": "#4d4635",
+              "on-tertiary-container": "#4e4334",
+              "error": "#ffb4ab",
+              "surface-container-highest": "#393430",
+              "primary-container": "#d4af37",
+              "tertiary": "#dccbb8",
+              "primary-fixed-dim": "#e9c349",
+              "primary": "#f2ca50",
+              "inverse-surface": "#eae1db",
+              "secondary-fixed-dim": "#d0c4bb",
+              "on-primary-fixed": "#241a00"
+            },
+            fontFamily: {
+              "headline": ["Noto Serif"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+    <style>
+      .bg-gold-gradient { background: linear-gradient(135deg, #F2CA50 0%, #D4AF37 100%); }
+      .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+    </style>
+<script>
+      const { createClient } = supabase;
+      const supabaseClient = createClient(
+        'https://ikahdkaccmpldstbcbpk.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw',
+        { auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true } }
+      );
+
+      async function verificarAutenticacao() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session?.user) {
+          window.location.href = 'login.html';
+          return null;
+        }
+        const { data: refreshData, error: refreshErr } = await supabaseClient.auth.refreshSession();
+        if (refreshErr || !refreshData.session) {
+          const expiresAt = session.expires_at;
+          const now = Math.floor(Date.now() / 1000);
+          if (expiresAt && expiresAt < now) {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'login.html';
+            return null;
+          }
+          return session.user;
+        }
+        return refreshData.session.user;
+      }
+
+      async function carregarFunerariasUsuario() {
+        const user = await verificarAutenticacao();
+        if (!user) return [];
+        const { data, error } = await supabaseClient.from('funerarias').select('id, nome').eq('user_id', user.id).order('nome');
+        if (error) return [];
+        return data || [];
+      }
+
+      async function excluirProduto(id, nome) {
+        if (!confirm(`Tem certeza que deseja excluir o produto "${nome}"?`)) return;
+        const user = await verificarAutenticacao();
+        if (!user) return;
+        try {
+          const { data: produto } = await supabaseClient.from('produtos').select('funeraria_id').eq('id', id).single();
+          if (!produto) { alert('Produto não encontrado.'); return; }
+          const { data: funeraria } = await supabaseClient.from('funerarias').select('id').eq('id', produto.funeraria_id).eq('user_id', user.id).single();
+          if (!funeraria) { alert('Você não tem permissão para excluir este produto.'); return; }
+          const { error } = await supabaseClient.from('produtos').delete().eq('id', id).eq('funeraria_id', funeraria.id);
+          if (error) { alert('Erro ao excluir: ' + error.message); return; }
+          carregarProdutos();
+        } catch (err) { alert('Erro: ' + err.message); }
+      }
+
+      async function carregarProdutos() {
+        const user = await verificarAutenticacao();
+        if (!user) return;
+        try {
+          const funerarias = await carregarFunerariasUsuario();
+          if (!funerarias.length) {
+            document.getElementById('produtos-tbody').innerHTML = '<tr><td colspan="6" class="px-8 py-12 text-center text-on-surface-variant">Nenhuma funerária vinculada. Crie uma funerária primeiro.</td></tr>';
+            return;
+          }
+          const funerariaIds = funerarias.map(f => f.id);
+          const { data, error } = await supabaseClient.from('produtos').select('*, funerarias(nome)').in('funeraria_id', funerariaIds).order('id', { ascending: false });
+          if (error) { alert('Erro ao carregar produtos: ' + error.message); return; }
+          const tbody = document.getElementById('produtos-tbody');
+          tbody.innerHTML = '';
+          if (data && data.length > 0) {
+            data.forEach(produto => {
+              if (produto.funerarias) {
+                produto.funeraria_nome = produto.funerarias.nome;
+                delete produto.funerarias;
+              }
+              const tr = document.createElement('tr');
+              tr.className = 'group hover:bg-surface-container-low transition-colors';
+              tr.innerHTML = `
+                <td class="px-8 py-6">
+                  <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center overflow-hidden">
+                      ${produto.imagem ? `<img src="${produto.imagem}" class="w-full h-full object-cover"/>` : '<span class="material-symbols-outlined text-on-surface-variant">inventory_2</span>'}
+                    </div>
+                    <div>
+                      <p class="font-headline text-lg">${produto.nome || 'Produto'}</p>
+                      <p class="text-xs text-on-surface-variant">${produto.categoria || 'Sem categoria'}</p>
+                      <p class="text-[10px] text-on-surface-variant/60 mt-0.5">${produto.funeraria_nome || 'Funerária'}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-8 py-6"><span class="text-sm font-medium text-on-surface/80">${produto.estoque ?? 0}</span></td>
+                <td class="px-8 py-6"><span class="text-sm font-medium text-on-surface/80">R$ ${Number(produto.preco).toFixed(2)}</span></td>
+                <td class="px-8 py-6"><span class="text-sm font-medium text-on-surface/80">${produto.preco_promocional ? 'R$ ' + Number(produto.preco_promocional).toFixed(2) : '—'}</span></td>
+                <td class="px-8 py-6">
+                  <span class="inline-flex items-center gap-2 text-xs ${produto.ativo ? 'text-emerald-400' : 'text-outline'} font-semibold">
+                    <span class="w-2 h-2 rounded-full ${produto.ativo ? 'bg-emerald-400' : 'bg-outline'}"></span>
+                    ${produto.ativo ? 'Ativo' : 'Inativo'}
+                  </span>
+                </td>
+                <td class="px-8 py-6 text-right">
+                  <div class="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="editarProduto(${produto.id})" class="p-2 text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
+                    <button onclick="excluirProduto(${produto.id}, '${(produto.nome || '').replace(/'/g, "\\'")}')" class="p-2 text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+                  </div>
+                </td>
+              `;
+              tbody.appendChild(tr);
+            });
+          } else {
+            tbody.innerHTML = '<tr><td colspan="6" class="px-8 py-12 text-center text-on-surface-variant">Nenhum produto cadastrado.</td></tr>';
+          }
+        } catch (err) { alert('Erro: ' + err.message); }
+      }
+
+      document.addEventListener('DOMContentLoaded', carregarProdutos);
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body min-h-screen">
+<aside class="h-full w-64 fixed left-0 top-0 bg-[#1F1B18] z-40 flex flex-col py-8 pr-4">
+<div class="px-8 mb-10">
+<h1 class="text-xl font-serif text-[#F2CA50]">VIRAR</h1>
+<p class="text-[10px] uppercase tracking-widest opacity-50 text-[#EAE1DB]">Sanctuary Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="funcional.html">
+<span class="material-symbols-outlined mr-4 text-lg">dashboard</span>
+<span class="font-['Manrope'] font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="funerarias.html">
+<span class="material-symbols-outlined mr-4 text-lg">account_balance</span>
+<span class="font-['Manrope'] font-medium text-sm">Funerárias</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="servicos.html">
+<span class="material-symbols-outlined mr-4 text-lg">settings_heart</span>
+<span class="font-['Manrope'] font-medium text-sm">Serviços</span>
+</a>
+<a class="flex items-center px-8 py-3 bg-[#2E2926] text-[#F2CA50] rounded-r-full border-l-4 border-[#D4AF37] translate-x-1 transition-transform" href="produtos.html">
+<span class="material-symbols-outlined mr-4 text-lg" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+<span class="font-['Manrope'] font-medium text-sm">Produtos</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="pedidos.html">
+<span class="material-symbols-outlined mr-4 text-lg">receipt_long</span>
+<span class="font-['Manrope'] font-medium text-sm">Pedidos</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="planos.html">
+<span class="material-symbols-outlined mr-4 text-lg">payments</span>
+<span class="font-['Manrope'] font-medium text-sm">Planos</span>
+</a>
+</nav>
+<div class="px-8 mt-auto pt-8 border-t border-[#2E2926]">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-10 h-10 rounded-full bg-[#2E2926] flex items-center justify-center border border-[#4d4635]/20">
+<span class="material-symbols-outlined text-[#F2CA50] text-xl">account_circle</span>
+</div>
+<div class="flex-1">
+<p class="text-xs font-bold text-[#EAE1DB]">Cliente</p>
+<p id="userEmail" class="text-[10px] text-[#EAE1DB]/50">Carregando...</p>
+</div>
+</div>
+<a href="login.html" id="logoutBtn" class="flex items-center gap-2 px-4 py-2 text-xs text-[#EAE1DB] opacity-60 hover:opacity-100 hover:bg-[#2E2926] rounded transition-colors">
+<span class="material-symbols-outlined text-sm">logout</span>
+Sair do Sistema
+</a>
+</div>
+</aside>
+
+<main class="ml-64 min-h-screen p-10 bg-surface">
+<div class="max-w-7xl">
+<div class="flex justify-between items-end mb-16">
+<div class="space-y-4">
+<h2 class="text-5xl font-headline font-normal text-on-surface tracking-tight">Gestão de Produtos</h2>
+<p class="text-on-surface-variant max-w-xl font-light leading-relaxed">Cadastre produtos para a loja da funerária. Eles aparecerão no app para os clientes.</p>
+</div>
+<button id="btnNovoProduto" onclick="abrirModalNovoProduto()" class="bg-gold-gradient text-on-primary px-8 py-3 rounded-md font-label font-bold text-sm tracking-wide shadow-xl flex items-center gap-2 hover:scale-[1.02] transition-transform">
+<span class="material-symbols-outlined text-sm">add</span>
+Novo Produto
+</button>
+</div>
+
+<div class="bg-surface-container rounded-xl overflow-hidden">
+<table class="w-full border-collapse text-left">
+<thead>
+<tr class="bg-surface-container-high text-[10px] uppercase tracking-[0.2em] text-on-surface-variant font-bold">
+<th class="px-8 py-5 font-medium">Produto</th>
+<th class="px-8 py-5 font-medium">Estoque</th>
+<th class="px-8 py-5 font-medium">Preço</th>
+<th class="px-8 py-5 font-medium">Promoção</th>
+<th class="px-8 py-5 font-medium">Status</th>
+<th class="px-8 py-5 font-medium text-right">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5" id="produtos-tbody">
+<!-- Carregado dinamicamente -->
+</tbody>
+</table>
+</div>
+</div>
+</main>
+
+<!-- Modal de Produto -->
+<div id="modalProduto" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center">
+  <div class="bg-surface-container-low rounded-xl w-full max-w-2xl mx-4 shadow-2xl border border-outline-variant/20 max-h-[90vh] flex flex-col">
+    <div class="flex items-center justify-between p-6 border-b border-outline-variant/10 flex-shrink-0">
+      <div>
+        <h3 id="modalProdutoTitulo" class="text-2xl font-headline text-on-surface">Novo Produto</h3>
+        <p class="text-sm text-on-surface-variant mt-1">Cadastre um produto para a loja</p>
+      </div>
+      <button onclick="fecharModalProduto()" class="p-2 hover:bg-surface-container-high rounded-lg transition-colors"><span class="material-symbols-outlined text-on-surface-variant">close</span></button>
+    </div>
+    <form id="formProduto" data-id="" class="p-6 space-y-5 overflow-y-auto flex-1">
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Funerária *</label>
+        <select id="inputFuneraria" required class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary">
+          <option value="">Selecione a funerária...</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Nome do Produto *</label>
+        <input type="text" id="inputNome" required class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary"/>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Descrição</label>
+        <textarea id="inputDescricao" rows="3" class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface resize-none"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">Categoria *</label>
+          <input type="text" id="inputCategoria" required class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface" placeholder="Ex: Urnas, Flores, Velas"/>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">Estoque</label>
+          <input type="number" id="inputEstoque" min="0" class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">Preço *</label>
+          <input type="number" id="inputPreco" required min="0" step="0.01" class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface"/>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">Preço Promocional</label>
+          <input type="number" id="inputPrecoPromocional" min="0" step="0.01" class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface"/>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Imagem do Produto</label>
+        <label for="inputImagem" class="relative flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-outline-variant/30 rounded-lg cursor-pointer hover:border-primary/50 overflow-hidden">
+          <div id="imagemPlaceholder" class="flex flex-col items-center gap-1 pointer-events-none">
+            <span class="material-symbols-outlined text-2xl text-on-surface-variant">add_photo_alternate</span>
+            <span class="text-xs text-on-surface-variant">Clique para selecionar</span>
+          </div>
+          <img id="imagemPreview" src="" alt="Preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-md"/>
+          <input type="file" id="inputImagem" accept="image/*" class="hidden" onchange="atualizarImagemProduto(this)"/>
+        </label>
+      </div>
+      <div class="flex gap-4">
+        <label class="flex items-center gap-2 text-sm text-on-surface cursor-pointer"><input type="checkbox" id="inputAtivo" checked class="accent-primary"/> Ativo</label>
+        <label class="flex items-center gap-2 text-sm text-on-surface cursor-pointer"><input type="checkbox" id="inputDestaque" class="accent-primary"/> Destaque</label>
+      </div>
+    </form>
+    <div class="flex items-center justify-end gap-3 p-6 border-t border-outline-variant/10 bg-surface-container/50 flex-shrink-0">
+      <button onclick="fecharModalProduto()" type="button" class="px-6 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg font-semibold text-sm">Cancelar</button>
+      <button id="btnSalvarProduto" onclick="salvarProduto()" type="button" class="px-6 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-lg shadow-lg font-bold text-sm flex items-center gap-2">
+        <span id="btnSalvarProdutoIcone" class="material-symbols-outlined text-sm">add</span>
+        <span id="btnSalvarProdutoTexto">Criar Produto</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  async function abrirModalNovoProduto() {
+    document.getElementById('formProduto').setAttribute('data-id', '');
+    document.getElementById('modalProdutoTitulo').textContent = 'Novo Produto';
+    document.getElementById('btnSalvarProdutoTexto').textContent = 'Criar Produto';
+    document.getElementById('btnSalvarProdutoIcone').textContent = 'add';
+    document.getElementById('formProduto').reset();
+    document.getElementById('imagemPreview').src = '';
+    document.getElementById('imagemPreview').classList.add('hidden');
+    document.getElementById('imagemPlaceholder').classList.remove('hidden');
+    await preencherFunerariasDropdown();
+    document.getElementById('modalProduto').classList.remove('hidden');
+    document.getElementById('modalProduto').classList.add('flex');
+  }
+
+  async function preencherFunerariasDropdown(selecionarId) {
+    const select = document.getElementById('inputFuneraria');
+    select.innerHTML = '<option value="">Selecione a funerária...</option>';
+    const funerarias = await carregarFunerariasUsuario();
+    funerarias.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f.id;
+      opt.textContent = f.nome;
+      if (selecionarId && f.id === selecionarId) opt.selected = true;
+      select.appendChild(opt);
+    });
+  }
+
+  function fecharModalProduto() {
+    document.getElementById('modalProduto').classList.add('hidden');
+    document.getElementById('modalProduto').classList.remove('flex');
+  }
+
+  function atualizarImagemProduto(input) {
+    const preview = document.getElementById('imagemPreview');
+    const placeholder = document.getElementById('imagemPlaceholder');
+    if (input.files.length) {
+      preview.src = URL.createObjectURL(input.files[0]);
+      preview.classList.remove('hidden');
+      placeholder.classList.add('hidden');
+    } else {
+      preview.src = '';
+      preview.classList.add('hidden');
+      placeholder.classList.remove('hidden');
+    }
+  }
+
+  async function editarProduto(id) {
+    const user = await verificarAutenticacao();
+    if (!user) return;
+    try {
+      const { data, error } = await supabaseClient.from('produtos').select('*').eq('id', id).single();
+      if (error || !data) { alert('Erro: ' + (error?.message || 'Produto não encontrado')); return; }
+      const { data: funeraria } = await supabaseClient.from('funerarias').select('id').eq('id', data.funeraria_id).eq('user_id', user.id).single();
+      if (!funeraria) { alert('Você não tem permissão para editar este produto.'); return; }
+
+      document.getElementById('formProduto').setAttribute('data-id', id);
+      document.getElementById('modalProdutoTitulo').textContent = 'Editar Produto';
+      document.getElementById('btnSalvarProdutoTexto').textContent = 'Salvar Alterações';
+      document.getElementById('btnSalvarProdutoIcone').textContent = 'save';
+
+      await preencherFunerariasDropdown(data.funeraria_id);
+      document.getElementById('inputNome').value = data.nome || '';
+      document.getElementById('inputDescricao').value = data.descricao || '';
+      document.getElementById('inputCategoria').value = data.categoria || '';
+      document.getElementById('inputEstoque').value = data.estoque ?? '';
+      document.getElementById('inputPreco').value = data.preco ?? '';
+      document.getElementById('inputPrecoPromocional').value = data.preco_promocional ?? '';
+      document.getElementById('inputAtivo').checked = data.ativo !== false;
+      document.getElementById('inputDestaque').checked = data.destaque === true;
+
+      const imgPreview = document.getElementById('imagemPreview');
+      const imgPlaceholder = document.getElementById('imagemPlaceholder');
+      imgPreview.src = data.imagem || '';
+      imgPreview.classList.toggle('hidden', !data.imagem);
+      imgPlaceholder.classList.toggle('hidden', !!data.imagem);
+
+      document.getElementById('modalProduto').classList.remove('hidden');
+      document.getElementById('modalProduto').classList.add('flex');
+    } catch (err) { alert('Erro ao carregar produto: ' + err.message); }
+  }
+
+  async function salvarProduto() {
+    const funeraria_id = document.getElementById('inputFuneraria').value;
+    const nome = document.getElementById('inputNome').value.trim();
+    const descricao = document.getElementById('inputDescricao').value.trim();
+    const categoria = document.getElementById('inputCategoria').value.trim();
+    const estoque = document.getElementById('inputEstoque').value ? parseInt(document.getElementById('inputEstoque').value) : 0;
+    const preco = document.getElementById('inputPreco').value ? parseFloat(document.getElementById('inputPreco').value) : null;
+    const preco_promocional = document.getElementById('inputPrecoPromocional').value ? parseFloat(document.getElementById('inputPrecoPromocional').value) : null;
+    const ativo = document.getElementById('inputAtivo').checked;
+    const destaque = document.getElementById('inputDestaque').checked;
+    const imagemFile = document.getElementById('inputImagem').files[0];
+    const editandoId = document.getElementById('formProduto').getAttribute('data-id');
+    const imagemAtual = document.getElementById('imagemPreview').src;
+
+    if (!funeraria_id || !nome || !categoria || preco === null) {
+      alert('Preencha funerária, nome, categoria e preço.');
+      return;
+    }
+
+    const user = await verificarAutenticacao();
+    if (!user) return;
+    const btn = document.getElementById('btnSalvarProduto');
+    if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
+
+    try {
+      const { data: funeraria, error: fErr } = await supabaseClient.from('funerarias').select('id').eq('id', funeraria_id).eq('user_id', user.id).single();
+      if (fErr || !funeraria) { alert('Você não tem permissão para cadastrar produtos nesta funerária.'); return; }
+
+      let imagem = imagemAtual || null;
+      if (imagemFile) {
+        const ext = imagemFile.name.split('.').pop();
+        const path = `produtos/${user.id}/${Date.now()}.${ext}`;
+        const { error: upErr } = await supabaseClient.storage.from('documentos').upload(path, imagemFile, { upsert: true });
+        if (upErr) {
+          alert('Erro ao enviar imagem: ' + upErr.message);
+        } else {
+          const { data: urlData } = supabaseClient.storage.from('documentos').getPublicUrl(path);
+          imagem = urlData?.publicUrl || null;
+        }
+      }
+
+      const registro = {
+        nome, descricao: descricao || null, categoria, estoque, preco,
+        preco_promocional: preco_promocional || null, imagem, ativo, destaque
+      };
+
+      let result;
+      if (editandoId) {
+        result = await supabaseClient.from('produtos').update(registro).eq('id', editandoId).eq('funeraria_id', funeraria_id).select();
+      } else {
+        result = await supabaseClient.from('produtos').insert([{ ...registro, funeraria_id: funeraria_id }]).select();
+      }
+      if (result.error) { alert('Erro ao salvar: ' + result.error.message); return; }
+      fecharModalProduto();
+      carregarProdutos();
+    } catch (err) {
+      alert('Erro: ' + err.message);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = editandoId
+          ? '<span id="btnSalvarProdutoIcone" class="material-symbols-outlined text-sm">save</span><span id="btnSalvarProdutoTexto">Salvar Alterações</span>'
+          : '<span id="btnSalvarProdutoIcone" class="material-symbols-outlined text-sm">add</span><span id="btnSalvarProdutoTexto">Criar Produto</span>';
+      }
+    }
+  }
+
+  document.getElementById('modalProduto')?.addEventListener('click', function(e) {
+    if (e.target === this) fecharModalProduto();
+  });
+</script>
+<script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const supabase = createClient('https://ikahdkaccmpldstbcbpk.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw', { auth: { autoRefreshToken: true, persistSession: true } });
+    async function loadUserData() {
+        try { const { data: { user } } = await supabase.auth.getUser(); document.getElementById('userEmail').textContent = user?.email || 'cliente@virar.com'; }
+        catch (err) { document.getElementById('userEmail').textContent = 'cliente@virar.com'; }
+    }
+    document.getElementById('logoutBtn')?.addEventListener('click', async (e) => { e.preventDefault(); await supabase.auth.signOut(); window.location.href = 'login.html'; });
+    loadUserData();
+</script>
+</body>
+</html>

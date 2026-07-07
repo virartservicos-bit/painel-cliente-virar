@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIRAR - Diagnóstico</title>
+    <style>
+        body {
+            background: #161310;
+            color: #eae1db;
+            font-family: 'Manrope', sans-serif;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .title {
+            color: #f2ca50;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .section {
+            background: #231f1c;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            border: 1px solid #4d4635;
+        }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .warning { color: #fbbf24; }
+        .btn {
+            background: linear-gradient(135deg, #f2ca50 0%, #d4af37 100%);
+            color: #554300;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🔍 Diagnóstico do Sistema VIRAR</h1>
+        
+        <div class="section">
+            <h3>📁 Verificação de Assets</h3>
+            <div id="assets-status">Verificando...</div>
+        </div>
+        
+        <div class="section">
+            <h3>🌐 Conectividade</h3>
+            <div id="network-status">Verificando...</div>
+        </div>
+        
+        <div class="section">
+            <h3>⚡ Performance</h3>
+            <div id="performance-status">Verificando...</div>
+        </div>
+        
+        <div class="section">
+            <h3>🎨 CSS e Fonts</h3>
+            <div id="css-status">Verificando...</div>
+        </div>
+        
+        <div class="section">
+            <h3>📱 Console Errors</h3>
+            <div id="console-status">Nenhum erro detectado</div>
+        </div>
+        
+        <button class="btn" onclick="runDiagnostics()">Rodar Diagnóstico Completo</button>
+        <button class="btn" onclick="testAppLoad()">Testar Carregamento do App</button>
+    </div>
+
+    <script>
+        function checkAssets() {
+            const assets = [
+                '/assets/index-DdnqNfkp.js',
+                '/assets/index-CLPdMoMI.css'
+            ];
+            
+            let results = '';
+            assets.forEach(asset => {
+                fetch(asset, { method: 'HEAD' })
+                    .then(response => {
+                        results += `<div class="success">✅ ${asset} - ${response.status}</div>`;
+                        document.getElementById('assets-status').innerHTML = results;
+                    })
+                    .catch(error => {
+                        results += `<div class="error">❌ ${asset} - ERRO: ${error.message}</div>`;
+                        document.getElementById('assets-status').innerHTML = results;
+                    });
+            });
+        }
+        
+        function checkNetwork() {
+            const online = navigator.onLine;
+            document.getElementById('network-status').innerHTML = 
+                online ? '<div class="success">✅ Online</div>' : '<div class="error">❌ Offline</div>';
+        }
+        
+        function checkPerformance() {
+            if (performance.timing) {
+                const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+                document.getElementById('performance-status').innerHTML = 
+                    `<div class="success">⚡ Tempo de carregamento: ${loadTime}ms</div>`;
+            }
+        }
+        
+        function checkCSS() {
+            const testElement = document.createElement('div');
+            testElement.style.display = 'none';
+            testElement.className = 'bg-surface text-primary';
+            document.body.appendChild(testElement);
+            
+            const styles = window.getComputedStyle(testElement);
+            const bgColor = styles.backgroundColor;
+            const textColor = styles.color;
+            
+            document.getElementById('css-status').innerHTML = `
+                <div>Background: ${bgColor}</div>
+                <div>Text Color: ${textColor}</div>
+                <div class="success">✅ CSS está aplicando cores</div>
+            `;
+            
+            document.body.removeChild(testElement);
+        }
+        
+        function testAppLoad() {
+            const script = document.createElement('script');
+            script.src = '/assets/index-DdnqNfkp.js';
+            script.onload = () => {
+                document.getElementById('console-status').innerHTML = 
+                    '<div class="success">✅ JavaScript carregado com sucesso!</div>';
+            };
+            script.onerror = (error) => {
+                document.getElementById('console-status').innerHTML = 
+                    `<div class="error">❌ Erro ao carregar JavaScript: ${error}</div>`;
+            };
+            document.head.appendChild(script);
+        }
+        
+        function runDiagnostics() {
+            checkAssets();
+            checkNetwork();
+            checkPerformance();
+            checkCSS();
+        }
+        
+        // Capturar erros do console
+        window.addEventListener('error', (event) => {
+            const errorDiv = document.getElementById('console-status');
+            errorDiv.innerHTML = `<div class="error">❌ ${event.error.message}</div>`;
+        });
+        
+        // Rodar diagnóstico automático
+        setTimeout(runDiagnostics, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-br">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Usuários - VIRAR Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "on-surface": "#eae1db",
+              "surface-bright": "#3d3835",
+              "on-primary-fixed-variant": "#574500",
+              "on-secondary-fixed-variant": "#4d453e",
+              "surface-dim": "#161310",
+              "secondary-container": "#4d453e",
+              "outline": "#99907c",
+              "surface-tint": "#e9c349",
+              "secondary": "#d0c4bb",
+              "on-tertiary-fixed": "#231a0e",
+              "on-primary": "#3c2f00",
+              "on-secondary-fixed": "#211a15",
+              "tertiary-container": "#c0b09d",
+              "primary-fixed": "#ffe088",
+              "on-tertiary-fixed-variant": "#504536",
+              "on-primary-container": "#554300",
+              "surface-container-lowest": "#110d0b",
+              "surface-container-high": "#2e2926",
+              "on-tertiary": "#392f21",
+              "on-surface-variant": "#d0c5af",
+              "error-container": "#93000a",
+              "on-error": "#690005",
+              "on-secondary": "#362f29",
+              "tertiary-fixed-dim": "#d5c4b1",
+              "surface-container-low": "#1f1b18",
+              "on-secondary-container": "#bfb3aa",
+              "surface-variant": "#393430",
+              "surface-container": "#231f1c",
+              "background": "#161310",
+              "on-background": "#eae1db",
+              "tertiary-fixed": "#f1e0cc",
+              "inverse-on-surface": "#342f2c",
+              "secondary-fixed": "#ede0d6",
+              "inverse-primary": "#735c00",
+              "surface": "#161310",
+              "outline-variant": "#4d4635",
+              "on-tertiary-container": "#4e4334",
+              "error": "#ffb4ab",
+              "surface-container-highest": "#393430",
+              "primary-container": "#d4af37",
+              "tertiary": "#dccbb8",
+              "primary-fixed-dim": "#e9c349",
+              "primary": "#f2ca50",
+              "inverse-surface": "#eae1db",
+              "secondary-fixed-dim": "#d0c4bb",
+              "on-primary-fixed": "#241a00"
+            },
+            fontFamily: {
+              "headline": ["Noto Serif"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+    <script>
+      // Configuração do Supabase
+      const { createClient } = supabase;
+      const supabaseClient = createClient(
+        'https://ikahdkaccmpldstbcbpk.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw',
+        {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true
+          },
+          db: {
+            schema: 'public'
+          },
+          global: {
+            headers: {
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw'
+            }
+          }
+        }
+      );
+
+      // Carregar usuários do banco de dados
+      async function carregarUsuarios() {
+        console.log('Testando se é RLS (Row Level Security) - buscando com filtro falso...');
+        console.log('URL do Supabase:', 'https://ikahdkaccmpldstbcbpk.supabase.co');
+        console.log('Chave da API (primeiros 20 chars):', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw'.substring(0, 20));
+        try {
+          // Vamos tentar buscar sem filtros primeiro, mas pode ser RLS
+          const { data, error } = await supabaseClient
+            .from('profiles')
+            .select('*');
+          
+          console.log('Resposta completa do Supabase:', { data, error });
+          console.log('Data type:', typeof data);
+          console.log('Data length:', data ? data.length : 'null/undefined');
+          
+          if (error) {
+            console.error('Erro ao carregar profiles:', error);
+            alert('Erro ao carregar profiles: ' + error.message);
+            return;
+          }
+          
+          const tbody = document.querySelector('#usuarios-tbody');
+          console.log('Elemento tbody encontrado:', tbody);
+          tbody.innerHTML = '';
+          
+          console.log('Número de profiles encontrados:', data ? data.length : 0);
+          
+          if (data && data.length > 0) {
+            console.log('Processando profiles...');
+            data.forEach((usuario, index) => {
+              console.log(`Profile ${index}:`, usuario);
+              const tr = document.createElement('tr');
+              tr.className = 'group hover:bg-surface-container-high/50 transition-colors';
+              tr.innerHTML = `
+                <td class="px-8 py-6">
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-lg overflow-hidden border border-outline-variant/10">
+                      <img class="w-full h-full object-cover" src="${usuario.foto || 'https://picsum.photos/seed/' + usuario.id + '/100/100.jpg'}" alt="${usuario.nome || 'Usuário'}"/>
+                    </div>
+                    <div>
+                      <div class="text-sm font-semibold text-on-surface">${usuario.nome || 'Nome não informado'}</div>
+                      <div class="text-xs text-on-surface-variant opacity-60">${usuario.email || 'Email não informado'}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-8 py-6">
+                  <select class="bg-surface-container-highest text-xs border-none rounded-sm px-3 py-1.5 focus:ring-1 focus:ring-primary text-primary-fixed-dim font-bold uppercase tracking-wider cursor-pointer">
+                    <option value="admin" ${usuario.cargo === 'admin' ? 'selected' : ''}>Admin</option>
+                    <option value="editor" ${usuario.cargo === 'editor' ? 'selected' : ''}>Editor</option>
+                    <option value="viewer" ${usuario.cargo === 'viewer' ? 'selected' : ''}>Viewer</option>
+                  </select>
+                </td>
+                <td class="px-8 py-6">
+                  <div class="flex gap-2">
+                    <span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    <span class="text-[10px] uppercase tracking-tighter self-center opacity-60">${usuario.permissoes || 'Total Access'}</span>
+                  </div>
+                </td>
+                <td class="px-8 py-6">
+                  <span class="text-xs text-on-surface-variant">${usuario.ultimo_acesso || 'Nunca'}</span>
+                </td>
+                <td class="px-8 py-6 text-right">
+                  <button class="text-outline hover:text-on-surface transition-colors p-2">
+                    <span class="material-symbols-outlined">more_vert</span>
+                  </button>
+                </td>
+              `;
+              tbody.appendChild(tr);
+              console.log(`Profile ${index} adicionado à tabela`);
+            });
+            console.log('Todos os profiles processados');
+          } else {
+            console.log('Nenhum profile encontrado, exibindo mensagem');
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="5" class="px-8 py-12 text-center text-on-surface-variant">
+                  Nenhum usuário cadastrado no momento.
+                </td>
+              </tr>
+            `;
+          }
+        } catch (err) {
+          console.error('Erro ao processar dados:', err);
+          console.error('Stack trace:', err.stack);
+          alert('Erro ao processar dados: ' + err.message);
+        }
+      }
+
+      // Carregar dados quando a página for carregada
+      document.addEventListener('DOMContentLoaded', carregarUsuarios);
+      
+      // Auto-recarregar a cada 5 segundos para sempre ter dados atualizados
+      setInterval(carregarUsuarios, 5000);
+    </script>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar (Authority: Shared Components JSON) -->
+<aside class="h-full w-64 fixed left-0 top-0 bg-[#1F1B18] flex flex-col py-8 pr-4 z-40">
+<div class="px-8 mb-10">
+<h1 class="text-xl font-serif text-[#F2CA50]">VIRAR</h1>
+<p class="text-[10px] uppercase tracking-widest opacity-50 text-[#EAE1DB]">Sanctuary Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="funcional.html">
+<span class="material-symbols-outlined mr-4 text-lg">dashboard</span>
+<span class="font-['Manrope'] font-medium text-sm">Dashboard</span>
+            </a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="funerarias.html">
+<span class="material-symbols-outlined mr-4 text-lg">account_balance</span>
+<span class="font-['Manrope'] font-medium text-sm">Funerárias</span>
+            </a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="servicos.html">
+<span class="material-symbols-outlined mr-4 text-lg">settings_heart</span>
+<span class="font-['Manrope'] font-medium text-sm">Serviços</span>
+            </a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="planos.html">
+<span class="material-symbols-outlined mr-4 text-lg">payments</span>
+<span class="font-['Manrope'] font-medium text-sm">Planos</span>
+            </a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="produtos.html">
+<span class="material-symbols-outlined mr-4 text-lg">shopping_bag</span>
+<span class="font-['Manrope'] font-medium text-sm">Produtos</span>
+            </a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="pedidos.html">
+<span class="material-symbols-outlined mr-4 text-lg">receipt_long</span>
+<span class="font-['Manrope'] font-medium text-sm">Pedidos</span>
+            </a>
+<a class="flex items-center px-8 py-3 bg-[#2E2926] text-[#F2CA50] rounded-r-full border-l-4 border-[#D4AF37] translate-x-1 transition-transform" href="usuarios.html">
+<span class="material-symbols-outlined mr-4 text-lg">group</span>
+<span class="font-['Manrope'] font-medium text-sm">Usuários</span>
+            </a>
+</nav>
+<div class="px-8 mt-auto pt-8 border-t border-[#2E2926]">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-10 h-10 rounded-full bg-[#2E2926] flex items-center justify-center border border-[#4d4635]/20">
+<span class="material-symbols-outlined text-[#F2CA50] text-xl">account_circle</span>
+</div>
+<div class="flex-1">
+<p class="text-xs font-bold text-[#EAE1DB]">Cliente</p>
+<p id="userEmail" class="text-[10px] text-[#EAE1DB]/50">Carregando...</p>
+</div>
+</div>
+<a href="login.html" id="logoutBtn" class="flex items-center gap-2 px-4 py-2 text-xs text-[#EAE1DB] opacity-60 hover:opacity-100 hover:bg-[#2E2926] rounded transition-colors">
+<span class="material-symbols-outlined text-sm">logout</span>
+Sair do Sistema
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 flex-grow px-12 py-16 bg-surface">
+<!-- Header Section -->
+<header class="mb-16 flex justify-between items-end">
+<div class="max-w-2xl">
+<span class="text-primary-fixed-dim text-xs tracking-[0.2em] font-label font-bold uppercase mb-4 block">Controle de Acesso</span>
+<h2 class="text-5xl font-headline text-on-surface tracking-tight mb-6">Gestão de Usuários</h2>
+<p class="text-on-surface-variant font-body text-lg leading-relaxed opacity-80">
+                    Administre os guardiões do santuário digital. Controle permissões e níveis de acesso com reverência e precisão.
+                </p>
+</div>
+<button class="luxury-gradient text-on-primary px-8 py-4 rounded-md font-label font-bold text-sm flex items-center gap-3 shadow-xl hover:opacity-90 transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+                CONVIDAR USUÁRIO
+            </button>
+</header>
+<!-- Stats Grid (Bento Style) -->
+<div class="grid grid-cols-12 gap-6 mb-12">
+<div class="col-span-4 bg-surface-container-low p-8 rounded-xl flex flex-col justify-between h-40">
+<span class="text-on-surface-variant text-xs font-label opacity-60 uppercase tracking-widest">Total de Usuários</span>
+<div class="flex items-end justify-between">
+<span class="text-4xl font-headline text-primary">24</span>
+<span class="text-xs text-on-tertiary-container bg-tertiary-container/10 px-2 py-1 rounded">+2 este mês</span>
+</div>
+</div>
+<div class="col-span-4 bg-surface-container-low p-8 rounded-xl flex flex-col justify-between h-40">
+<span class="text-on-surface-variant text-xs font-label opacity-60 uppercase tracking-widest">Acessos Hoje</span>
+<div class="flex items-end justify-between">
+<span class="text-4xl font-headline text-on-surface">18</span>
+<span class="material-symbols-outlined text-outline" data-icon="visibility">visibility</span>
+</div>
+</div>
+<div class="col-span-4 bg-surface-container-low p-8 rounded-xl flex flex-col justify-between h-40">
+<span class="text-on-surface-variant text-xs font-label opacity-60 uppercase tracking-widest">Ações Pendentes</span>
+<div class="flex items-end justify-between">
+<span class="text-4xl font-headline text-on-surface">03</span>
+<span class="text-xs text-error/80 font-bold uppercase tracking-tighter">Requer Atenção</span>
+</div>
+</div>
+</div>
+<!-- User Table UI -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden">
+<div class="px-8 py-6 border-b border-outline-variant/10 flex justify-between items-center bg-surface-container">
+<div class="flex items-center gap-4 bg-surface-container-highest px-4 py-2 rounded-sm border border-outline-variant/5">
+<span class="material-symbols-outlined text-outline" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-64 text-on-surface placeholder:opacity-30" placeholder="Buscar por nome ou email..." type="text"/>
+</div>
+<div class="flex gap-4">
+<button class="text-xs font-label flex items-center gap-2 px-4 py-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+                        Filtrar
+                    </button>
+</div>
+</div>
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/60">
+<th class="px-8 py-6 font-medium">Usuário</th>
+<th class="px-8 py-6 font-medium">Cargo / Role</th>
+<th class="px-8 py-6 font-medium">Permissões</th>
+<th class="px-8 py-6 font-medium">Último Acesso</th>
+<th class="px-8 py-6 font-medium text-right">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5" id="usuarios-tbody">
+<!-- Os dados serão carregados dinamicamente pelo JavaScript -->
+</tbody>
+</table>
+<div class="px-8 py-6 flex items-center justify-between border-t border-outline-variant/5">
+<span class="text-[10px] text-on-surface-variant uppercase tracking-widest opacity-60">Exibindo 3 de 24 usuários</span>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded border border-outline-variant/20 flex items-center justify-center hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded border border-outline-variant/20 bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">1</button>
+<button class="w-8 h-8 rounded border border-outline-variant/20 flex items-center justify-center hover:bg-surface-container-highest transition-colors text-xs">2</button>
+<button class="w-8 h-8 rounded border border-outline-variant/20 flex items-center justify-center hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer (Authority: Shared Components JSON) -->
+<footer class="fixed bottom-0 right-0 w-[calc(100%-16rem)] bg-[#161310] border-t border-[#EAE1DB]/5 py-6 px-12 z-40">
+<div class="flex flex-col md:flex-row justify-between items-center gap-8 max-w-7xl mx-auto">
+<div class="font-serif text-lg text-[#F2CA50]">VIRAR</div>
+<div class="flex gap-8">
+<a class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Políticas de Privacidade</a>
+<a class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Termos de Uso</a>
+<a class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Compliance</a>
+</div>
+<div class="font-['Manrope'] text-[10px] tracking-widest text-[#EAE1DB] opacity-30">
+                © 2024 VIRAR. Todos os direitos reservados.
+            </div>
+</div>
+</footer>
+<script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const supabase = createClient('https://ikahdkaccmpldstbcbpk.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw', { auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true } });
+    async function loadUserData() {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            document.getElementById('userEmail').textContent = (user && user.email) ? user.email : 'cliente@virar.com';
+        } catch (err) { document.getElementById('userEmail').textContent = 'cliente@virar.com'; }
+    }
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await supabase.auth.signOut();
+        window.location.href = 'login.html';
+    });
+    loadUserData();
+</script>
+</body></html>

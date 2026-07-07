@@ -1,0 +1,50 @@
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #161310 !important;
+  color: #eae1db !important;
+  font-family: 'Manrope', sans-serif;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
+.bg-login-hero {
+  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB-zCY85qtpLhtkwQ7mRRwdcx44TWHcWJ63bBsNvm94WTpVVUQ4gsS5G_210RtaaFwmp8p8lQ9v5y9KutbLtWAoOOKl_koNz4Vfk8t7waLqj2BtDEMM9Vqs7LoUWtksKwcsc2RwqzJXUaC8aWS8gRL5GdB8DgwMJl6uWgYno08pgTh6kdKPpBqnGYJsIOfwtcN9NqRO4ODNnBGt8g8kstYs0tBE6k9FvXOTP-wCOg9RTAocWp3oCyXxiO3qxzC6pSBm6XT4Q-053kNl');
+  background-size: cover;
+  background-position: center;
+}
+
+.premium-gradient,
+.luxury-gradient {
+  background: linear-gradient(135deg, #f2ca50 0%, #d4af37 100%);
+}
+
+/* Garantir que as cores do Material Design sejam aplicadas */
+.bg-surface { background-color: #161310 !important; }
+.bg-surface-container { background-color: #231f1c !important; }
+.bg-surface-container-low { background-color: #1f1b18 !important; }
+.bg-surface-container-high { background-color: #2e2926 !important; }
+.bg-surface-variant { background-color: #393430 !important; }
+
+.text-on-surface { color: #eae1db !important; }
+.text-on-surface-variant { color: #d0c5af !important; }
+.text-primary { color: #f2ca50 !important; }
+.text-primary-container { color: #d4af37 !important; }
+.text-on-primary { color: #3c2f00 !important; }
+.text-on-primary-container { color: #554300 !important; }
+
+.border-outline-variant { border-color: #4d4635 !important; }
+.border-outline { border-color: #99907c !important; }

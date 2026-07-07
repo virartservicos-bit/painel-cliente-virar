@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-br">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Pedidos - VIRAR Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "on-surface": "#eae1db",
+              "surface-bright": "#3d3835",
+              "on-primary-fixed-variant": "#574500",
+              "on-secondary-fixed-variant": "#4d453e",
+              "surface-dim": "#161310",
+              "secondary-container": "#4d453e",
+              "outline": "#99907c",
+              "surface-tint": "#e9c349",
+              "secondary": "#d0c4bb",
+              "on-tertiary-fixed": "#231a0e",
+              "on-primary": "#3c2f00",
+              "on-secondary-fixed": "#211a15",
+              "tertiary-container": "#c0b09d",
+              "primary-fixed": "#ffe088",
+              "on-tertiary-fixed-variant": "#504536",
+              "on-primary-container": "#554300",
+              "surface-container-lowest": "#110d0b",
+              "surface-container-high": "#2e2926",
+              "on-tertiary": "#392f21",
+              "on-surface-variant": "#d0c5af",
+              "error-container": "#93000a",
+              "on-error": "#690005",
+              "on-secondary": "#362f29",
+              "tertiary-fixed-dim": "#d5c4b1",
+              "surface-container-low": "#1f1b18",
+              "on-secondary-container": "#bfb3aa",
+              "surface-variant": "#393430",
+              "surface-container": "#231f1c",
+              "background": "#161310",
+              "on-background": "#eae1db",
+              "tertiary-fixed": "#f1e0cc",
+              "inverse-on-surface": "#342f2c",
+              "secondary-fixed": "#ede0d6",
+              "inverse-primary": "#735c00",
+              "surface": "#161310",
+              "outline-variant": "#4d4635",
+              "on-tertiary-container": "#4e4334",
+              "error": "#ffb4ab",
+              "surface-container-highest": "#393430",
+              "primary-container": "#d4af37",
+              "tertiary": "#dccbb8",
+              "primary-fixed-dim": "#e9c349",
+              "primary": "#f2ca50",
+              "inverse-surface": "#eae1db",
+              "secondary-fixed-dim": "#d0c4bb",
+              "on-primary-fixed": "#241a00"
+            },
+            fontFamily: {
+              "headline": ["Noto Serif"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+    <style>
+      .bg-gold-gradient { background: linear-gradient(135deg, #F2CA50 0%, #D4AF37 100%); }
+      .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+      body { background-color: #161310; color: #eae1db; font-family: 'Manrope', sans-serif; }
+    </style>
+<script>
+      const { createClient } = supabase;
+      const supabaseClient = createClient(
+        'https://ikahdkaccmpldstbcbpk.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw',
+        { auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true } }
+      );
+
+      async function verificarAutenticacao() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session?.user) {
+          window.location.href = 'login.html';
+          return null;
+        }
+        const { data: refreshData, error: refreshErr } = await supabaseClient.auth.refreshSession();
+        if (refreshErr || !refreshData.session) {
+          const expiresAt = session.expires_at;
+          const now = Math.floor(Date.now() / 1000);
+          if (expiresAt && expiresAt < now) {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'login.html';
+            return null;
+          }
+          return session.user;
+        }
+        return refreshData.session.user;
+      }
+
+      async function carregarFunerariasUsuario() {
+        const user = await verificarAutenticacao();
+        if (!user) return [];
+        const { data, error } = await supabaseClient.from('funerarias').select('id, nome').eq('user_id', user.id).order('nome');
+        if (error) return [];
+        return data || [];
+      }
+
+      function formatarDataHora(dataStr) {
+        if (!dataStr) return '—';
+        const d = new Date(dataStr);
+        return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      }
+
+      function formatarPreco(valor) {
+        if (valor === null || valor === undefined) return '—';
+        return 'R$ ' + Number(valor).toFixed(2).replace('.', ',');
+      }
+
+      const statusCores = {
+        'pendente': { bg: 'bg-amber-400/10', text: 'text-amber-400', border: 'border-amber-400/20', dot: 'bg-amber-400', label: 'Pendente' },
+        'pago': { bg: 'bg-emerald-400/10', text: 'text-emerald-400', border: 'border-emerald-400/20', dot: 'bg-emerald-400', label: 'Pago' },
+        'aprovado': { bg: 'bg-emerald-400/10', text: 'text-emerald-400', border: 'border-emerald-400/20', dot: 'bg-emerald-400', label: 'Aprovado' },
+        'enviado': { bg: 'bg-blue-400/10', text: 'text-blue-400', border: 'border-blue-400/20', dot: 'bg-blue-400', label: 'Enviado' },
+        'entregue': { bg: 'bg-emerald-400/10', text: 'text-emerald-400', border: 'border-emerald-400/20', dot: 'bg-emerald-400', label: 'Entregue' },
+        'cancelado': { bg: 'bg-red-400/10', text: 'text-red-400', border: 'border-red-400/20', dot: 'bg-red-400', label: 'Cancelado' },
+        'recusado': { bg: 'bg-red-400/10', text: 'text-red-400', border: 'border-red-400/20', dot: 'bg-red-400', label: 'Recusado' }
+      };
+
+      function getStatusInfo(status) {
+        const key = (status || 'pendente').toLowerCase();
+        return statusCores[key] || statusCores['pendente'];
+      }
+
+      async function carregarPedidos() {
+        const user = await verificarAutenticacao();
+        if (!user) return;
+        try {
+          const funerarias = await carregarFunerariasUsuario();
+          if (!funerarias.length) {
+            document.getElementById('pedidos-tbody').innerHTML = '<tr><td colspan="7" class="px-8 py-12 text-center text-on-surface-variant">Nenhuma funerária vinculada. Crie uma funerária primeiro.</td></tr>';
+            return;
+          }
+          const funerariaIds = funerarias.map(f => f.id);
+          const funerariaMap = {};
+          funerarias.forEach(f => funerariaMap[f.id] = f.nome);
+
+          const { data: pedidos, error } = await supabaseClient
+            .from('pedidos')
+            .select('*')
+            .in('funeraria_id', funerariaIds)
+            .order('created_at', { ascending: false });
+
+          if (error) {
+            document.getElementById('pedidos-tbody').innerHTML = '<tr><td colspan="7" class="px-8 py-12 text-center text-on-surface-variant">Erro ao carregar: ' + error.message + '</td></tr>';
+            return;
+          }
+
+          const tbody = document.getElementById('pedidos-tbody');
+          tbody.innerHTML = '';
+
+          if (!pedidos || pedidos.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="px-8 py-12 text-center text-on-surface-variant">Nenhum pedido recebido ainda.</td></tr>';
+            return;
+          }
+
+          const pedidoIds = pedidos.map(p => p.id);
+          const { data: itens } = await supabaseClient
+            .from('pedido_itens')
+            .select('*, produtos(nome, imagem)')
+            .in('pedido_id', pedidoIds);
+
+          const itensPorPedido = {};
+          if (itens) {
+            itens.forEach(item => {
+              if (!itensPorPedido[item.pedido_id]) itensPorPedido[item.pedido_id] = [];
+              itensPorPedido[item.pedido_id].push(item);
+            });
+          }
+
+          for (const pedido of pedidos) {
+            const itensPedido = itensPorPedido[pedido.id] || [];
+            const funerariaNome = funerariaMap[pedido.funeraria_id] || '—';
+            const statusInfo = getStatusInfo(pedido.status);
+
+            let clienteInfo = '—';
+            if (pedido.user_id) {
+              try {
+                const { data: profile } = await supabaseClient
+                  .from('profiles')
+                  .select('nome, email, telefone')
+                  .eq('id', pedido.user_id)
+                  .single();
+                if (profile) {
+                  clienteInfo = profile.nome || profile.email || '—';
+                  if (profile.email && profile.email !== clienteInfo) clienteInfo += '<br><span class="text-xs text-on-surface-variant">' + profile.email + '</span>';
+                  if (profile.telefone) clienteInfo += '<br><span class="text-xs text-on-surface-variant">' + profile.telefone + '</span>';
+                }
+              } catch {}
+            }
+
+            let produtosHtml = '<div class="space-y-1">';
+            if (itensPedido.length > 0) {
+              itensPedido.forEach(item => {
+                const nome = item.produtos?.nome || 'Produto removido';
+                const img = item.produtos?.imagem || null;
+                produtosHtml += `<div class="flex items-center gap-2">
+                  <div class="w-8 h-8 bg-surface-container-highest rounded flex items-center justify-center overflow-hidden flex-shrink-0">
+                    ${img ? `<img src="${img}" class="w-full h-full object-cover"/>` : '<span class="material-symbols-outlined text-on-surface-variant text-sm">inventory_2</span>'}
+                  </div>
+                  <div>
+                    <span class="text-sm text-on-surface">${nome}</span>
+                    <span class="text-xs text-on-surface-variant block">${item.quantidade}x ${formatarPreco(item.preco_unitario)}</span>
+                  </div>
+                </div>`;
+              });
+            } else {
+              produtosHtml += '<span class="text-sm text-on-surface-variant">Sem itens</span>';
+            }
+            produtosHtml += '</div>';
+
+            const tr = document.createElement('tr');
+            tr.className = 'group hover:bg-surface-container-low transition-colors cursor-pointer';
+            tr.innerHTML = `
+              <td class="px-6 py-5">
+                <span class="text-sm font-bold text-primary">#${pedido.id}</span>
+              </td>
+              <td class="px-6 py-5">${produtosHtml}</td>
+              <td class="px-6 py-5">
+                <div class="text-sm font-medium text-on-surface">${clienteInfo}</div>
+              </td>
+              <td class="px-6 py-5">
+                <span class="text-sm font-medium text-on-surface/80">${funerariaNome}</span>
+              </td>
+              <td class="px-6 py-5">
+                <span class="text-sm font-bold text-primary">${formatarPreco(pedido.total)}</span>
+                ${pedido.forma_pagamento ? `<span class="text-xs text-on-surface-variant block">${pedido.forma_pagamento}</span>` : ''}
+              </td>
+              <td class="px-6 py-5">
+                <span class="text-xs text-on-surface-variant">${formatarDataHora(pedido.created_at)}</span>
+              </td>
+              <td class="px-6 py-5">
+                <div class="flex flex-col gap-2">
+                  <span class="inline-flex items-center gap-2 text-xs ${statusInfo.text} font-semibold">
+                    <span class="w-2 h-2 rounded-full ${statusInfo.dot}"></span>
+                    ${statusInfo.label}
+                  </span>
+                  <select onchange="atualizarStatusPedido(${pedido.id}, this.value)" class="text-xs bg-surface-container-highest border border-outline-variant/20 rounded px-2 py-1 text-on-surface-variant focus:ring-1 focus:ring-primary">
+                    <option value="pendente" ${pedido.status === 'pendente' ? 'selected' : ''}>Pendente</option>
+                    <option value="pago" ${pedido.status === 'pago' ? 'selected' : ''}>Pago</option>
+                    <option value="aprovado" ${pedido.status === 'aprovado' ? 'selected' : ''}>Aprovado</option>
+                    <option value="enviado" ${pedido.status === 'enviado' ? 'selected' : ''}>Enviado</option>
+                    <option value="entregue" ${pedido.status === 'entregue' ? 'selected' : ''}>Entregue</option>
+                    <option value="cancelado" ${pedido.status === 'cancelado' ? 'selected' : ''}>Cancelado</option>
+                  </select>
+                </div>
+              </td>
+            `;
+            tbody.appendChild(tr);
+          }
+        } catch (err) {
+          document.getElementById('pedidos-tbody').innerHTML = '<tr><td colspan="7" class="px-8 py-12 text-center text-on-surface-variant">Erro ao carregar pedidos: ' + err.message + '</td></tr>';
+        }
+      }
+
+      async function atualizarStatusPedido(id, novoStatus) {
+        const { error } = await supabaseClient.from('pedidos').update({ status: novoStatus }).eq('id', id);
+        if (error) { alert('Erro ao atualizar status: ' + error.message); return; }
+        carregarPedidos();
+      }
+
+      document.addEventListener('DOMContentLoaded', async () => {
+        const user = await verificarAutenticacao();
+        if (!user) return;
+        document.getElementById('userEmail').textContent = user.email || 'cliente@virar.com';
+        carregarPedidos();
+      });
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body min-h-screen">
+<aside class="h-full w-64 fixed left-0 top-0 bg-[#1F1B18] z-40 flex flex-col py-8 pr-4">
+<div class="px-8 mb-10">
+<h1 class="text-xl font-serif text-[#F2CA50]">VIRAR</h1>
+<p class="text-[10px] uppercase tracking-widest opacity-50 text-[#EAE1DB]">Sanctuary Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="funcional.html">
+<span class="material-symbols-outlined mr-4 text-lg">dashboard</span>
+<span class="font-['Manrope'] font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="funerarias.html">
+<span class="material-symbols-outlined mr-4 text-lg">account_balance</span>
+<span class="font-['Manrope'] font-medium text-sm">Funerárias</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="servicos.html">
+<span class="material-symbols-outlined mr-4 text-lg">settings_heart</span>
+<span class="font-['Manrope'] font-medium text-sm">Serviços</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="produtos.html">
+<span class="material-symbols-outlined mr-4 text-lg">shopping_bag</span>
+<span class="font-['Manrope'] font-medium text-sm">Produtos</span>
+</a>
+<a class="flex items-center px-8 py-3 bg-[#2E2926] text-[#F2CA50] rounded-r-full border-l-4 border-[#D4AF37] translate-x-1 transition-transform" href="pedidos.html">
+<span class="material-symbols-outlined mr-4 text-lg" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span class="font-['Manrope'] font-medium text-sm">Pedidos</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="planos.html">
+<span class="material-symbols-outlined mr-4 text-lg">payments</span>
+<span class="font-['Manrope'] font-medium text-sm">Planos</span>
+</a>
+</nav>
+<div class="px-8 mt-auto pt-8 border-t border-[#2E2926]">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-10 h-10 rounded-full bg-[#2E2926] flex items-center justify-center border border-[#4d4635]/20">
+<span class="material-symbols-outlined text-[#F2CA50] text-xl">account_circle</span>
+</div>
+<div class="flex-1">
+<p class="text-xs font-bold text-[#EAE1DB]">Cliente</p>
+<p id="userEmail" class="text-[10px] text-[#EAE1DB]/50">Carregando...</p>
+</div>
+</div>
+<a href="login.html" id="logoutBtn" class="flex items-center gap-2 px-4 py-2 text-xs text-[#EAE1DB] opacity-60 hover:opacity-100 hover:bg-[#2E2926] rounded transition-colors">
+<span class="material-symbols-outlined text-sm">logout</span>
+Sair do Sistema
+</a>
+</div>
+</aside>
+
+<main class="ml-64 min-h-screen p-10 bg-surface">
+<div class="max-w-7xl">
+<div class="flex justify-between items-end mb-16">
+<div class="space-y-4">
+<h2 class="text-5xl font-headline font-normal text-on-surface tracking-tight">Pedidos</h2>
+<p class="text-on-surface-variant max-w-xl font-light leading-relaxed">Acompanhe os pedidos feitos pelos clientes no app. Visualize produtos, clientes, valores e status.</p>
+</div>
+<div class="flex items-center gap-3">
+<button onclick="carregarPedidos()" class="flex items-center gap-2 px-5 py-3 border border-outline-variant/20 rounded-lg text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-lg">refresh</span>
+Atualizar
+</button>
+</div>
+</div>
+
+<div class="bg-surface-container-low rounded-xl border border-outline-variant/10 overflow-hidden">
+<table class="w-full">
+<thead>
+<tr class="border-b border-outline-variant/10">
+<th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Pedido</th>
+<th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Produto</th>
+<th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Cliente</th>
+<th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Funerária</th>
+<th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Total</th>
+<th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Data/Hora</th>
+<th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Status</th>
+</tr>
+</thead>
+<tbody id="pedidos-tbody">
+<tr><td colspan="7" class="px-8 py-12 text-center text-on-surface-variant">
+<span class="material-symbols-outlined animate-spin text-primary text-2xl block mb-3">progress_activity</span>
+Carregando pedidos...
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+
+<script>
+  document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await supabaseClient.auth.signOut();
+    window.location.href = 'login.html';
+  });
+</script>
+</body>
+</html>

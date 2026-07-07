@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Meu Plano - VIRAR</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "on-surface": "#eae1db",
+              "surface-bright": "#3d3835",
+              "on-primary-fixed-variant": "#574500",
+              "on-secondary-fixed-variant": "#4d453e",
+              "surface-dim": "#161310",
+              "secondary-container": "#4d453e",
+              "outline": "#99907c",
+              "surface-tint": "#e9c349",
+              "secondary": "#d0c4bb",
+              "on-tertiary-fixed": "#231a0e",
+              "on-primary": "#3c2f00",
+              "on-secondary-fixed": "#211a15",
+              "tertiary-container": "#c0b09d",
+              "primary-fixed": "#ffe088",
+              "on-tertiary-fixed-variant": "#504536",
+              "on-primary-container": "#554300",
+              "surface-container-lowest": "#110d0b",
+              "surface-container-high": "#2e2926",
+              "on-tertiary": "#392f21",
+              "on-surface-variant": "#d0c5af",
+              "error-container": "#93000a",
+              "on-error": "#690005",
+              "on-secondary": "#362f29",
+              "tertiary-fixed-dim": "#d5c4b1",
+              "surface-container-low": "#1f1b18",
+              "on-secondary-container": "#bfb3aa",
+              "surface-variant": "#393430",
+              "surface-container": "#231f1c",
+              "background": "#161310",
+              "on-background": "#eae1db",
+              "tertiary-fixed": "#f1e0cc",
+              "inverse-on-surface": "#342f2c",
+              "secondary-fixed": "#ede0d6",
+              "inverse-primary": "#735c00",
+              "surface": "#161310",
+              "outline-variant": "#4d4635",
+              "on-tertiary-container": "#4e4334",
+              "error": "#ffb4ab",
+              "surface-container-highest": "#393430",
+              "primary-container": "#d4af37",
+              "tertiary": "#dccbb8",
+              "primary-fixed-dim": "#e9c349",
+              "primary": "#f2ca50",
+              "inverse-surface": "#eae1db",
+              "secondary-fixed-dim": "#d0c4bb",
+              "on-primary-fixed": "#241a00"
+            },
+            fontFamily: {
+              "headline": ["Noto Serif"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        background-color: #161310;
+        color: #eae1db;
+        font-family: 'Manrope', sans-serif;
+      }
+      .gold-gradient {
+        background: linear-gradient(135deg, #f2ca50 0%, #d4af37 100%);
+      }
+    </style>
+</head>
+<body class="min-h-screen">
+<!-- SideNavBar (Execution from JSON) -->
+<aside class="h-full w-64 fixed left-0 top-0 bg-[#1F1B18] flex flex-col py-8 pr-4 z-40">
+<div class="px-8 mb-10">
+<h1 class="text-xl font-serif text-[#F2CA50]">VIRAR</h1>
+<p class="text-[10px] uppercase tracking-widest opacity-50 text-[#EAE1DB]">Sanctuary Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="funcional.html">
+<span class="material-symbols-outlined mr-4 text-lg">dashboard</span>
+<span class="font-['Manrope'] font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="funerarias.html">
+<span class="material-symbols-outlined mr-4 text-lg">account_balance</span>
+<span class="font-['Manrope'] font-medium text-sm">Funerárias</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="servicos.html">
+<span class="material-symbols-outlined mr-4 text-lg">settings_heart</span>
+<span class="font-['Manrope'] font-medium text-sm">Serviços</span>
+</a>
+<!-- Active Tab: Planos -->
+<a class="flex items-center px-8 py-3 bg-[#2E2926] text-[#F2CA50] rounded-r-full border-l-4 border-[#D4AF37] translate-x-1 transition-transform" href="planos.html">
+<span class="material-symbols-outlined mr-4 text-lg">payments</span>
+<span class="font-['Manrope'] font-medium text-sm">Planos</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="produtos.html">
+<span class="material-symbols-outlined mr-4 text-lg">shopping_bag</span>
+<span class="font-['Manrope'] font-medium text-sm">Produtos</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="pedidos.html">
+<span class="material-symbols-outlined mr-4 text-lg">receipt_long</span>
+<span class="font-['Manrope'] font-medium text-sm">Pedidos</span>
+</a>
+</nav>
+<div class="px-8 mt-auto pt-8 border-t border-[#2E2926]">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-10 h-10 rounded-full bg-[#2E2926] flex items-center justify-center border border-[#4d4635]/20">
+<span class="material-symbols-outlined text-[#F2CA50] text-xl">account_circle</span>
+</div>
+<div class="flex-1">
+<p class="text-xs font-bold text-[#EAE1DB]">Cliente</p>
+<p id="userEmail" class="text-[10px] text-[#EAE1DB]/50">Carregando...</p>
+</div>
+</div>
+<a href="login.html" id="logoutBtn" class="flex items-center gap-2 px-4 py-2 text-xs text-[#EAE1DB] opacity-60 hover:opacity-100 hover:bg-[#2E2926] rounded transition-colors">
+<span class="material-symbols-outlined text-sm">logout</span>
+Sair do Sistema
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-64 min-h-screen p-12 bg-surface">
+  <header class="mb-12">
+    <h2 class="text-4xl font-headline text-on-surface mb-2">Meu Plano</h2>
+    <p class="text-on-surface-variant text-sm">Detalhes da sua assinatura VIRAR.</p>
+  </header>
+
+  <!-- Estado: carregando -->
+  <div id="planoCarregando" class="flex items-center gap-3 text-on-surface-variant text-sm">
+    <span class="material-symbols-outlined animate-spin text-primary">progress_activity</span>
+    Carregando plano...
+  </div>
+
+  <!-- Estado: sem plano -->
+  <div id="planoVazio" class="hidden bg-surface-container-low rounded-xl p-12 text-center border border-outline-variant/10">
+    <span class="material-symbols-outlined text-5xl text-outline mb-4 block">credit_card_off</span>
+    <h3 class="text-xl font-headline text-on-surface mb-2">Nenhum plano ativo</h3>
+    <p class="text-on-surface-variant text-sm mb-6">Você ainda não possui uma assinatura VIRAR ativa.</p>
+    <button id="btnRecuperarPlano" onclick="recuperarPlano()" class="inline-flex items-center gap-2 px-6 py-3 bg-primary/10 border border-primary/30 text-primary rounded-lg text-sm font-semibold hover:bg-primary/20 transition-all">
+      <span class="material-symbols-outlined text-lg">refresh</span>
+      Já paguei — Verificar meu plano
+    </button>
+    <p id="recuperarMsg" class="text-xs text-on-surface-variant mt-3 hidden"></p>
+  </div>
+
+  <!-- Estado: plano ativo -->
+  <div id="planoAtivo" class="hidden space-y-6">
+    <!-- Card principal do plano -->
+    <div class="bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/10">
+      <div class="h-1 bg-gradient-to-r from-[#F2CA50] to-[#D4AF37]"></div>
+      <div class="p-8">
+        <div class="flex items-start justify-between mb-6">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-primary-fixed-dim bg-primary/10 px-3 py-1 rounded-full">Plano Ativo</span>
+            <h3 id="planoNome" class="text-3xl font-headline text-primary mt-3">—</h3>
+          </div>
+          <div id="planoStatusBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-surface-container rounded-lg p-5">
+            <p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">Início</p>
+            <p id="planoInicio" class="text-lg font-bold text-on-surface">—</p>
+          </div>
+          <div class="bg-surface-container rounded-lg p-5">
+            <p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">Renovação</p>
+            <p id="planoRenovacao" class="text-lg font-bold text-on-surface">—</p>
+          </div>
+          <div class="bg-surface-container rounded-lg p-5 border border-primary/20">
+            <p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">Dias Restantes</p>
+            <p id="planoDiasRestantes" class="text-3xl font-headline text-primary">—</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra de progresso do ciclo -->
+    <div class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/10">
+      <div class="flex justify-between items-center mb-3">
+        <span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Ciclo Atual</span>
+        <span id="planoPorcentagem" class="text-xs font-bold text-primary">—%</span>
+      </div>
+      <div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+        <div id="planoProgressBar" class="h-full bg-gradient-to-r from-[#F2CA50] to-[#D4AF37] rounded-full transition-all duration-700" style="width:0%"></div>
+      </div>
+      <div class="flex justify-between mt-2">
+        <span id="planoInicioLabel" class="text-[10px] text-on-surface-variant">—</span>
+        <span id="planoFimLabel" class="text-[10px] text-on-surface-variant">—</span>
+      </div>
+    </div>
+
+    <!-- Detalhes do plano -->
+    <div class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/10">
+      <h4 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-6">O que está incluído</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="planoBeneficios"></div>
+      <div class="mt-6 pt-6 border-t border-outline-variant/10">
+        <p id="planoPreco" class="text-2xl font-headline text-primary">—<span class="text-sm text-on-surface-variant font-body">/mês</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparação de Planos -->
+  <section class="mt-12">
+    <h3 class="text-2xl font-headline text-on-surface mb-2">Nossos Planos</h3>
+    <p class="text-on-surface-variant text-sm mb-8">Compare e escolha o plano ideal para sua funerária.</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Essencial -->
+      <div class="bg-surface-container-low rounded-xl border border-outline-variant/10 overflow-hidden flex flex-col">
+        <div class="p-6 border-b border-outline-variant/10">
+          <h4 class="text-xl font-headline text-on-surface mb-1">Essencial</h4>
+          <p class="text-2xl font-headline text-primary">R$ 165,00<span class="text-sm text-on-surface-variant font-body">/mês</span></p>
+        </div>
+        <div class="p-6 space-y-3 flex-1">
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Cadastro em até 3 categorias</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Perfil básico da empresa</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Informações de contato</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Galeria de fotos (até 10 imagens)</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Presença na plataforma</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Contato direto com o cliente</div>
+        </div>
+        <div class="p-6 pt-0">
+          <button id="btnPlanoEssencial" data-plano="Essencial" onclick="trocarPlano('Essencial')" class="w-full py-3 rounded-lg font-bold text-sm bg-gradient-to-br from-primary to-primary-container text-on-primary hover:scale-[1.02] transition-transform">Assinar Essencial</button>
+        </div>
+      </div>
+
+      <!-- Dignidade -->
+      <div class="bg-surface-container-low rounded-xl border-2 border-primary/30 overflow-hidden flex flex-col relative">
+        <div class="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-bl-lg">Popular</div>
+        <div class="p-6 border-b border-outline-variant/10">
+          <h4 class="text-xl font-headline text-on-surface mb-1">Dignidade</h4>
+          <p class="text-2xl font-headline text-primary">R$ 399,99<span class="text-sm text-on-surface-variant font-body">/mês</span></p>
+        </div>
+        <div class="p-6 space-y-3 flex-1">
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Cadastro em até 5 categorias</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Perfil completo da empresa (descrição e serviços)</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Galeria de fotos (até 25 imagens)</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Destaque nos resultados de busca</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Prioridade por localização</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Selo "Empresa Verificada"</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Atualização fácil das informações</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Suporte prioritário</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Contato direto com o cliente</div>
+        </div>
+        <div class="p-6 pt-0">
+          <button id="btnPlanoDignidade" data-plano="Dignidade" onclick="trocarPlano('Dignidade')" class="w-full py-3 rounded-lg font-bold text-sm bg-gradient-to-br from-primary to-primary-container text-on-primary hover:scale-[1.02] transition-transform">Assinar Dignidade</button>
+        </div>
+      </div>
+
+      <!-- Memorial Elite -->
+      <div class="bg-surface-container-low rounded-xl border border-outline-variant/10 overflow-hidden flex flex-col">
+        <div class="p-6 border-b border-outline-variant/10">
+          <h4 class="text-xl font-headline text-on-surface mb-1">Memorial Elite</h4>
+          <p class="text-2xl font-headline text-primary">R$ 799,99<span class="text-sm text-on-surface-variant font-body">/mês</span></p>
+        </div>
+        <div class="p-6 space-y-3 flex-1">
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Categorias ilimitadas</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Exibição entre as primeiras posições</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Prioridade máxima nos resultados de busca</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Maior visibilidade para os usuários</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Galeria de fotos ilimitada</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Página com layout premium</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Perfil com destaque visual aprimorado</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Selo "Empresa Verificada Premium"</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Suporte prioritário avançado</div>
+          <div class="flex items-center gap-2 text-sm text-on-surface"><span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>Contato direto com o cliente</div>
+        </div>
+        <div class="p-6 pt-0">
+          <button id="btnPlanoMemorialElite" data-plano="Memorial Elite" onclick="trocarPlano('Memorial Elite')" class="w-full py-3 rounded-lg font-bold text-sm bg-gradient-to-br from-primary to-primary-container text-on-primary hover:scale-[1.02] transition-transform">Assinar Memorial Elite</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Modal de Confirmação de Troca de Plano -->
+<div id="modalTrocaPlano" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center">
+  <div class="bg-surface-container-low rounded-xl w-full max-w-md mx-4 shadow-2xl border border-outline-variant/20 overflow-hidden">
+    <div class="h-1 bg-gradient-to-r from-[#F2CA50] to-[#D4AF37]"></div>
+    <div class="p-8">
+      <div class="flex items-center gap-4 mb-6">
+        <div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+          <span class="material-symbols-outlined text-primary text-3xl">upgrade</span>
+        </div>
+        <div>
+          <h3 id="modalTrocaTitulo" class="text-xl font-headline text-on-surface">Alterar Plano</h3>
+          <p class="text-sm text-on-surface-variant mt-0.5">Confirme os detalhes da assinatura</p>
+        </div>
+      </div>
+      <div class="bg-surface-container rounded-lg p-5 mb-6 space-y-3">
+        <div class="flex justify-between items-center">
+          <span class="text-xs uppercase tracking-widest text-on-surface-variant">Novo Plano</span>
+          <span id="modalTrocaNome" class="text-lg font-headline text-primary">—</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-xs uppercase tracking-widest text-on-surface-variant">Valor Mensal</span>
+          <span id="modalTrocaPreco" class="text-lg font-bold text-on-surface">—</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-xs uppercase tracking-widest text-on-surface-variant">Ciclo</span>
+          <span class="text-sm font-semibold text-on-surface">Mensal (30 dias)</span>
+        </div>
+      </div>
+      <div class="flex items-start gap-2 mb-6 text-xs text-on-surface-variant">
+        <span class="material-symbols-outlined text-base text-primary mt-0.5">info</span>
+        <span>Você será direcionado para o Mercado Pago para concluir o pagamento. Após a confirmação, seu plano será ativado automaticamente.</span>
+      </div>
+      <div class="flex gap-3">
+        <button onclick="fecharModalTroca()" class="flex-1 py-3 rounded-lg font-semibold text-sm text-on-surface-variant hover:bg-surface-container-high transition-colors">Cancelar</button>
+        <button id="btnConfirmarTroca" class="flex-1 py-3 rounded-lg font-bold text-sm bg-gradient-to-br from-primary to-primary-container text-on-primary hover:scale-[1.02] transition-transform">Ir para Pagamento</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="ml-64 bg-[#161310] w-full py-12 px-8 border-t border-[#EAE1DB]/5">
+<div class="flex flex-col md:flex-row justify-between items-center gap-8 max-w-7xl mx-auto">
+<div class="font-serif text-lg text-[#F2CA50]">VIRAR</div>
+<div class="flex gap-8 font-['Manrope'] text-xs tracking-widest text-[#EAE1DB]">
+<a class="text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Políticas de Privacidade</a>
+<a class="text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Termos de Uso</a>
+<a class="text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Compliance</a>
+</div>
+<div class="text-[10px] text-[#EAE1DB] opacity-40 uppercase tracking-widest">© 2024 VIRAR. Todos os direitos reservados.</div>
+</div>
+</footer>
+
+<script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const supabase = createClient(
+        'https://ikahdkaccmpldstbcbpk.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw',
+        { auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true } }
+    );
+
+    function formatarData(dataStr) {
+        if (!dataStr) return '—';
+        const d = new Date(dataStr);
+        return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    function calcularDias(dataFim) {
+        const hoje = new Date();
+        const fim = new Date(dataFim);
+        const diff = Math.ceil((fim - hoje) / (1000 * 60 * 60 * 24));
+        return diff > 0 ? diff : 0;
+    }
+
+    function calcularPorcentagem(dataInicio, dataFim) {
+        const inicio = new Date(dataInicio);
+        const fim = new Date(dataFim);
+        const hoje = new Date();
+        const total = fim - inicio;
+        const passado = hoje - inicio;
+        const pct = Math.min(100, Math.max(0, Math.round((passado / total) * 100)));
+        return pct;
+    }
+
+    async function carregarPlano() {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.user) { window.location.href = 'login.html'; return; }
+            // Verificar se o token expirou e tentar renovar
+            const expiresAt = session.expires_at;
+            const now = Math.floor(Date.now() / 1000);
+            if (expiresAt && expiresAt < now + 60) {
+                const { data: refreshData, error: refreshErr } = await supabase.auth.refreshSession();
+                if (refreshErr || !refreshData.session) {
+                    await supabase.auth.signOut();
+                    window.location.href = 'login.html';
+                    return;
+                }
+            }
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) { window.location.href = 'login.html'; return; }
+
+            document.getElementById('userEmail').textContent = user.email || 'cliente@virar.com';
+
+            let plano = null, status = null, inicio = null, fim = null;
+
+            try {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('plano, plano_status, plano_inicio, plano_fim')
+                    .eq('id', user.id)
+                    .single();
+                if (profile && profile.plano) {
+                    plano = profile.plano;
+                    status = profile.plano_status;
+                    inicio = profile.plano_inicio;
+                    fim = profile.plano_fim;
+                }
+            } catch (err) {}
+
+            if (!plano) {
+                const { data: funerarias } = await supabase
+                    .from('funerarias')
+                    .select('plano, created_at, updated_at')
+                    .eq('user_id', user.id)
+                    .limit(1);
+                if (funerarias && funerarias.length > 0 && funerarias[0].plano) {
+                    const planosMap = { 'Standard': 'Essencial', 'standard': 'Essencial', 'Essencial': 'Essencial', 'Premium': 'Premium', 'VIP': 'VIP', 'Gold': 'Gold' };
+                    plano = planosMap[funerarias[0].plano] || funerarias[0].plano;
+                    status = 'ativo';
+                    inicio = new Date().toISOString();
+                    const fimData = new Date();
+                    fimData.setDate(fimData.getDate() + 30);
+                    fim = fimData.toISOString();
+                }
+            }
+
+            document.getElementById('planoCarregando').classList.add('hidden');
+
+            if (!plano) {
+                document.getElementById('planoVazio').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('planoAtivo').classList.remove('hidden');
+            document.getElementById('planoNome').textContent = plano;
+            document.getElementById('planoInicio').textContent = formatarData(inicio);
+            document.getElementById('planoRenovacao').textContent = formatarData(fim);
+
+            const dadosPlano = planosDados[plano];
+            if (dadosPlano) {
+              const container = document.getElementById('planoBeneficios');
+              container.innerHTML = '';
+              dadosPlano.beneficios.forEach(b => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center gap-3 text-sm text-on-surface';
+                div.innerHTML = '<span class="material-symbols-outlined text-emerald-400 text-lg">check_circle</span>' + b;
+                container.appendChild(div);
+              });
+              document.getElementById('planoPreco').innerHTML = dadosPlano.preco + '<span class="text-sm text-on-surface-variant font-body">/mês</span>';
+            }
+
+            const btnIdMap = { 'Essencial': 'btnPlanoEssencial', 'Dignidade': 'btnPlanoDignidade', 'Memorial Elite': 'btnPlanoMemorialElite' };
+            Object.values(btnIdMap).forEach(id => {
+              const btn = document.getElementById(id);
+              if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed', 'border', 'border-primary/30', 'text-primary');
+                btn.classList.add('bg-gradient-to-br', 'from-primary', 'to-primary-container', 'text-on-primary', 'hover:scale-[1.02]', 'transition-transform');
+                btn.onclick = () => trocarPlano(btn.getAttribute('data-plano'));
+              }
+            });
+            const btnAtual = document.getElementById(btnIdMap[plano]);
+            if (btnAtual) {
+              btnAtual.disabled = true;
+              btnAtual.textContent = 'Plano Atual';
+              btnAtual.classList.remove('bg-gradient-to-br', 'from-primary', 'to-primary-container', 'text-on-primary', 'hover:scale-[1.02]', 'transition-transform');
+              btnAtual.classList.add('opacity-50', 'cursor-not-allowed', 'border', 'border-primary/30', 'text-primary');
+            }
+
+            const dias = fim ? calcularDias(fim) : '—';
+            document.getElementById('planoDiasRestantes').textContent = dias;
+
+            const badge = document.getElementById('planoStatusBadge');
+            const ativo = status === 'ativo' || (!status && (typeof dias === 'number' ? dias > 0 : true));
+            badge.textContent = ativo ? 'Ativo' : 'Expirado';
+            badge.className = ativo
+                ? 'flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border bg-emerald-400/10 text-emerald-400 border-emerald-400/20'
+                : 'flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border bg-error/10 text-error border-error/20';
+
+            if (inicio && fim) {
+                const pct = calcularPorcentagem(inicio, fim);
+                const restante = 100 - pct;
+                document.getElementById('planoProgressBar').style.width = restante + '%';
+                document.getElementById('planoPorcentagem').textContent = restante + '% restante';
+                document.getElementById('planoInicioLabel').textContent = formatarData(inicio);
+                document.getElementById('planoFimLabel').textContent = formatarData(fim);
+            } else {
+                document.getElementById('planoPorcentagem').textContent = '';
+                document.getElementById('planoInicioLabel').textContent = '';
+                document.getElementById('planoFimLabel').textContent = '';
+            }
+
+        } catch (err) {
+            console.error('Erro ao carregar plano:', err);
+            document.getElementById('planoCarregando').classList.add('hidden');
+            document.getElementById('planoVazio').classList.remove('hidden');
+        }
+    }
+
+    const MP_TOKEN = 'APP_USR-8269531254298547-060422-f9ffc447ce815a6a787eda05d5538b8c-156629572';
+    const nomesPlano = { essencial: 'Essencial', dignidade: 'Dignidade', elite: 'Memorial Elite' };
+
+    const planosDados = {
+      'Essencial': {
+        preco: 'R$ 165,00',
+        beneficios: [
+          'Cadastro em até 3 categorias', 'Perfil básico da empresa', 'Informações de contato',
+          'Galeria de fotos (até 10 imagens)', 'Presença na plataforma', 'Contato direto com o cliente'
+        ]
+      },
+      'Dignidade': {
+        preco: 'R$ 399,99',
+        beneficios: [
+          'Cadastro em até 5 categorias', 'Perfil completo da empresa (descrição e serviços)',
+          'Galeria de fotos (até 25 imagens)', 'Destaque nos resultados de busca', 'Prioridade por localização',
+          'Selo "Empresa Verificada"', 'Atualização fácil das informações', 'Suporte prioritário', 'Contato direto com o cliente'
+        ]
+      },
+      'Memorial Elite': {
+        preco: 'R$ 799,99',
+        beneficios: [
+          'Categorias ilimitadas', 'Exibição entre as primeiras posições da plataforma',
+          'Prioridade máxima nos resultados de busca', 'Maior visibilidade para os usuários',
+          'Galeria de fotos ilimitada', 'Página com layout premium',
+          'Perfil com destaque visual aprimorado, fotos ampliadas e melhor organização das informações',
+          'Selo "Empresa Verificada Premium"', 'Suporte prioritário avançado', 'Contato direto com o cliente'
+        ]
+      }
+    };
+
+    const planosPrecos = {
+      'Essencial': 165.00,
+      'Dignidade': 399.99,
+      'Memorial Elite': 799.99
+    };
+
+    let planoPendenteTroca = null;
+
+    window.trocarPlano = function(nomePlano) {
+      planoPendenteTroca = nomePlano;
+      const dados = planosDados[nomePlano];
+      document.getElementById('modalTrocaNome').textContent = nomePlano;
+      document.getElementById('modalTrocaPreco').textContent = dados.preco + '/mês';
+      const modal = document.getElementById('modalTrocaPlano');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    };
+
+    window.fecharModalTroca = function() {
+      const modal = document.getElementById('modalTrocaPlano');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      planoPendenteTroca = null;
+    };
+
+    document.getElementById('btnConfirmarTroca').addEventListener('click', async function() {
+      if (!planoPendenteTroca) return;
+      const nomePlano = planoPendenteTroca;
+      const btn = document.getElementById('btnConfirmarTroca');
+      btn.disabled = true;
+      btn.textContent = 'Preparando pagamento...';
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const preco = planosPrecos[nomePlano];
+        const preferenceBody = {
+          items: [{
+            title: `Plano ${nomePlano} - VIRAR (Mensal)`,
+            description: `Assinatura mensal do plano ${nomePlano}`,
+            quantity: 1,
+            unit_price: preco,
+            currency_id: 'BRL'
+          }],
+          payer: { email: user.email },
+          back_urls: {
+            success: window.location.origin + '/planos.html?status=success&plano=' + encodeURIComponent(nomePlano),
+            pending: window.location.origin + '/planos.html?status=pending&plano=' + encodeURIComponent(nomePlano),
+            failure: window.location.origin + '/planos.html?status=failure'
+          },
+          auto_return: 'approved',
+          statement_descriptor: 'VIRAR',
+          external_reference: user.id + '|' + nomePlano
+        };
+
+        const resp = await fetch('https://api.mercadopago.com/checkout/preferences', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + MP_TOKEN,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(preferenceBody)
+        });
+
+        const result = await resp.json();
+        if (result.init_point) {
+          window.location.href = result.init_point;
+        } else if (result.sandbox_init_point) {
+          window.location.href = result.sandbox_init_point;
+        } else {
+          alert('Erro ao criar pagamento: ' + JSON.stringify(result.message || result));
+          btn.disabled = false;
+          btn.textContent = 'Ir para Pagamento';
+        }
+      } catch (err) {
+        alert('Erro: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = 'Ir para Pagamento';
+      }
+    });
+
+    document.getElementById('modalTrocaPlano').addEventListener('click', function(e) {
+      if (e.target === this) fecharModalTroca();
+    });
+
+    async function verificarPagamentoERegistrarPlano(nomePlano) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { window.location.href = 'login.html'; return; }
+
+        const resp = await fetch(
+          `https://api.mercadopago.com/v1/payments/search?payer.email=${encodeURIComponent(user.email)}&status=approved&sort=date_created&criteria=desc&limit=5`,
+          { headers: { 'Authorization': 'Bearer ' + MP_TOKEN } }
+        );
+        const result = await resp.json();
+        const pagamentos = result.results || [];
+
+        const pgto = pagamentos.find(p => {
+          const ref = p.external_reference || '';
+          return ref.includes(user.id) && ref.includes(nomePlano);
+        }) || pagamentos.find(p => (p.description || '').toLowerCase().includes(nomePlano.toLowerCase())) || pagamentos[0];
+
+        if (!pgto) {
+          alert('Pagamento ainda não confirmado. Se você já pagou, aguarde alguns minutos e clique em "Já paguei — Verificar meu plano".');
+          return;
+        }
+
+        const dataPgto = new Date(pgto.date_approved || pgto.date_created);
+        const fim = new Date(dataPgto);
+        fim.setDate(fim.getDate() + 30);
+
+        const { error: profErr } = await supabase.from('profiles').update({
+          plano: nomePlano,
+          plano_status: 'ativo',
+          plano_inicio: dataPgto.toISOString(),
+          plano_fim: fim.toISOString()
+        }).eq('id', user.id);
+
+        if (profErr) {
+          const { error: profErr2 } = await supabase.from('profiles').upsert({
+            id: user.id,
+            plano: nomePlano,
+            plano_status: 'ativo',
+            plano_inicio: dataPgto.toISOString(),
+            plano_fim: fim.toISOString()
+          });
+          if (profErr2) console.error('Erro ao salvar perfil:', profErr2);
+        }
+
+        const { data: funerarias } = await supabase.from('funerarias').select('id').eq('user_id', user.id);
+        if (funerarias && funerarias.length > 0) {
+          for (const f of funerarias) {
+            await supabase.from('funerarias').update({ plano: nomePlano }).eq('id', f.id);
+          }
+        }
+
+        alert('Pagamento confirmado! Plano "' + nomePlano + '" ativado com sucesso!');
+        const url = new URL(window.location);
+        url.searchParams.delete('status');
+        url.searchParams.delete('plano');
+        window.history.replaceState({}, document.title, url);
+        window.location.reload();
+      } catch (err) {
+        alert('Erro ao verificar pagamento: ' + err.message);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      const params = new URLSearchParams(window.location.search);
+      const status = params.get('status');
+      const plano = params.get('plano');
+      if (status === 'success' && plano) {
+        const banner = document.createElement('div');
+        banner.className = 'fixed top-0 left-0 right-0 z-50 bg-emerald-400/10 border border-emerald-400/30 text-emerald-400 px-6 py-4 text-center text-sm font-semibold';
+        banner.innerHTML = '<span class="material-symbols-outlined align-middle mr-2">check_circle</span> Pagamento aprovado! Ativando seu plano...';
+        document.body.appendChild(banner);
+        verificarPagamentoERegistrarPlano(plano);
+      } else if (status === 'pending' && plano) {
+        alert('Pagamento pendente. Assim que for aprovado, clique em "Já paguei — Verificar meu plano".');
+      } else if (status === 'failure') {
+        alert('Pagamento não aprovado. Tente novamente.');
+      }
+    });
+
+    window.recuperarPlano = async function() {
+        const btn = document.getElementById('btnRecuperarPlano');
+        const msg = document.getElementById('recuperarMsg');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined text-lg animate-spin">progress_activity</span> Verificando...';
+        msg.textContent = '';
+        msg.classList.add('hidden');
+
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const resp = await fetch(
+                `https://api.mercadopago.com/v1/payments/search?payer.email=${encodeURIComponent(user.email)}&status=approved&sort=date_created&criteria=desc&limit=5`,
+                { headers: { 'Authorization': 'Bearer ' + MP_TOKEN } }
+            );
+            const result = await resp.json();
+            const pagamentos = result.results || [];
+
+            if (!pagamentos.length) {
+                msg.textContent = 'Nenhum pagamento aprovado encontrado para este e-mail. Entre em contato com o suporte.';
+                msg.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-symbols-outlined text-lg">refresh</span> Já paguei — Verificar meu plano';
+                return;
+            }
+
+            const pgto = pagamentos[0];
+            const titulo = (pgto.description || pgto.payment_method_id || '').toLowerCase();
+            let planoKey = 'essencial';
+            if (titulo.includes('elite') || titulo.includes('memorial')) planoKey = 'elite';
+            else if (titulo.includes('dignidade')) planoKey = 'dignidade';
+
+            const nomeP = nomesPlano[planoKey];
+            const dataPgto = new Date(pgto.date_approved || pgto.date_created);
+            const fim = new Date(dataPgto);
+            fim.setDate(fim.getDate() + 30);
+
+            const { error } = await supabase.from('profiles').update({
+                plano: nomeP,
+                plano_status: 'ativo',
+                plano_inicio: dataPgto.toISOString(),
+                plano_fim: fim.toISOString()
+            }).eq('id', user.id);
+
+            if (error) {
+                const { error: err2 } = await supabase.from('profiles').upsert({
+                    id: user.id,
+                    plano: nomeP,
+                    plano_status: 'ativo',
+                    plano_inicio: dataPgto.toISOString(),
+                    plano_fim: fim.toISOString()
+                });
+                if (err2) {
+                    msg.textContent = 'Erro ao atualizar: ' + err2.message;
+                    msg.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerHTML = '<span class="material-symbols-outlined text-lg">refresh</span> Já paguei — Verificar meu plano';
+                    return;
+                }
+            }
+
+            const { data: funerarias } = await supabase.from('funerarias').select('id').eq('user_id', user.id);
+            if (funerarias && funerarias.length > 0) {
+              for (const f of funerarias) {
+                await supabase.from('funerarias').update({ plano: nomeP }).eq('id', f.id);
+              }
+            }
+
+            msg.textContent = 'Plano encontrado! Carregando...';
+            msg.classList.remove('hidden');
+            setTimeout(() => window.location.reload(), 1000);
+
+        } catch (err) {
+            msg.textContent = 'Erro ao verificar. Tente novamente.';
+            msg.classList.remove('hidden');
+            btn.disabled = false;
+            btn.innerHTML = '<span class="material-symbols-outlined text-lg">refresh</span> Já paguei — Verificar meu plano';
+        }
+    };
+
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await supabase.auth.signOut();
+        window.location.href = 'login.html';
+    });
+
+    carregarPlano();
+</script>
+</body></html>

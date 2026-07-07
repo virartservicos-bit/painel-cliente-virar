@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-br">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Funerárias - VIRAR Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "on-surface": "#eae1db",
+              "surface-bright": "#3d3835",
+              "on-primary-fixed-variant": "#574500",
+              "on-secondary-fixed-variant": "#4d453e",
+              "surface-dim": "#161310",
+              "secondary-container": "#4d453e",
+              "outline": "#99907c",
+              "surface-tint": "#e9c349",
+              "secondary": "#d0c4bb",
+              "on-tertiary-fixed": "#231a0e",
+              "on-primary": "#3c2f00",
+              "on-secondary-fixed": "#211a15",
+              "tertiary-container": "#c0b09d",
+              "primary-fixed": "#ffe088",
+              "on-tertiary-fixed-variant": "#504536",
+              "on-primary-container": "#554300",
+              "surface-container-lowest": "#110d0b",
+              "surface-container-high": "#2e2926",
+              "on-tertiary": "#392f21",
+              "on-surface-variant": "#d0c5af",
+              "error-container": "#93000a",
+              "on-error": "#690005",
+              "on-secondary": "#362f29",
+              "tertiary-fixed-dim": "#d5c4b1",
+              "surface-container-low": "#1f1b18",
+              "on-secondary-container": "#bfb3aa",
+              "surface-variant": "#393430",
+              "surface-container": "#231f1c",
+              "background": "#161310",
+              "on-background": "#eae1db",
+              "tertiary-fixed": "#f1e0cc",
+              "inverse-on-surface": "#342f2c",
+              "secondary-fixed": "#ede0d6",
+              "inverse-primary": "#735c00",
+              "surface": "#161310",
+              "outline-variant": "#4d4635",
+              "on-tertiary-container": "#4e4334",
+              "error": "#ffb4ab",
+              "surface-container-highest": "#393430",
+              "primary-container": "#d4af37",
+              "tertiary": "#dccbb8",
+              "primary-fixed-dim": "#e9c349",
+              "primary": "#f2ca50",
+              "inverse-surface": "#eae1db",
+              "secondary-fixed-dim": "#d0c4bb",
+              "on-primary-fixed": "#241a00"
+            },
+            fontFamily: {
+              "headline": ["Noto Serif"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      }
+      .bg-gold-gradient {
+        background: linear-gradient(135deg, #F2CA50 0%, #D4AF37 100%);
+      }
+    </style>
+<script>
+      // Configuração do Supabase
+      const { createClient } = supabase;
+      const supabaseClient = createClient(
+        'https://ikahdkaccmpldstbcbpk.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw',
+        { auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true } }
+      );
+
+      // Verificar autenticação ao carregar página
+      async function verificarAutenticacao() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session?.user) {
+          console.log('Usuário não autenticado, redirecionando para login...');
+          window.location.href = 'login.html';
+          return null;
+        }
+        // Sempre tentar renovar a sessão para garantir token válido
+        const { data: refreshData, error: refreshErr } = await supabaseClient.auth.refreshSession();
+        if (refreshErr || !refreshData.session) {
+          // Se falhou ao renovar, verificar se o token atual ainda é válido
+          const expiresAt = session.expires_at;
+          const now = Math.floor(Date.now() / 1000);
+          if (expiresAt && expiresAt < now) {
+            console.log('Token expirado e renovação falhou, redirecionando para login...');
+            await supabaseClient.auth.signOut();
+            window.location.href = 'login.html';
+            return null;
+          }
+          // Token ainda válido, continuar com a sessão atual
+          return session.user;
+        }
+        return refreshData.session.user;
+      }
+
+      // Excluir funerária
+      async function excluirFuneraria(id, nome) {
+        if (!confirm(`Tem certeza que deseja excluir a funerária "${nome}"?\n\nEsta ação não pode ser desfeita.`)) return;
+
+        const user = await verificarAutenticacao();
+        if (!user) return;
+
+        try {
+          const { error } = await supabaseClient
+            .from('funerarias')
+            .delete()
+            .eq('id', id)
+            .eq('user_id', user.id);
+
+          if (error) {
+            console.error('Erro ao excluir funerária:', error);
+            alert('Erro ao excluir funerária: ' + error.message);
+            return;
+          }
+
+          alert('Funerária excluída com sucesso!');
+          carregarFunerarias();
+        } catch (err) {
+          console.error('Erro ao excluir:', err);
+          alert('Erro ao excluir funerária: ' + err.message);
+        }
+      }
+
+      // Carregar funerárias do usuário logado
+      async function carregarFunerarias() {
+        console.log('Iniciando carregamento de funerárias...');
+        
+        // Verificar se usuário está autenticado
+        const user = await verificarAutenticacao();
+        if (!user) return;
+        
+        console.log('Usuário autenticado:', user.email);
+        
+        try {
+          // Buscar APENAS funerárias do usuário logado
+          const { data, error } = await supabaseClient
+            .from('funerarias')
+            .select('*')
+            .eq('user_id', user.id);
+          
+          console.log('Resposta do Supabase:', { data, error });
+          
+          if (error) {
+            console.error('Erro ao carregar funerárias:', error);
+            alert('Erro ao carregar funerárias: ' + error.message);
+            return;
+          }
+          
+          const tbody = document.querySelector('#funerarias-tbody');
+          tbody.innerHTML = '';
+          
+          console.log('Número de funerárias encontradas:', data ? data.length : 0);
+          
+          if (data && data.length > 0) {
+            data.forEach(funeraria => {
+              console.log('Processando funerária:', funeraria);
+              const tr = document.createElement('tr');
+              tr.className = 'group hover:bg-surface-container-low transition-colors';
+              tr.innerHTML = `
+                <td class="px-8 py-6">
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center text-primary-fixed-dim">
+                      <span class="material-symbols-outlined">church</span>
+                    </div>
+                    <div>
+                      <p class="font-headline text-lg">${funeraria.nome || 'Nome não informado'}</p>
+                      <p class="text-xs text-on-surface-variant">ID: ${funeraria.id || 'N/A'}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-8 py-6">
+                  <span class="text-sm font-medium text-on-surface/80">${funeraria.cidade && funeraria.estado ? funeraria.cidade + ' / ' + funeraria.estado : 'Não informada'}</span>
+                </td>
+                <td class="px-8 py-6">
+                  <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+                    <div class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-primary">${funeraria.plano || 'Standard'}</span>
+                  </div>
+                </td>
+                <td class="px-8 py-6">
+                  <span class="inline-flex items-center gap-2 text-xs ${funeraria.status === 'ativo' ? 'text-emerald-400' : 'text-outline'} font-semibold">
+                    <span class="w-2 h-2 rounded-full ${funeraria.status === 'ativo' ? 'bg-emerald-400' : 'bg-outline'}"></span>
+                    ${funeraria.status === 'ativo' ? 'Ativo' : 'Inativo'}
+                  </span>
+                </td>
+                <td class="px-8 py-6 text-right">
+                  <div class="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="editarFuneraria(${funeraria.id})" class="p-2 text-outline hover:text-primary transition-colors">
+                      <span class="material-symbols-outlined text-lg">edit</span>
+                    </button>
+                    <button onclick="excluirFuneraria(${funeraria.id}, '${funeraria.nome?.replace(/'/g, "\\'") || ''}')" class="p-2 text-outline hover:text-error transition-colors">
+                      <span class="material-symbols-outlined text-lg">delete</span>
+                    </button>
+                  </div>
+                </td>
+              `;
+              tbody.appendChild(tr);
+            });
+          } else {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="5" class="px-8 py-12 text-center text-on-surface-variant">
+                  Nenhuma funerária cadastrada no momento.
+                </td>
+              </tr>
+            `;
+          }
+        } catch (err) {
+          console.error('Erro ao processar dados:', err);
+          alert('Erro ao processar dados: ' + err.message);
+        }
+      }
+
+      // Função para abrir modal de nova funerária
+      function abrirModalNovaFuneraria() {
+        const nome = prompt('Nome da Funerária:');
+        if (!nome) return;
+        
+        const plano = prompt('Plano (Standard/Premium/Enterprise):') || 'Standard';
+        
+        criarFuneraria(nome, plano);
+      }
+      
+      // Função para criar funerária no Supabase
+      async function criarFuneraria(nome, plano, status = 'ativo', cnpj = '', endereco = '') {
+        const user = await verificarAutenticacao();
+        if (!user) return;
+        
+        try {
+          const funerariaData = {
+            nome: nome,
+            plano: plano,
+            status: status,
+            user_id: user.id
+          };
+          
+          // Adicionar campos opcionais se fornecidos
+          if (cnpj) funerariaData.cnpj = cnpj;
+          if (endereco) funerariaData.endereco = endereco;
+          
+          const { data, error } = await supabaseClient
+            .from('funerarias')
+            .insert([funerariaData])
+            .select();
+          
+          if (error) {
+            console.error('Erro ao criar funerária:', error);
+            alert('Erro ao criar funerária: ' + error.message);
+            return;
+          }
+          
+          alert('Funerária criada com sucesso!');
+          carregarFunerarias();
+        } catch (err) {
+          console.error('Erro:', err);
+          alert('Erro ao criar funerária: ' + err.message);
+        }
+      }
+
+      // Carregar dados quando a página for carregada
+      document.addEventListener('DOMContentLoaded', carregarFunerarias);
+      
+      // Auto-recarregar a cada 10 segundos para sempre ter dados atualizados
+      setInterval(carregarFunerarias, 10000);
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body min-h-screen">
+<!-- SideNavBar Anchor -->
+<aside class="h-full w-64 fixed left-0 top-0 bg-[#1F1B18] z-40 flex flex-col py-8 pr-4">
+<div class="px-8 mb-10">
+<h1 class="text-xl font-serif text-[#F2CA50]">VIRAR</h1>
+<p class="text-[10px] uppercase tracking-widest opacity-50 text-[#EAE1DB]">Sanctuary Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="funcional.html">
+<span class="material-symbols-outlined mr-4 text-lg">dashboard</span>
+<span class="font-['Manrope'] font-medium text-sm">Dashboard</span>
+</a>
+<!-- Active State: Funerárias -->
+<a class="flex items-center px-8 py-3 bg-[#2E2926] text-[#F2CA50] rounded-r-full border-l-4 border-[#D4AF37] translate-x-1 transition-transform" href="funerarias.html">
+<span class="material-symbols-outlined mr-4 text-lg" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+<span class="font-['Manrope'] font-medium text-sm">Funerárias</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="servicos.html">
+<span class="material-symbols-outlined mr-4 text-lg">settings_heart</span>
+<span class="font-['Manrope'] font-medium text-sm">Serviços</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="planos.html">
+<span class="material-symbols-outlined mr-4 text-lg">payments</span>
+<span class="font-['Manrope'] font-medium text-sm">Planos</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="produtos.html">
+<span class="material-symbols-outlined mr-4 text-lg">shopping_bag</span>
+<span class="font-['Manrope'] font-medium text-sm">Produtos</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="pedidos.html">
+<span class="material-symbols-outlined mr-4 text-lg">receipt_long</span>
+<span class="font-['Manrope'] font-medium text-sm">Pedidos</span>
+</a>
+</nav>
+<div class="px-8 mt-auto pt-8 border-t border-[#2E2926]">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-10 h-10 rounded-full bg-[#2E2926] flex items-center justify-center border border-[#4d4635]/20">
+<span class="material-symbols-outlined text-[#F2CA50] text-xl">account_circle</span>
+</div>
+<div class="flex-1">
+<p class="text-xs font-bold text-[#EAE1DB]">Cliente</p>
+<p id="userEmail" class="text-[10px] text-[#EAE1DB]/50">Carregando...</p>
+</div>
+</div>
+<a href="login.html" id="logoutBtn" class="flex items-center gap-2 px-4 py-2 text-xs text-[#EAE1DB] opacity-60 hover:opacity-100 hover:bg-[#2E2926] rounded transition-colors">
+<span class="material-symbols-outlined text-sm">logout</span>
+Sair do Sistema
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 min-h-screen p-10 bg-surface">
+<!-- Content Area -->
+<div class="max-w-7xl">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-16">
+<div class="space-y-4">
+<h2 class="text-5xl font-headline font-normal text-on-surface tracking-tight">Gestão de Funerárias</h2>
+<p class="text-on-surface-variant max-w-xl font-light leading-relaxed">
+                        Administre a rede de parceiros e santuários digitais. Garanta a excelência no atendimento e a integridade das homenagens prestadas.
+                    </p>
+</div>
+<button id="btnNovaFuneraria" onclick="abrirModalNovaFuneraria()" class="bg-gold-gradient text-on-primary px-8 py-3 rounded-md font-label font-bold text-sm tracking-wide shadow-xl flex items-center gap-2 hover:scale-[1.02] transition-transform">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'wght' 600;">add</span>
+                    Nova Funerária
+                </button>
+</div>
+<!-- Filters Section -->
+<section class="bg-surface-container-low rounded-xl p-6 mb-8 flex flex-wrap items-center gap-6">
+<div class="flex-1 min-w-[300px] relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant text-lg">search</span>
+<input class="w-full bg-surface-container-highest border-none rounded-sm pl-12 py-3 text-sm focus:ring-1 focus:ring-primary text-on-surface placeholder-on-surface-variant/40" placeholder="Buscar por nome ou CNPJ..." type="text"/>
+</div>
+<div class="w-64 relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant text-lg">location_on</span>
+<select class="w-full bg-surface-container-highest border-none rounded-sm pl-12 py-3 text-sm focus:ring-1 focus:ring-primary text-on-surface appearance-none">
+<option>Todas as Regiões</option>
+<option>São Paulo - Capital</option>
+<option>Rio de Janeiro - Sul</option>
+<option>Minas Gerais - Central</option>
+<option>Paraná - Litoral</option>
+</select>
+</div>
+<button class="px-6 py-3 text-primary-fixed-dim font-label text-sm font-semibold hover:bg-surface-container-high transition-colors">
+                    Limpar Filtros
+                </button>
+</section>
+<!-- Data Table -->
+<div class="bg-surface-container rounded-xl overflow-hidden">
+<table class="w-full border-collapse text-left">
+<thead>
+<tr class="bg-surface-container-high text-[10px] uppercase tracking-[0.2em] text-on-surface-variant font-bold">
+<th class="px-8 py-5 font-medium">Nome do Estabelecimento</th>
+<th class="px-8 py-5 font-medium">Região</th>
+<th class="px-8 py-5 font-medium">Plano Atual</th>
+<th class="px-8 py-5 font-medium">Status</th>
+<th class="px-8 py-5 font-medium text-right">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5" id="funerarias-tbody">
+<!-- Os dados serão carregados dinamicamente pelo JavaScript -->
+</tbody>
+</table>
+<!-- Pagination -->
+<div class="px-8 py-6 border-t border-outline-variant/10 flex items-center justify-between">
+<p class="text-xs text-on-surface-variant">Exibindo 3 de 42 funerárias cadastradas</p>
+<div class="flex gap-2">
+<button class="p-2 border border-outline-variant/20 rounded-lg hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="p-2 bg-primary/10 border border-primary/30 rounded-lg text-primary text-xs font-bold px-4">1</button>
+<button class="p-2 border border-outline-variant/20 rounded-lg text-xs px-4 hover:bg-surface-container-high transition-colors">2</button>
+<button class="p-2 border border-outline-variant/20 rounded-lg text-xs px-4 hover:bg-surface-container-high transition-colors">3</button>
+<button class="p-2 border border-outline-variant/20 rounded-lg hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Anchor -->
+<footer class="mt-auto bg-[#161310] w-full py-12 px-8 border-t border-[#EAE1DB]/5">
+<div class="flex flex-col md:flex-row justify-between items-center gap-8 max-w-7xl mx-auto">
+<div class="text-left">
+<div class="font-serif text-lg text-[#F2CA50]">VIRAR</div>
+<p class="font-['Manrope'] text-[10px] tracking-widest text-[#EAE1DB] opacity-50 uppercase mt-1"> 2024 VIRAR. Todos os direitos reservados.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Políticas de Privacidade</a>
+<a class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Termos de Uso</a>
+<a class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Compliance</a>
+</div>
+</div>
+</footer>
+</main>
+
+<!-- Modal de Nova Funerária -->
+<div id="modalNovaFuneraria" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center">
+  <div class="bg-surface-container-low rounded-xl w-full max-w-2xl mx-4 shadow-2xl border border-outline-variant/20 animate-fadeIn max-h-[90vh] flex flex-col">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between p-6 border-b border-outline-variant/10 flex-shrink-0">
+      <div>
+        <h3 id="modalTitulo" class="text-2xl font-headline text-on-surface">Nova Funerária</h3>
+        <p id="modalSubtitulo" class="text-sm text-on-surface-variant mt-1">Cadastre uma nova funerária no sistema</p>
+      </div>
+      <button onclick="fecharModal()" class="p-2 hover:bg-surface-container-high rounded-lg transition-colors">
+        <span class="material-symbols-outlined text-on-surface-variant">close</span>
+      </button>
+    </div>
+    
+    <!-- Modal Body -->
+    <form id="formNovaFuneraria" data-id="" class="p-6 space-y-5 overflow-y-auto flex-1">
+
+      <!-- Nome -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Nome da Funerária *</label>
+        <input type="text" id="inputNome" required
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+          placeholder="Ex: Funerária São João"/>
+      </div>
+
+      <!-- Descrição -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Descrição da Funerária <span id="descricaoLabel" class="text-on-surface-variant font-normal">(opcional)</span></label>
+        <textarea id="inputDescricao" rows="4"
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
+          placeholder="Descreva a funerária, sua história, diferenciais e serviços principais..."></textarea>
+      </div>
+
+      <!-- Subcategoria -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Subcategoria *</label>
+        <select id="inputSubcategoria" required
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+          <option value="">Selecione a categoria...</option>
+          <option>Funerária Completa</option>
+          <option>Especializada em Cremação</option>
+          <option>Cemitério e Memorial</option>
+          <option>Translado Funerário</option>
+          <option>Planos Funerários</option>
+          <option>Velório e Capela</option>
+          <option>Serviços Pet</option>
+        </select>
+      </div>
+
+      <!-- Telefone + WhatsApp -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">Telefone *</label>
+          <input type="tel" id="inputTelefone" required
+            class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+            placeholder="(00) 0000-0000"/>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">WhatsApp *</label>
+          <input type="tel" id="inputWhatsapp" required
+            class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+            placeholder="(00) 00000-0000"/>
+        </div>
+      </div>
+
+      <!-- E-mail + Site -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">E-mail <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+          <input type="email" id="inputEmail"
+            class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+            placeholder="contato@funeraria.com"/>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">Site <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+          <input type="text" id="inputSite"
+            class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+            placeholder="www.funeraria.com.br"/>
+        </div>
+      </div>
+
+      <!-- Cidade + Estado -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">Cidade *</label>
+          <input type="text" id="inputCidade" required
+            class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+            placeholder="Ex: São Paulo"/>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">Estado (UF) *</label>
+          <select id="inputEstado" required
+            class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+            <option value="">Selecione...</option>
+            <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+            <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+            <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+            <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+            <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+            <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+            <option>SP</option><option>SE</option><option>TO</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Endereço -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Endereço *</label>
+        <input type="text" id="inputEndereco" required
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+          placeholder="Rua, número, bairro"/>
+      </div>
+
+      <!-- Latitude + Longitude -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">Latitude <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+          <input type="number" step="any" id="inputLatitude"
+            class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+            placeholder="Ex: -23.5505"/>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">Longitude <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+          <input type="number" step="any" id="inputLongitude"
+            class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+            placeholder="Ex: -46.6333"/>
+        </div>
+      </div>
+
+      <!-- Dias da Semana -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-3">Dias de Funcionamento</label>
+        <div class="grid grid-cols-7 gap-2">
+          <label class="flex flex-col items-center gap-1 cursor-pointer">
+            <input type="checkbox" class="chk-dia accent-primary sr-only peer" value="Segunda"/>
+            <div class="w-full text-center text-xs font-semibold py-2 rounded-lg border border-outline-variant/20 bg-surface-container-highest text-on-surface-variant peer-checked:bg-primary peer-checked:text-on-primary peer-checked:border-primary transition-all">Seg</div>
+          </label>
+          <label class="flex flex-col items-center gap-1 cursor-pointer">
+            <input type="checkbox" class="chk-dia accent-primary sr-only peer" value="Terça"/>
+            <div class="w-full text-center text-xs font-semibold py-2 rounded-lg border border-outline-variant/20 bg-surface-container-highest text-on-surface-variant peer-checked:bg-primary peer-checked:text-on-primary peer-checked:border-primary transition-all">Ter</div>
+          </label>
+          <label class="flex flex-col items-center gap-1 cursor-pointer">
+            <input type="checkbox" class="chk-dia accent-primary sr-only peer" value="Quarta"/>
+            <div class="w-full text-center text-xs font-semibold py-2 rounded-lg border border-outline-variant/20 bg-surface-container-highest text-on-surface-variant peer-checked:bg-primary peer-checked:text-on-primary peer-checked:border-primary transition-all">Qua</div>
+          </label>
+          <label class="flex flex-col items-center gap-1 cursor-pointer">
+            <input type="checkbox" class="chk-dia accent-primary sr-only peer" value="Quinta"/>
+            <div class="w-full text-center text-xs font-semibold py-2 rounded-lg border border-outline-variant/20 bg-surface-container-highest text-on-surface-variant peer-checked:bg-primary peer-checked:text-on-primary peer-checked:border-primary transition-all">Qui</div>
+          </label>
+          <label class="flex flex-col items-center gap-1 cursor-pointer">
+            <input type="checkbox" class="chk-dia accent-primary sr-only peer" value="Sexta"/>
+            <div class="w-full text-center text-xs font-semibold py-2 rounded-lg border border-outline-variant/20 bg-surface-container-highest text-on-surface-variant peer-checked:bg-primary peer-checked:text-on-primary peer-checked:border-primary transition-all">Sex</div>
+          </label>
+          <label class="flex flex-col items-center gap-1 cursor-pointer">
+            <input type="checkbox" class="chk-dia accent-primary sr-only peer" value="Sábado"/>
+            <div class="w-full text-center text-xs font-semibold py-2 rounded-lg border border-outline-variant/20 bg-surface-container-highest text-on-surface-variant peer-checked:bg-primary peer-checked:text-on-primary peer-checked:border-primary transition-all">Sáb</div>
+          </label>
+          <label class="flex flex-col items-center gap-1 cursor-pointer">
+            <input type="checkbox" class="chk-dia accent-primary sr-only peer" value="Domingo"/>
+            <div class="w-full text-center text-xs font-semibold py-2 rounded-lg border border-outline-variant/20 bg-surface-container-highest text-on-surface-variant peer-checked:bg-primary peer-checked:text-on-primary peer-checked:border-primary transition-all">Dom</div>
+          </label>
+        </div>
+        <div class="flex items-center gap-2 mt-2">
+          <button type="button" onclick="selecionarTodosDias(true)" class="text-xs text-primary hover:underline">Selecionar todos</button>
+          <span class="text-outline-variant">·</span>
+          <button type="button" onclick="selecionarTodosDias(false)" class="text-xs text-on-surface-variant hover:underline">Limpar</button>
+        </div>
+      </div>
+
+      <!-- Horário de Funcionamento -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">Horário de Abertura <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+          <input type="time" id="inputHorarioAbertura"
+            class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"/>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">Horário de Fechamento <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+          <input type="time" id="inputHorarioFechamento"
+            class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"/>
+        </div>
+      </div>
+
+      <!-- Aberto 24h -->
+      <div class="flex items-center justify-between bg-surface-container-highest rounded-lg px-4 py-3 border border-outline-variant/20">
+        <div>
+          <p class="text-sm font-semibold text-on-surface">Aberto 24 horas</p>
+          <p class="text-xs text-on-surface-variant mt-0.5">Atendimento ininterrupto</p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="inputAberto24h" class="sr-only peer"/>
+          <div class="w-11 h-6 bg-surface-container-high rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+        </label>
+      </div>
+
+      <!-- Serviços Oferecidos -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-3">Serviços Oferecidos</label>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="flex items-center gap-2 text-sm text-on-surface cursor-pointer p-2 rounded hover:bg-surface-container-high transition-colors"><input type="checkbox" class="chk-servico accent-primary" value="Sepultamento"/> Sepultamento</label>
+          <label class="flex items-center gap-2 text-sm text-on-surface cursor-pointer p-2 rounded hover:bg-surface-container-high transition-colors"><input type="checkbox" class="chk-servico accent-primary" value="Cremação"/> Cremação</label>
+          <label class="flex items-center gap-2 text-sm text-on-surface cursor-pointer p-2 rounded hover:bg-surface-container-high transition-colors"><input type="checkbox" class="chk-servico accent-primary" value="Velório"/> Velório</label>
+          <label class="flex items-center gap-2 text-sm text-on-surface cursor-pointer p-2 rounded hover:bg-surface-container-high transition-colors"><input type="checkbox" class="chk-servico accent-primary" value="Translado"/> Translado</label>
+          <label class="flex items-center gap-2 text-sm text-on-surface cursor-pointer p-2 rounded hover:bg-surface-container-high transition-colors"><input type="checkbox" class="chk-servico accent-primary" value="Repatriação"/> Repatriação</label>
+          <label class="flex items-center gap-2 text-sm text-on-surface cursor-pointer p-2 rounded hover:bg-surface-container-high transition-colors"><input type="checkbox" class="chk-servico accent-primary" value="Tanatopraxia"/> Tanatopraxia</label>
+          <label class="flex items-center gap-2 text-sm text-on-surface cursor-pointer p-2 rounded hover:bg-surface-container-high transition-colors"><input type="checkbox" class="chk-servico accent-primary" value="Urna Funerária"/> Urna Funerária</label>
+          <label class="flex items-center gap-2 text-sm text-on-surface cursor-pointer p-2 rounded hover:bg-surface-container-high transition-colors"><input type="checkbox" class="chk-servico accent-primary" value="Flores e Coroas"/> Flores e Coroas</label>
+          <label class="flex items-center gap-2 text-sm text-on-surface cursor-pointer p-2 rounded hover:bg-surface-container-high transition-colors"><input type="checkbox" class="chk-servico accent-primary" value="Documentação"/> Documentação</label>
+          <label class="flex items-center gap-2 text-sm text-on-surface cursor-pointer p-2 rounded hover:bg-surface-container-high transition-colors"><input type="checkbox" class="chk-servico accent-primary" value="Memorial Digital"/> Memorial Digital</label>
+          <label class="flex items-center gap-2 text-sm text-on-surface cursor-pointer p-2 rounded hover:bg-surface-container-high transition-colors"><input type="checkbox" class="chk-servico accent-primary" value="Transmissão Online"/> Transmissão Online</label>
+          <label class="flex items-center gap-2 text-sm text-on-surface cursor-pointer p-2 rounded hover:bg-surface-container-high transition-colors"><input type="checkbox" class="chk-servico accent-primary" value="Assistência 24h"/> Assistência 24h</label>
+        </div>
+      </div>
+
+      <!-- Chave PIX -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Chave PIX <span class="text-on-surface-variant font-normal">(para pagamentos no app)</span></label>
+        <input type="text" id="inputChavePix"
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+          placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória"/>
+      </div>
+
+      <!-- Imagem Principal -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Imagem Principal da Funerária <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+        <label for="inputImagem" class="relative flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-outline-variant/30 rounded-lg cursor-pointer hover:border-primary/50 transition-all overflow-hidden">
+          <div id="imagemPlaceholder" class="flex flex-col items-center gap-1 pointer-events-none">
+            <span class="material-symbols-outlined text-2xl text-on-surface-variant">add_photo_alternate</span>
+            <span class="text-xs text-on-surface-variant">Clique para selecionar</span>
+          </div>
+          <img id="imagemPreview" src="" alt="Preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-md"/>
+          <span id="imagemNome" class="hidden absolute bottom-1 left-1 right-1 text-center text-[10px] text-white bg-black/60 px-2 py-0.5 rounded truncate"></span>
+          <input type="file" id="inputImagem" accept="image/*" class="hidden" onchange="atualizarNomeImagem(this)"/>
+        </label>
+      </div>
+
+      <!-- Galeria de Imagens -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Galeria de Imagens <span id="galeriaLabel" class="text-on-surface-variant font-normal">(opcional)</span></label>
+        <label for="inputGaleria" class="relative flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-outline-variant/30 rounded-lg cursor-pointer hover:border-primary/50 transition-all">
+          <div class="flex flex-col items-center gap-1 pointer-events-none">
+            <span class="material-symbols-outlined text-2xl text-on-surface-variant">photo_library</span>
+            <span class="text-xs text-on-surface-variant">Clique para selecionar múltiplas imagens</span>
+          </div>
+          <input type="file" id="inputGaleria" accept="image/*" multiple class="hidden" onchange="atualizarGaleriaImagens(this)"/>
+        </label>
+        <div id="galeriaPreview" class="grid grid-cols-4 gap-2 mt-3"></div>
+      </div>
+
+      <!-- Plano -->
+      <div class="pt-3 border-t border-outline-variant/10">
+        <label class="block text-sm font-semibold text-on-surface mb-2">Plano da Funerária</label>
+        <select id="inputPlano"
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+          <option value="Essencial">Essencial — R$ 165,00/mês</option>
+          <option value="Dignidade">Dignidade — R$ 399,99/mês</option>
+          <option value="Memorial Elite">Memorial Elite — R$ 799,99/mês</option>
+        </select>
+      </div>
+
+      <!-- Status (admin) -->
+      <div class="pt-3 border-t border-outline-variant/10">
+        <label class="block text-sm font-semibold text-on-surface mb-2">Status</label>
+        <select id="inputStatus"
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+          <option value="ativo">Ativo</option>
+          <option value="inativo">Inativo</option>
+        </select>
+      </div>
+    </form>
+    
+    <!-- Modal Footer -->
+    <div class="flex items-center justify-end gap-3 p-6 border-t border-outline-variant/10 bg-surface-container/50 flex-shrink-0">
+      <button 
+        onclick="fecharModal()" 
+        type="button"
+        class="px-6 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all font-semibold text-sm"
+      >
+        Cancelar
+      </button>
+      <button 
+        id="btnSalvarFuneraria"
+        onclick="salvarFuneraria()" 
+        type="button"
+        class="px-6 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all font-bold text-sm flex items-center gap-2"
+      >
+        <span id="btnSalvarIcone" class="material-symbols-outlined text-sm">add</span>
+        <span id="btnSalvarTexto">Criar Funerária</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal ID Gerado -->
+<div id="modalIdGerado" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center">
+  <div class="bg-[#1f1b18] rounded-xl w-full max-w-sm mx-4 shadow-2xl border border-[#4d4635]/30 p-8 text-center">
+    <span class="material-symbols-outlined text-5xl text-[#f2ca50] mb-4 block" style="font-variation-settings:'FILL' 1">check_circle</span>
+    <h3 class="text-xl font-serif text-[#eae1db] mb-1">Funerária Criada!</h3>
+    <p id="idGeradoNome" class="text-sm text-[#eae1db]/50 mb-5"></p>
+    <div class="mb-6">
+      <p class="text-[10px] uppercase tracking-widest text-[#eae1db]/40 mb-2">ID da Funerária</p>
+      <div class="flex items-center gap-2 bg-[#161310] border border-[#2E2926] rounded-lg px-4 py-3">
+        <span id="idGeradoValor" class="flex-1 text-2xl font-bold text-[#f2ca50] text-center tracking-widest"></span>
+        <button onclick="copiarId()" title="Copiar ID"
+          class="text-[#eae1db]/40 hover:text-[#f2ca50] transition-colors">
+          <span class="material-symbols-outlined text-xl" id="copyIcon">content_copy</span>
+        </button>
+      </div>
+      <p class="text-[11px] text-[#eae1db]/30 mt-2">Use este ID no campo de rastreamento de partida.</p>
+    </div>
+    <button onclick="fecharModalId()"
+      class="w-full bg-gradient-to-br from-[#f2ca50] to-[#d4af37] text-[#3c2f00] font-bold py-3 rounded-lg hover:brightness-110 transition-all text-sm uppercase tracking-widest">
+      Entendido
+    </button>
+  </div>
+</div>
+
+<script>
+  const planosLimites = {
+    'Essencial': { categorias: 3, galeria: 10, servicos: true, descricao: true },
+    'Dignidade': { categorias: 5, galeria: 25, servicos: true, descricao: true },
+    'Memorial Elite': { categorias: 999, galeria: 999, servicos: true, descricao: true }
+  };
+
+  let planoUsuarioAtual = 'Essencial';
+
+  async function carregarPlanoUsuario() {
+    const user = await verificarAutenticacao();
+    if (!user) return 'Essencial';
+    try {
+      let plano = null;
+      const { data: profile } = await supabaseClient.from('profiles').select('plano').eq('id', user.id).single();
+      if (profile && profile.plano) plano = profile.plano;
+      if (!plano) {
+        const { data: funerarias } = await supabaseClient.from('funerarias').select('plano').eq('user_id', user.id).limit(1);
+        if (funerarias && funerarias.length > 0 && funerarias[0].plano) plano = funerarias[0].plano;
+      }
+      return plano || 'Essencial';
+    } catch { return 'Essencial'; }
+  }
+
+  function aplicarLimitesPlano(plano) {
+    planoUsuarioAtual = plano;
+    const limites = planosLimites[plano] || planosLimites['Essencial'];
+
+    const galeriaLabel = document.getElementById('galeriaLabel');
+    if (limites.galeria === 999) {
+      galeriaLabel.textContent = '(ilimitada)';
+    } else {
+      galeriaLabel.textContent = '(máx. ' + limites.galeria + ' imagens)';
+    }
+
+    const servicosSection = document.querySelector('.chk-servico')?.closest('.grid.grid-cols-2')?.parentElement;
+    if (servicosSection) {
+      if (!limites.servicos) {
+        servicosSection.style.opacity = '0.4';
+        servicosSection.style.pointerEvents = 'none';
+        const aviso = servicosSection.querySelector('.aviso-plano');
+        if (!aviso) {
+          const div = document.createElement('p');
+          div.className = 'aviso-plano text-xs text-error mt-2';
+          div.textContent = 'Seu plano não inclui serviços. Faça upgrade para adicionar.';
+          servicosSection.appendChild(div);
+        }
+      } else {
+        servicosSection.style.opacity = '1';
+        servicosSection.style.pointerEvents = 'auto';
+        const aviso = servicosSection.querySelector('.aviso-plano');
+        if (aviso) aviso.remove();
+      }
+    }
+
+    const descricaoLabel = document.getElementById('descricaoLabel');
+    const descricaoInput = document.getElementById('inputDescricao');
+    if (!limites.descricao) {
+      descricaoLabel.textContent = '(não disponível no seu plano)';
+      descricaoInput.disabled = true;
+      descricaoInput.placeholder = 'Faça upgrade para o plano Dignidade ou superior para adicionar descrição.';
+    } else {
+      descricaoLabel.textContent = '(opcional)';
+      descricaoInput.disabled = false;
+      descricaoInput.placeholder = 'Descreva a funerária, sua história, diferenciais e serviços principais...';
+    }
+  }
+
+  // Atualizar função para abrir modal
+  async function abrirModalNovaFuneraria() {
+    const plano = await carregarPlanoUsuario();
+    document.getElementById('formNovaFuneraria').setAttribute('data-id', '');
+    document.getElementById('modalTitulo').textContent = 'Nova Funerária';
+    document.getElementById('modalSubtitulo').textContent = 'Cadastre uma nova funerária no sistema';
+    document.getElementById('btnSalvarTexto').textContent = 'Criar Funerária';
+    document.getElementById('btnSalvarIcone').textContent = 'add';
+    document.getElementById('formNovaFuneraria').reset();
+    document.getElementById('imagemPreview').src = '';
+    document.getElementById('imagemPreview').classList.add('hidden');
+    document.getElementById('imagemPlaceholder').classList.remove('hidden');
+    document.getElementById('imagemNome').textContent = '';
+    document.getElementById('imagemNome').classList.add('hidden');
+    document.getElementById('galeriaPreview').innerHTML = '';
+    document.querySelectorAll('.chk-dia').forEach(c => c.checked = false);
+    document.querySelectorAll('.chk-servico').forEach(c => c.checked = false);
+    aplicarLimitesPlano(plano);
+    const selectPlano = document.getElementById('inputPlano');
+    if (selectPlano) { selectPlano.value = plano; selectPlano.disabled = true; }
+    document.getElementById('modalNovaFuneraria').classList.remove('hidden');
+    document.getElementById('modalNovaFuneraria').classList.add('flex');
+  }
+
+  async function editarFuneraria(id) {
+    const user = await verificarAutenticacao();
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabaseClient
+        .from('funerarias')
+        .select('*')
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .single();
+
+      if (error || !data) {
+        alert('Erro ao carregar funerária: ' + (error?.message || 'Não encontrada'));
+        return;
+      }
+
+      const form = document.getElementById('formNovaFuneraria');
+      const modalTitulo = document.getElementById('modalTitulo');
+      const modalSubtitulo = document.getElementById('modalSubtitulo');
+      const btnSalvarTexto = document.getElementById('btnSalvarTexto');
+      const btnSalvarIcone = document.getElementById('btnSalvarIcone');
+      if (!form || !modalTitulo || !modalSubtitulo || !btnSalvarTexto || !btnSalvarIcone) {
+        alert('Erro: modal de formulário não encontrado. Recarregue a página.');
+        return;
+      }
+      form.setAttribute('data-id', id);
+      modalTitulo.textContent = 'Editar Funerária';
+      modalSubtitulo.textContent = 'Atualize os dados da funerária';
+      btnSalvarTexto.textContent = 'Salvar Alterações';
+      btnSalvarIcone.textContent = 'save';
+
+      const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+      const setCheck = (id, val) => { const el = document.getElementById(id); if (el) el.checked = !!val; };
+
+      setVal('inputNome', data.nome);
+      setVal('inputDescricao', data.descricao);
+      setVal('inputSubcategoria', data.subcategoria);
+      setVal('inputTelefone', data.telefone);
+      setVal('inputWhatsapp', data.whatsapp);
+      setVal('inputEmail', data.email);
+      setVal('inputSite', data.site);
+      setVal('inputCidade', data.cidade);
+      setVal('inputEstado', data.estado);
+      setVal('inputEndereco', data.rua_avenida);
+      setVal('inputLatitude', data.latitude);
+      setVal('inputLongitude', data.longitude);
+      setVal('inputChavePix', data.chave_pix);
+      setCheck('inputAberto24h', data.aberto_24h);
+      setVal('inputHorarioAbertura', data.horario_abertura);
+      setVal('inputHorarioFechamento', data.horario_fechamento);
+      setVal('inputStatus', data.status);
+
+      document.querySelectorAll('.chk-dia').forEach(c => c.checked = false);
+      if (data.dias_semana) {
+        const diasStr = Array.isArray(data.dias_semana) ? data.dias_semana.join(', ') : String(data.dias_semana);
+        const dias = diasStr.split(',').map(d => d.trim()).filter(Boolean);
+        document.querySelectorAll('.chk-dia').forEach(c => {
+          if (dias.includes(c.value)) c.checked = true;
+        });
+      }
+
+      document.querySelectorAll('.chk-servico').forEach(c => c.checked = false);
+      if (data.servicos && Array.isArray(data.servicos)) {
+        document.querySelectorAll('.chk-servico').forEach(c => {
+          if (data.servicos.includes(c.value)) c.checked = true;
+        });
+      }
+
+      const imgPreview = document.getElementById('imagemPreview');
+      const imgPlaceholder = document.getElementById('imagemPlaceholder');
+      const galeriaPreview = document.getElementById('galeriaPreview');
+      const modal = document.getElementById('modalNovaFuneraria');
+      if (imgPreview) {
+        imgPreview.src = data.imagem_url || '';
+        imgPreview.classList.toggle('hidden', !data.imagem_url);
+      }
+      if (imgPlaceholder) imgPlaceholder.classList.toggle('hidden', !!data.imagem_url);
+      if (galeriaPreview) {
+        galeriaPreview.innerHTML = '';
+        if (data.galeria_urls && Array.isArray(data.galeria_urls)) {
+          data.galeria_urls.forEach(url => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'relative group rounded-lg overflow-hidden aspect-square border border-outline-variant/20';
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = 'w-full h-full object-cover';
+            wrapper.appendChild(img);
+            galeriaPreview.appendChild(wrapper);
+          });
+        }
+      }
+
+      if (modal) {
+        const plano = await carregarPlanoUsuario();
+        aplicarLimitesPlano(plano);
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    } catch (err) {
+      console.error('Erro ao editar:', err);
+      alert('Erro ao carregar funerária: ' + err.message);
+    }
+  }
+  
+  function fecharModal() {
+    document.getElementById('modalNovaFuneraria').classList.add('hidden');
+    document.getElementById('modalNovaFuneraria').classList.remove('flex');
+    document.getElementById('formNovaFuneraria').reset();
+    const imgNome = document.getElementById('imagemNome');
+    if (imgNome) { imgNome.textContent = ''; imgNome.classList.add('hidden'); }
+    const imgPreview = document.getElementById('imagemPreview');
+    if (imgPreview) { imgPreview.src = ''; imgPreview.classList.add('hidden'); }
+    const imgPH = document.getElementById('imagemPlaceholder');
+    if (imgPH) imgPH.classList.remove('hidden');
+    const galeriaPrev = document.getElementById('galeriaPreview');
+    if (galeriaPrev) galeriaPrev.innerHTML = '';
+  }
+
+  function selecionarTodosDias(marcar) {
+    document.querySelectorAll('.chk-dia').forEach(c => c.checked = marcar);
+  }
+
+  function atualizarGaleriaImagens(input) {
+    const limites = planosLimites[planoUsuarioAtual] || planosLimites['Essencial'];
+    const maxImagens = limites.galeria;
+    let files = Array.from(input.files);
+    if (files.length > maxImagens) {
+      alert('Seu plano permite no máximo ' + maxImagens + ' imagens na galeria. Faça upgrade para enviar mais.');
+      files = files.slice(0, maxImagens);
+      const dt = new DataTransfer();
+      files.forEach(f => dt.items.add(f));
+      input.files = dt.files;
+    }
+    const preview = document.getElementById('galeriaPreview');
+    preview.innerHTML = '';
+    if (input.files.length) {
+      Array.from(input.files).forEach((file, idx) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'relative group rounded-lg overflow-hidden aspect-square border border-outline-variant/20';
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.className = 'w-full h-full object-cover';
+        wrapper.appendChild(img);
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'absolute top-1 right-1 bg-black/70 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity';
+        removeBtn.innerHTML = '×';
+        removeBtn.onclick = function(e) { e.preventDefault(); wrapper.remove(); const dt = new DataTransfer(); Array.from(input.files).filter((_, i) => i !== idx).forEach(f => dt.items.add(f)); input.files = dt.files; };
+        wrapper.appendChild(removeBtn);
+        preview.appendChild(wrapper);
+      });
+    }
+  }
+
+  function atualizarNomeImagem(input) {
+    const nome = document.getElementById('imagemNome');
+    const preview = document.getElementById('imagemPreview');
+    const placeholder = document.getElementById('imagemPlaceholder');
+    if (input.files.length) {
+      const file = input.files[0];
+      nome.textContent = file.name;
+      nome.classList.remove('hidden');
+      preview.src = URL.createObjectURL(file);
+      preview.classList.remove('hidden');
+      placeholder.classList.add('hidden');
+    } else {
+      nome.classList.add('hidden');
+      preview.src = '';
+      preview.classList.add('hidden');
+      placeholder.classList.remove('hidden');
+    }
+  }
+  
+  async function salvarFuneraria() {
+    const nome = document.getElementById('inputNome').value.trim();
+    const subcategoria = document.getElementById('inputSubcategoria').value;
+    const telefone = document.getElementById('inputTelefone').value.trim();
+    const whatsapp = document.getElementById('inputWhatsapp').value.trim();
+    const email = document.getElementById('inputEmail').value.trim();
+    const site = document.getElementById('inputSite').value.trim();
+    const cidade = document.getElementById('inputCidade').value.trim();
+    const estado = document.getElementById('inputEstado').value;
+    const endereco = document.getElementById('inputEndereco').value.trim();
+    const latitude = document.getElementById('inputLatitude').value ? parseFloat(document.getElementById('inputLatitude').value) : null;
+    const longitude = document.getElementById('inputLongitude').value ? parseFloat(document.getElementById('inputLongitude').value) : null;
+    const descricao = document.getElementById('inputDescricao').value.trim();
+    const chave_pix = document.getElementById('inputChavePix').value.trim();
+    const aberto24h = document.getElementById('inputAberto24h').checked;
+    const horario_abertura = document.getElementById('inputHorarioAbertura').value || null;
+    const horario_fechamento = document.getElementById('inputHorarioFechamento').value || null;
+    const dias_funcionamento = Array.from(document.querySelectorAll('.chk-dia:checked')).map(c => c.value);
+    const status = document.getElementById('inputStatus').value;
+    const plano = document.getElementById('inputPlano').value;
+    const imagem = document.getElementById('inputImagem').files[0];
+    const galeriaFiles = Array.from(document.getElementById('inputGaleria').files);
+    const servicos = Array.from(document.querySelectorAll('.chk-servico:checked')).map(c => c.value);
+
+    if (!nome || !telefone || !whatsapp || !cidade || !estado || !endereco) {
+      alert('Preencha os campos obrigatórios: Nome, Telefone, WhatsApp, Cidade, Estado e Endereço');
+      return;
+    }
+
+    const limites = planosLimites[planoUsuarioAtual] || planosLimites['Essencial'];
+    if (galeriaFiles.length > limites.galeria) {
+      alert('Seu plano ' + planoUsuarioAtual + ' permite no máximo ' + limites.galeria + ' imagens na galeria. Você selecionou ' + galeriaFiles.length + '.');
+      return;
+    }
+    if (!limites.servicos && servicos.length > 0) {
+      alert('Seu plano ' + planoUsuarioAtual + ' não inclui serviços. Faça upgrade para adicioná-los.');
+      return;
+    }
+    if (!limites.descricao && descricao) {
+      alert('Seu plano ' + planoUsuarioAtual + ' não permite descrição. Faça upgrade para adicioná-la.');
+      return;
+    }
+
+    const user = await verificarAutenticacao();
+    if (!user) return;
+
+    const btnSalvar = document.getElementById('btnSalvarFuneraria');
+    const editandoId = document.getElementById('formNovaFuneraria').getAttribute('data-id');
+    if (btnSalvar) { btnSalvar.disabled = true; btnSalvar.textContent = 'Salvando...'; }
+
+    try {
+      let imagem_url = null;
+      let imagem_url_atual = editandoId ? document.getElementById('imagemPreview').src : null;
+      if (imagem) {
+        const ext = imagem.name.split('.').pop();
+        const path = `funerarias/${user.id}/${Date.now()}.${ext}`;
+        console.log('Enviando imagem de capa:', path, imagem.name, imagem.size);
+        const { data: upData, error: upErr } = await supabaseClient.storage.from('documentos').upload(path, imagem, { upsert: true });
+        if (upErr) {
+          console.error('Erro upload capa:', upErr.message);
+          if (upErr.message.includes('Bucket not found')) {
+            alert('Erro: o bucket "documentos" não existe no Supabase.\n\nCrie-o no SQL Editor com o comando que foi enviado no chat.');
+          } else {
+            alert('Erro ao enviar imagem de capa: ' + upErr.message);
+          }
+        } else {
+          console.log('Upload capa sucesso:', upData);
+          const { data: urlData } = supabaseClient.storage.from('documentos').getPublicUrl(path);
+          imagem_url = urlData?.publicUrl || null;
+          console.log('URL imagem de capa:', imagem_url);
+        }
+      }
+
+      // Upload da galeria de imagens
+      let galeria_urls = [];
+      if (galeriaFiles.length) {
+        for (const file of galeriaFiles) {
+          const ext = file.name.split('.').pop();
+          const path = `funerarias/${user.id}/galeria/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+          console.log('Enviando imagem galeria:', path, file.name, file.size);
+          const { error: upErr } = await supabaseClient.storage.from('documentos').upload(path, file, { upsert: true });
+          if (upErr) {
+            console.error('Erro upload galeria:', upErr.message);
+          } else {
+            const { data: urlData } = supabaseClient.storage.from('documentos').getPublicUrl(path);
+            if (urlData?.publicUrl) galeria_urls.push(urlData.publicUrl);
+          }
+        }
+      }
+      console.log('URLs galeria:', galeria_urls);
+
+      const registro = {
+        nome, subcategoria, telefone, whatsapp, email, site,
+        cidade, estado, rua_avenida: endereco,
+        latitude, longitude, descricao,
+        chave_pix: chave_pix || null,
+        aberto_24h: aberto24h,
+        horario_abertura, horario_fechamento,
+        dias_semana: dias_funcionamento.length ? dias_funcionamento.join(', ') : null,
+        servicos: servicos.length ? servicos : null,
+        imagem_url: imagem_url || imagem_url_atual || null,
+        galeria_urls: galeria_urls.length ? galeria_urls : null,
+        plano,
+        status
+      };
+
+      let data, error;
+      if (editandoId) {
+        const result = await supabaseClient
+          .from('funerarias')
+          .update(registro)
+          .eq('id', editandoId)
+          .eq('user_id', user.id)
+          .select();
+        data = result.data;
+        error = result.error;
+      } else {
+        const result = await supabaseClient
+          .from('funerarias')
+          .insert([{ ...registro, user_id: user.id }])
+          .select();
+        data = result.data;
+        error = result.error;
+      }
+
+      if (error) {
+        if (error.message.includes('schema cache') || error.message.includes('column')) {
+          const base = {
+            nome,
+            telefone: telefone || null,
+            email: email || null,
+            site: site || null,
+            cidade,
+            estado,
+            rua_avenida: endereco || 'Não informado',
+            descricao: descricao || null,
+            latitude: latitude || null,
+            longitude: longitude || null,
+            subcategoria: subcategoria || null,
+            whatsapp: whatsapp || null,
+            chave_pix: chave_pix || null,
+            aberto_24h: aberto24h,
+            horario_abertura: horario_abertura || null,
+            horario_fechamento: horario_fechamento || null,
+            dias_semana: dias_funcionamento.length ? dias_funcionamento.join(', ') : null,
+            servicos: servicos.length ? servicos : null,
+            imagem_url: imagem_url || imagem_url_atual || null,
+            galeria_urls: galeria_urls.length ? galeria_urls : null,
+            status: status || 'ativo'
+          };
+          let result2;
+          if (editandoId) {
+            result2 = await supabaseClient.from('funerarias').update(base).eq('id', editandoId).eq('user_id', user.id).select();
+          } else {
+            result2 = await supabaseClient.from('funerarias').insert([{ ...base, user_id: user.id }]).select();
+          }
+          if (result2.error) {
+            const minimo = editandoId ? { nome } : { nome, user_id: user.id };
+            const result3 = editandoId
+              ? await supabaseClient.from('funerarias').update(minimo).eq('id', editandoId).eq('user_id', user.id).select()
+              : await supabaseClient.from('funerarias').insert([minimo]).select();
+            if (result3.error) { alert('Erro ao salvar funerária: ' + result3.error.message); return; }
+            fecharModal();
+            carregarFunerarias();
+            if (!editandoId) mostrarIdGerado(result3.data[0]);
+          } else {
+            fecharModal();
+            carregarFunerarias();
+            if (!editandoId) mostrarIdGerado(result2.data[0]);
+          }
+          alert('⚠️ Funerária salva! Execute no SQL Editor do Supabase para adicionar a coluna de galeria:\n\nALTER TABLE funerarias ADD COLUMN IF NOT EXISTS galeria_urls JSONB;');
+          return;
+        }
+        alert('Erro ao salvar funerária: ' + error.message);
+        return;
+      }
+      fecharModal();
+      carregarFunerarias();
+      if (!editandoId) mostrarIdGerado(data[0]);
+    } catch (err) {
+      alert('Erro: ' + err.message);
+    } finally {
+      if (btnSalvar) {
+        btnSalvar.disabled = false;
+        const icon = document.getElementById('btnSalvarIcone');
+        const txt = document.getElementById('btnSalvarTexto');
+        if (icon && txt) {
+          icon.textContent = editandoId ? 'save' : 'add';
+          txt.textContent = editandoId ? 'Salvar Alterações' : 'Criar Funerária';
+        } else {
+          btnSalvar.innerHTML = editandoId
+            ? '<span id="btnSalvarIcone" class="material-symbols-outlined text-sm">save</span><span id="btnSalvarTexto">Salvar Alterações</span>'
+            : '<span id="btnSalvarIcone" class="material-symbols-outlined text-sm">add</span><span id="btnSalvarTexto">Criar Funerária</span>';
+        }
+      }
+    }
+  }
+
+  function mostrarIdGerado(funeraria) {
+    document.getElementById('idGeradoNome').textContent = funeraria.nome;
+    document.getElementById('idGeradoValor').textContent = funeraria.id;
+    document.getElementById('copyIcon').textContent = 'content_copy';
+    document.getElementById('modalIdGerado').classList.remove('hidden');
+    document.getElementById('modalIdGerado').classList.add('flex');
+  }
+
+  function fecharModalId() {
+    document.getElementById('modalIdGerado').classList.add('hidden');
+    document.getElementById('modalIdGerado').classList.remove('flex');
+  }
+
+  function copiarId() {
+    const id = document.getElementById('idGeradoValor').textContent;
+    navigator.clipboard.writeText(id).then(() => {
+      const icon = document.getElementById('copyIcon');
+      icon.textContent = 'check';
+      icon.style.color = '#4ade80';
+      setTimeout(() => { icon.textContent = 'content_copy'; icon.style.color = ''; }, 2000);
+    });
+  }
+  
+  // Fechar modal ao clicar fora
+  document.getElementById('modalNovaFuneraria')?.addEventListener('click', function(e) {
+    if (e.target === this) { fecharModal(); }
+  });
+</script>
+<script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const supabase = createClient('https://ikahdkaccmpldstbcbpk.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw', { auth: { autoRefreshToken: true, persistSession: true } });
+    async function loadUserData() {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            document.getElementById('userEmail').textContent = (user && user.email) ? user.email : 'cliente@virar.com';
+        } catch (err) { document.getElementById('userEmail').textContent = 'cliente@virar.com'; }
+    }
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await supabase.auth.signOut();
+        window.location.href = 'login.html';
+    });
+    loadUserData();
+</script>
+</body></html>

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cadastro - VIRAR Parceiros</title>
+<script src="https://cdn.tailwindcss.com?plugins=container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body { background-color: #161310; color: #eae1db; font-family: 'Manrope', sans-serif; }
+  .bg-login-hero {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuB-zCY85qtpLhtkwQ7mRRwdcx44TWHcWJ63bBsNvm94WTpVVUQ4gsS5G_210RtaaFwmp8p8lQ9v5y9KutbLtWAoOOKl_koNz4Vfk8t7waLqj2BtDEMM9Vqs7LoUWtksKwcsc2RwqzJXUaC8aWS8gRL5GdB8DgwMJl6uWgYno08pgTh6kdKPpBqnGYJsIOfwtcN9NqRO4ODNnBGt8g8kstYs0tBE6k9FvXOTP-wCOg9RTAocWp3oCyXxiO3qxzC6pSBm6XT4Q-053kNl);
+    background-size: cover;
+    background-position: center;
+  }
+  .inp { width:100%; background:#393430; border-bottom:1px solid rgba(77,70,53,0.3); border-radius:2px; padding:12px 16px; color:#eae1db; outline:none; transition:border-color .2s; color-scheme: dark; }
+  input[type="date"].inp::-webkit-calendar-picker-indicator { filter: invert(1) opacity(0.5); cursor: pointer; }
+  .inp:focus { border-color:#f2ca50; }
+  .inp::placeholder { color:rgba(234,225,219,0.2); }
+  .lbl { display:block; font-size:10px; text-transform:uppercase; letter-spacing:.15em; color:rgba(234,225,219,0.4); margin-bottom:4px; margin-left:4px; }
+  .sec-label { font-size:10px; text-transform:uppercase; letter-spacing:.15em; color:rgba(242,202,80,0.7); font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:6px; padding-top:16px; border-top:1px solid rgba(77,70,53,0.2); margin-top:8px; }
+  .sec-label:first-child { border-top:none; padding-top:0; margin-top:0; }
+  .file-btn { width:100%; background:#393430; border:1px dashed rgba(77,70,53,0.5); border-radius:2px; padding:12px 16px; color:rgba(234,225,219,0.5); font-size:13px; cursor:pointer; transition:border-color .2s; display:flex; align-items:center; gap:8px; }
+  .file-btn:hover { border-color:rgba(242,202,80,0.5); }
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:#161310; }
+  ::-webkit-scrollbar-thumb { background:#2E2926; border-radius:10px; }
+</style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row">
+
+<!-- Left Side (hero) -->
+<div class="hidden md:flex md:w-1/2 lg:w-2/5 relative bg-login-hero flex-shrink-0">
+  <div class="absolute inset-0 bg-[#1E1A17]/85 mix-blend-multiply"></div>
+  <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#1E1A17]/40 to-[#1E1A17]"></div>
+  <div class="relative z-10 p-24 flex flex-col justify-between h-full">
+    <div><h1 class="text-[#f2ca50] text-3xl font-serif italic tracking-wider">VIRAR Parceiros</h1></div>
+    <div class="max-w-md">
+      <p class="text-[#eae1db]/80 font-serif italic text-4xl leading-relaxed">Um santuário digital para preservar legados e honrar memórias.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Right Side (form) -->
+<div class="flex-1 overflow-y-auto bg-[#161310]">
+  <div class="min-h-full flex items-start justify-center p-8 md:p-12">
+    <div class="w-full max-w-[480px]">
+
+      <div class="md:hidden mb-12 text-center">
+        <h1 class="text-[#f2ca50] text-4xl font-serif italic tracking-wider">VIRAR Parceiros</h1>
+      </div>
+
+      <div class="bg-[#1f1b18] p-10 rounded-lg shadow-2xl">
+        <!-- Tabs -->
+        <div class="flex items-center justify-between border-b border-[#4d4635]/20 mb-6">
+          <a href="login.html" class="pb-4 px-2 text-[#eae1db]/40 hover:text-[#eae1db]/70 transition-all font-medium text-sm uppercase tracking-widest">Login</a>
+          <button type="button" class="pb-4 px-2 text-[#f2ca50] border-b border-[#d4af37] transition-all font-semibold text-sm uppercase tracking-widest">Criar Conta</button>
+        </div>
+
+        <h2 class="text-2xl font-serif text-[#eae1db] mb-1">Criar sua conta</h2>
+        <p class="text-[#eae1db]/60 text-sm leading-relaxed mb-6">Junte-se ao santuário digital e comece a preservar memórias.</p>
+
+        <form id="signupForm" class="space-y-4">
+
+          <!-- Dados da Empresa -->
+          <p class="sec-label"><span class="material-symbols-outlined text-base">business</span>Dados da Empresa</p>
+          <div>
+            <label class="lbl">Razão Social *</label>
+            <input type="text" id="razaoSocial" required class="inp" placeholder="Nome oficial da empresa"/>
+          </div>
+          <div>
+            <label class="lbl">Nome Fantasia *</label>
+            <input type="text" id="nomeFantasia" required class="inp" placeholder="Nome comercial"/>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="lbl">CNPJ *</label>
+              <input type="text" id="cnpj" required class="inp" placeholder="00.000.000/0000-00" maxlength="18"/>
+            </div>
+            <div>
+              <label class="lbl">Data de Fundação</label>
+              <input type="date" id="dataFundacao" class="inp"/>
+            </div>
+          </div>
+
+          <!-- Dados do Responsável -->
+          <p class="sec-label"><span class="material-symbols-outlined text-base">person</span>Dados do Responsável</p>
+          <div>
+            <label class="lbl">Nome Completo *</label>
+            <input type="text" id="nomeResponsavel" required class="inp" placeholder="Nome do responsável legal"/>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="lbl">CPF *</label>
+              <input type="text" id="cpfResponsavel" required class="inp" placeholder="000.000.000-00" maxlength="14"/>
+            </div>
+            <div>
+              <label class="lbl">Cargo *</label>
+              <input type="text" id="cargoResponsavel" required class="inp" placeholder="Diretor, Sócio..."/>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="lbl">Telefone/WhatsApp *</label>
+              <input type="tel" id="telefoneResponsavel" required class="inp" placeholder="(00) 00000-0000" maxlength="15"/>
+            </div>
+            <div>
+              <label class="lbl">E-mail Corporativo *</label>
+              <input type="email" id="emailCorporativo" required class="inp" placeholder="contato@empresa.com"/>
+            </div>
+          </div>
+
+          <!-- Endereço -->
+          <p class="sec-label"><span class="material-symbols-outlined text-base">location_on</span>Endereço da Empresa</p>
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label class="lbl">CEP *</label>
+              <input type="text" id="cep" required class="inp" placeholder="00000-000" maxlength="9"/>
+            </div>
+            <div class="col-span-2">
+              <label class="lbl">Rua/Avenida *</label>
+              <input type="text" id="rua" required class="inp" placeholder="Nome da rua"/>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label class="lbl">Número *</label>
+              <input type="text" id="numero" required class="inp" placeholder="Nº"/>
+            </div>
+            <div class="col-span-2">
+              <label class="lbl">Complemento</label>
+              <input type="text" id="complemento" class="inp" placeholder="Sala, Andar..."/>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label class="lbl">Bairro *</label>
+              <input type="text" id="bairro" required class="inp" placeholder="Bairro"/>
+            </div>
+            <div>
+              <label class="lbl">Cidade *</label>
+              <input type="text" id="cidade" required class="inp" placeholder="Cidade"/>
+            </div>
+            <div>
+              <label class="lbl">Estado *</label>
+              <select id="estado" required class="inp" style="padding:11px 16px">
+                <option value="">UF</option>
+                <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Informações da Empresa -->
+          <p class="sec-label"><span class="material-symbols-outlined text-base">info</span>Informações da Empresa</p>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="lbl">Segmento de Atuação *</label>
+              <select id="segmento" required class="inp" style="padding:11px 16px">
+                <option value="">Selecione...</option>
+                <option value="funeraria">Funerária</option>
+                <option value="cemiterio">Cemitério</option>
+                <option value="crematorio">Crematório</option>
+                <option value="floricultura">Floricultura Funerária</option>
+                <option value="transporte">Transporte Funerário</option>
+                <option value="plano_funerario">Plano Funerário</option>
+                <option value="outro">Outro</option>
+              </select>
+            </div>
+            <div>
+              <label class="lbl">Qtd. Funcionários</label>
+              <select id="funcionarios" class="inp" style="padding:11px 16px">
+                <option value="">Selecione...</option>
+                <option value="1-5">1 a 5</option>
+                <option value="6-20">6 a 20</option>
+                <option value="21-50">21 a 50</option>
+                <option value="51-100">51 a 100</option>
+                <option value="100+">Mais de 100</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="lbl">Site Oficial</label>
+            <input type="url" id="site" class="inp" placeholder="https://www.empresa.com.br"/>
+          </div>
+          <div>
+            <label class="lbl">Redes Sociais</label>
+            <input type="text" id="redesSociais" class="inp" placeholder="@instagram, facebook.com/..."/>
+          </div>
+          <div>
+            <label class="lbl">Breve Descrição da Empresa</label>
+            <textarea id="descricaoEmpresa" rows="2" class="inp resize-none" style="border-bottom:1px solid rgba(77,70,53,0.3)" placeholder="Descreva brevemente os serviços..."></textarea>
+          </div>
+
+          <!-- Documentos -->
+          <p class="sec-label"><span class="material-symbols-outlined text-base">folder</span>Documentos Obrigatórios</p>
+          <p class="text-[11px] text-[#eae1db]/40 -mt-2 mb-2">PDF ou imagem. Máx. 5MB cada.</p>
+          <div>
+            <label class="lbl">Cartão CNPJ *</label>
+            <label class="file-btn">
+              <input type="file" id="docCnpj" accept=".pdf,.jpg,.jpeg,.png" class="hidden" required/>
+              <span class="material-symbols-outlined text-[#f2ca50]/60">upload_file</span>
+              <span id="docCnpjName">Clique para enviar</span>
+            </label>
+          </div>
+          <div>
+            <label class="lbl">Documento de Identidade do Responsável *</label>
+            <label class="file-btn">
+              <input type="file" id="docIdentidade" accept=".pdf,.jpg,.jpeg,.png" class="hidden" required/>
+              <span class="material-symbols-outlined text-[#f2ca50]/60">badge</span>
+              <span id="docIdentidadeName">Clique para enviar</span>
+            </label>
+          </div>
+          <div>
+            <label class="lbl">Comprovante de Endereço da Empresa *</label>
+            <label class="file-btn">
+              <input type="file" id="docEndereco" accept=".pdf,.jpg,.jpeg,.png" class="hidden" required/>
+              <span class="material-symbols-outlined text-[#f2ca50]/60">home</span>
+              <span id="docEnderecoName">Clique para enviar</span>
+            </label>
+          </div>
+          <div>
+            <label class="lbl">Contrato Social ou Certificado de MEI *</label>
+            <label class="file-btn">
+              <input type="file" id="docContrato" accept=".pdf,.jpg,.jpeg,.png" class="hidden" required/>
+              <span class="material-symbols-outlined text-[#f2ca50]/60">description</span>
+              <span id="docContratoName">Clique para enviar</span>
+            </label>
+          </div>
+
+          <!-- Acesso -->
+          <p class="sec-label"><span class="material-symbols-outlined text-base">lock</span>Acesso ao Sistema</p>
+          <div>
+            <label class="lbl">E-mail *</label>
+            <input id="email" type="email" required class="inp" placeholder="seu@email.com"/>
+          </div>
+          <div>
+            <label class="lbl">Senha *</label>
+            <div class="relative">
+              <input id="password" type="password" required class="inp" placeholder="••••••••" style="padding-right:48px" minlength="6"/>
+              <button type="button" id="togglePwd" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#eae1db]/40 hover:text-[#eae1db]/80 transition-colors">
+                <span class="material-symbols-outlined text-lg" id="eyeIcon">visibility</span>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="lbl">Código do Parceiro (Opcional)</label>
+            <input id="partnerCode" type="text" class="inp" placeholder="Ex: JOAO15"/>
+            <p id="partnerStatus" class="text-[10px] mt-1 ml-1"></p>
+          </div>
+
+          <!-- Declarações -->
+          <p class="sec-label"><span class="material-symbols-outlined text-base">verified</span>Declarações</p>
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="declInfoVerdadeiras" required class="mt-0.5 w-4 h-4 rounded border-[#4d4635] bg-[#393430] text-[#f2ca50] focus:ring-[#f2ca50]/30 flex-shrink-0"/>
+            <span class="text-xs text-[#eae1db]/60">Declaro que as informações fornecidas são verdadeiras.</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="declTermos" required class="mt-0.5 w-4 h-4 rounded border-[#4d4635] bg-[#393430] text-[#f2ca50] focus:ring-[#f2ca50]/30 flex-shrink-0"/>
+            <span class="text-xs text-[#eae1db]/60">Concordo com os <a href="#" class="text-[#f2ca50] underline">Termos de Uso</a> e <a href="#" class="text-[#f2ca50] underline">Política de Privacidade</a>.</span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="declVerificacao" required class="mt-0.5 w-4 h-4 rounded border-[#4d4635] bg-[#393430] text-[#f2ca50] focus:ring-[#f2ca50]/30 flex-shrink-0"/>
+            <span class="text-xs text-[#eae1db]/60">Autorizo a verificação dos dados cadastrais da empresa.</span>
+          </label>
+
+          <button type="submit" id="submitBtn" class="w-full bg-gradient-to-br from-[#f2ca50] to-[#d4af37] text-[#3c2f00] font-bold py-4 rounded-md shadow-lg shadow-[#f2ca50]/10 hover:brightness-110 active:scale-[0.98] transition-all uppercase tracking-widest text-xs mt-2">
+            Criar Conta
+          </button>
+        </form>
+      </div>
+
+      <div class="mt-12 flex flex-col items-center gap-4">
+        <p class="text-[10px] uppercase tracking-widest text-[#eae1db]/30">© 2024 VIRAR Parceiros</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Sucesso (apenas para cadastros sem plano) -->
+<div id="modalSucesso" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-6">
+  <div class="bg-[#1f1b18] rounded-2xl p-10 max-w-lg w-full text-center border border-[#4d4635]/30 shadow-2xl">
+    <span class="material-symbols-outlined text-5xl text-[#f2ca50] mb-4 block">check_circle</span>
+    <h3 class="text-2xl font-serif text-[#eae1db] mb-4">Cadastro Recebido!</h3>
+    <p class="text-[#eae1db]/70 mb-6 leading-relaxed">Seu cadastro foi recebido com sucesso! Nossa equipe analisará seus dados e documentos em até <strong class="text-[#f2ca50]">24 horas</strong> e entrará em contato pelo e-mail informado.</p>
+    <p class="text-[#eae1db]/50 text-sm mb-8">Fique de olho na sua caixa de entrada — você receberá uma resposta em breve.</p>
+    <a href="login.html" class="inline-flex items-center gap-2 bg-[#f2ca50] text-[#3c2f00] font-bold py-3 px-8 rounded-lg hover:brightness-110 transition-all">
+      <span class="material-symbols-outlined text-lg">login</span>
+      Ir para Login
+    </a>
+  </div>
+</div>
+
+<script>
+  const supabaseUrl = 'https://ikahdkaccmpldstbcbpk.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw';
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+  const MP_ACCESS_TOKEN = 'APP_USR-8269531254298547-060422-f9ffc447ce815a6a787eda05d5538b8c-156629572';
+  const planos = {
+    essencial: { title: 'Plano Essencial - VIRAR', price: 0.01, description: 'Assinatura mensal do Plano Essencial' },
+    dignidade: { title: 'Plano Dignidade - VIRAR', price: 0.01, description: 'Assinatura mensal do Plano Dignidade' },
+    elite:     { title: 'Plano Memorial Elite - VIRAR', price: 0.01, description: 'Assinatura mensal do Plano Memorial Elite' }
+  };
+  const nomesPlano = { essencial: 'Essencial', dignidade: 'Dignidade', elite: 'Memorial Elite' };
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const planoParam = urlParams.get('plano');
+  const partnerCodeFromUrl = urlParams.get('parceiro');
+  const partnerCodeInput = document.getElementById('partnerCode');
+  const partnerStatus = document.getElementById('partnerStatus');
+  const submitBtn = document.getElementById('submitBtn');
+
+  // Ajustar botão/título se vier com plano na URL
+  if (planoParam && planos[planoParam]) {
+    submitBtn.textContent = 'Cadastrar e Assinar — Plano ' + nomesPlano[planoParam];
+    document.querySelector('h2').textContent = 'Criar conta e assinar';
+  }
+  if (partnerCodeFromUrl) {
+    partnerCodeInput.value = partnerCodeFromUrl.toUpperCase();
+    validatePartnerCode(partnerCodeFromUrl.toUpperCase());
+  }
+
+  // Máscaras
+  function maskCNPJ(v) { return v.replace(/\D/g,'').replace(/^(\d{2})(\d)/,'$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3').replace(/\.(\d{3})(\d)/,'.$1/$2').replace(/(\d{4})(\d)/,'$1-$2').substring(0,18); }
+  function maskCPF(v)  { return v.replace(/\D/g,'').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2').substring(0,14); }
+  function maskPhone(v){ return v.replace(/\D/g,'').replace(/^(\d{2})(\d)/g,'($1) $2').replace(/(\d{5})(\d)/,'$1-$2').substring(0,15); }
+  function maskCEP(v)  { return v.replace(/\D/g,'').replace(/(\d{5})(\d)/,'$1-$2').substring(0,9); }
+
+  document.getElementById('cnpj').addEventListener('input', e => e.target.value = maskCNPJ(e.target.value));
+  document.getElementById('cpfResponsavel').addEventListener('input', e => e.target.value = maskCPF(e.target.value));
+  document.getElementById('telefoneResponsavel').addEventListener('input', e => e.target.value = maskPhone(e.target.value));
+  document.getElementById('cep').addEventListener('input', e => e.target.value = maskCEP(e.target.value));
+
+  // Busca CEP
+  document.getElementById('cep').addEventListener('blur', async function() {
+    const cep = this.value.replace(/\D/g,'');
+    if (cep.length === 8) {
+      try {
+        const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const d = await r.json();
+        if (!d.erro) { document.getElementById('rua').value = d.logradouro||''; document.getElementById('bairro').value = d.bairro||''; document.getElementById('cidade').value = d.localidade||''; document.getElementById('estado').value = d.uf||''; }
+      } catch(e) {}
+    }
+  });
+
+  // Nomes de arquivo
+  ['docCnpj','docIdentidade','docEndereco','docContrato'].forEach(id => {
+    document.getElementById(id).addEventListener('change', function() {
+      const el = document.getElementById(id+'Name');
+      el.textContent = this.files.length ? this.files[0].name : 'Clique para enviar';
+      el.style.color = this.files.length ? '#f2ca50' : '';
+    });
+  });
+
+  // Toggle senha
+  document.getElementById('togglePwd').addEventListener('click', function() {
+    const pwd = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+    if (pwd.type === 'password') { pwd.type = 'text'; icon.textContent = 'visibility_off'; }
+    else { pwd.type = 'password'; icon.textContent = 'visibility'; }
+  });
+
+  // Validar código parceiro
+  partnerCodeInput.addEventListener('blur', async () => {
+    const code = partnerCodeInput.value.trim().toUpperCase();
+    if (code) { partnerCodeInput.value = code; await validatePartnerCode(code); }
+    else { partnerStatus.textContent = ''; }
+  });
+
+  async function validatePartnerCode(code) {
+    try {
+      const { data, error } = await supabaseClient.from('partners').select('partner_name, is_active').eq('partner_code', code).eq('is_active', true).single();
+      if (error || !data) { partnerStatus.textContent = '⚠️ Código de parceiro inválido'; partnerStatus.className = 'text-[10px] mt-1 ml-1 text-red-400'; return false; }
+      else { partnerStatus.textContent = `✓ Indicado por: ${data.partner_name}`; partnerStatus.className = 'text-[10px] mt-1 ml-1 text-green-400'; return true; }
+    } catch (err) { partnerStatus.textContent = ''; return false; }
+  }
+
+  async function enviarEmailNotificacao(d) {
+    try {
+      const corpo = `NOVO CADASTRO VIRAR PARCEIROS\n`
+        + `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`
+        + `DADOS DA EMPRESA\n`
+        + `Razão Social: ${d.razaoSocial}\n`
+        + `Nome Fantasia: ${d.nomeFantasia}\n`
+        + `CNPJ: ${d.cnpj}\n`
+        + `Data de Fundação: ${d.dataFundacao}\n`
+        + `Segmento: ${d.segmento}\n`
+        + `Funcionários: ${d.funcionarios}\n`
+        + `Site: ${d.site}\n`
+        + `Redes Sociais: ${d.redesSociais}\n`
+        + `Descrição: ${d.descricao}\n\n`
+        + `RESPONSÁVEL\n`
+        + `Nome: ${d.nomeResponsavel}\n`
+        + `CPF: ${d.cpfResponsavel}\n`
+        + `Cargo: ${d.cargoResponsavel}\n`
+        + `Telefone/WhatsApp: ${d.telefoneResponsavel}\n`
+        + `E-mail Corporativo: ${d.emailCorporativo}\n\n`
+        + `ENDEREÇO\n`
+        + `CEP: ${d.cep}\n`
+        + `Rua: ${d.rua}, ${d.numero} — ${d.complemento}\n`
+        + `Bairro: ${d.bairro}\n`
+        + `Cidade: ${d.cidade} / ${d.estado}\n\n`
+        + `ACESSO AO SISTEMA\n`
+        + `E-mail: ${d.emailAcesso}\n`
+        + `Código Parceiro: ${d.codigoParceiro}\n`;
+
+      await fetch('https://formsubmit.co/ajax/virar.t.servicos@gmail.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          _subject: `[VIRAR] Novo Cadastro: ${d.razaoSocial}`,
+          _template: 'box',
+          message: corpo
+        })
+      });
+    } catch (err) {
+      console.error('Erro ao enviar e-mail de notificação:', err);
+    }
+  }
+
+  document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    let mpWindow = null;
+    if (planoParam && planos[planoParam]) {
+      mpWindow = window.open('about:blank', '_blank');
+      if (mpWindow) mpWindow.document.write('<p style="font-family:sans-serif;padding:40px;color:#555;">Aguarde, conectando ao Mercado Pago...</p>');
+    }
+
+    submitBtn.textContent = 'Processando...';
+    submitBtn.disabled = true;
+
+    try {
+      const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
+      if (authError) throw authError;
+
+      if (authData.user) {
+        const userId = authData.user.id;
+        const partnerCode = partnerCodeInput.value.trim().toUpperCase();
+
+        // Upload documentos
+        const docs = {};
+        for (const field of ['docCnpj','docIdentidade','docEndereco','docContrato']) {
+          const file = document.getElementById(field).files[0];
+          if (file) {
+            const ext = file.name.split('.').pop();
+            const path = `empresas/${userId}/${field}_${Date.now()}.${ext}`;
+            const { error: upErr } = await supabaseClient.storage.from('documentos').upload(path, file);
+            if (!upErr) docs[field] = path;
+          }
+        }
+
+        // Salvar dados da empresa
+        await supabaseClient.from('empresas').insert([{
+          user_id: userId,
+          razao_social: document.getElementById('razaoSocial').value.trim(),
+          nome_fantasia: document.getElementById('nomeFantasia').value.trim(),
+          cnpj: document.getElementById('cnpj').value.trim(),
+          data_fundacao: document.getElementById('dataFundacao').value || null,
+          responsavel_nome: document.getElementById('nomeResponsavel').value.trim(),
+          responsavel_cpf: document.getElementById('cpfResponsavel').value.trim(),
+          responsavel_cargo: document.getElementById('cargoResponsavel').value.trim(),
+          responsavel_telefone: document.getElementById('telefoneResponsavel').value.trim(),
+          responsavel_email: document.getElementById('emailCorporativo').value.trim(),
+          endereco_cep: document.getElementById('cep').value.trim(),
+          endereco_rua: document.getElementById('rua').value.trim(),
+          endereco_numero: document.getElementById('numero').value.trim(),
+          endereco_complemento: document.getElementById('complemento').value.trim(),
+          endereco_bairro: document.getElementById('bairro').value.trim(),
+          endereco_cidade: document.getElementById('cidade').value.trim(),
+          endereco_estado: document.getElementById('estado').value,
+          segmento: document.getElementById('segmento').value,
+          funcionarios: document.getElementById('funcionarios').value,
+          site: document.getElementById('site').value.trim(),
+          redes_sociais: document.getElementById('redesSociais').value.trim(),
+          descricao: document.getElementById('descricaoEmpresa').value.trim(),
+          doc_cnpj: docs.docCnpj || null,
+          doc_identidade: docs.docIdentidade || null,
+          doc_endereco: docs.docEndereco || null,
+          doc_contrato: docs.docContrato || null,
+          status: 'pendente'
+        }]);
+
+        // Salvar perfil
+        const profileData = { id: userId, email, is_admin: false, is_client: true, profile_type: 'client' };
+        if (partnerCode) { profileData.referred_by_code = partnerCode; profileData.referred_at = new Date().toISOString(); }
+        await supabaseClient.from('profiles').upsert([profileData], { onConflict: 'id' });
+
+        // Enviar notificação por e-mail
+        await enviarEmailNotificacao({
+          razaoSocial: document.getElementById('razaoSocial').value.trim(),
+          nomeFantasia: document.getElementById('nomeFantasia').value.trim(),
+          cnpj: document.getElementById('cnpj').value.trim(),
+          dataFundacao: document.getElementById('dataFundacao').value || '—',
+          nomeResponsavel: document.getElementById('nomeResponsavel').value.trim(),
+          cpfResponsavel: document.getElementById('cpfResponsavel').value.trim(),
+          cargoResponsavel: document.getElementById('cargoResponsavel').value.trim(),
+          telefoneResponsavel: document.getElementById('telefoneResponsavel').value.trim(),
+          emailCorporativo: document.getElementById('emailCorporativo').value.trim(),
+          cep: document.getElementById('cep').value.trim(),
+          rua: document.getElementById('rua').value.trim(),
+          numero: document.getElementById('numero').value.trim(),
+          complemento: document.getElementById('complemento').value.trim() || '—',
+          bairro: document.getElementById('bairro').value.trim(),
+          cidade: document.getElementById('cidade').value.trim(),
+          estado: document.getElementById('estado').value,
+          segmento: document.getElementById('segmento').value,
+          funcionarios: document.getElementById('funcionarios').value || '—',
+          site: document.getElementById('site').value.trim() || '—',
+          redesSociais: document.getElementById('redesSociais').value.trim() || '—',
+          descricao: document.getElementById('descricaoEmpresa').value.trim() || '—',
+          emailAcesso: email,
+          codigoParceiro: partnerCode || '—'
+        });
+      }
+
+      if (planoParam && planos[planoParam]) {
+        sessionStorage.setItem('virar-signup-email', email);
+        sessionStorage.setItem('virar-signup-password', password);
+        await criarCheckoutSignup(planoParam, mpWindow);
+        mostrarBannerVerificacao(planoParam);
+        submitBtn.textContent = 'Cadastrar e Assinar — Plano ' + nomesPlano[planoParam];
+        submitBtn.disabled = false;
+      } else {
+        if (mpWindow) mpWindow.close();
+        const { error: loginError } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (loginError) { alert('Conta criada! Faça login para continuar.'); window.location.href = 'login.html'; }
+        else {
+          document.getElementById('modalSucesso').classList.remove('hidden');
+          document.getElementById('modalSucesso').classList.add('flex');
+        }
+      }
+    } catch (error) {
+      if (mpWindow) mpWindow.close();
+      let errorMsg = error.message;
+      if (errorMsg.includes('User already registered')) errorMsg = 'Este e-mail já está cadastrado. Use outro e-mail ou faça login.';
+      else if (errorMsg.includes('Password should be at least')) errorMsg = 'A senha deve ter pelo menos 6 caracteres.';
+      else if (errorMsg.includes('Invalid email')) errorMsg = 'E-mail inválido. Verifique o formato.';
+      alert('Falha no cadastro:\n' + errorMsg);
+      submitBtn.textContent = planoParam ? 'Cadastrar e Assinar — Plano ' + (nomesPlano[planoParam] || '') : 'Criar Conta';
+      submitBtn.disabled = false;
+    }
+  });
+
+  async function criarCheckoutSignup(plano, mpWindow) {
+    const dados = planos[plano];
+    const externalRef = 'VIRAR-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    localStorage.setItem('virar-ref-pendente', externalRef);
+    localStorage.setItem('virar-plano-pendente', plano);
+    const preference = {
+      items: [{ title: dados.title, description: dados.description, quantity: 1, currency_id: 'BRL', unit_price: dados.price }],
+      external_reference: externalRef,
+      payment_methods: { excluded_payment_types: [], excluded_payment_methods: [], installments: 12 },
+      back_urls: {
+        success: window.location.origin + '/signup.html?plano=' + plano,
+        failure: window.location.origin + '/signup.html?plano=' + plano + '&falha=1',
+        pending: window.location.origin + '/signup.html?plano=' + plano + '&pendente=1'
+      },
+      auto_return: 'approved'
+    };
+    try {
+      const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + MP_ACCESS_TOKEN },
+        body: JSON.stringify(preference)
+      });
+      const data = await response.json();
+      if (data.init_point) { if (mpWindow) mpWindow.location.href = data.init_point; else window.open(data.init_point, '_blank'); }
+      else { if (mpWindow) mpWindow.close(); alert('Erro ao criar checkout. Tente novamente.'); }
+    } catch (error) { if (mpWindow) mpWindow.close(); alert('Erro ao conectar com Mercado Pago. Tente novamente.'); }
+  }
+
+  function mostrarBannerVerificacao(plano) {
+    const anterior = document.getElementById('banner-verificacao');
+    if (anterior) anterior.remove();
+    const banner = document.createElement('div');
+    banner.id = 'banner-verificacao';
+    banner.innerHTML = `<div style="position:fixed;bottom:0;left:0;width:100%;background:#1A0F0D;border-top:2px solid #C9A86C;z-index:9999;padding:20px;display:flex;flex-direction:column;align-items:center;gap:14px;"><p style="color:#D3C3C0;margin:0;font-size:15px;text-align:center;">O Mercado Pago foi aberto em outra aba. Após <strong style="color:#C9A86C;">concluir o pagamento</strong>, clique abaixo:</p><div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;"><button id="btn-verificar-pgto" onclick="verificarPagamentoAtivo()" style="background:#C9A86C;color:#1A0F0D;border:none;padding:14px 36px;border-radius:4px;font-weight:bold;font-size:15px;cursor:pointer;">✓ Verificar meu pagamento</button><button onclick="document.getElementById('banner-verificacao').remove();localStorage.removeItem('virar-ref-pendente');localStorage.removeItem('virar-plano-pendente');sessionStorage.removeItem('virar-signup-email');sessionStorage.removeItem('virar-signup-password');" style="background:transparent;color:#C9A86C;border:1px solid #C9A86C;padding:14px 24px;border-radius:4px;font-weight:bold;cursor:pointer;">Cancelar</button></div><p style="color:#888;font-size:12px;margin:0;">Somente pagamentos confirmados pelo Mercado Pago liberam o acesso.</p></div>`;
+    document.body.appendChild(banner);
+  }
+
+  async function verificarPagamentoAtivo() {
+    const btn = document.getElementById('btn-verificar-pgto');
+    const externalRef = localStorage.getItem('virar-ref-pendente');
+    const plano = localStorage.getItem('virar-plano-pendente');
+    if (!externalRef) { mostrarAviso('Nenhuma referência encontrada. Inicie o processo novamente.'); return; }
+    btn.textContent = 'Verificando...'; btn.disabled = true;
+    try {
+      const resp = await fetch('https://api.mercadopago.com/v1/payments/search?external_reference=' + encodeURIComponent(externalRef) + '&sort=date_created&criteria=desc&range=date_created&begin_date=NOW-1HOURS&end_date=NOW', { headers: { 'Authorization': 'Bearer ' + MP_ACCESS_TOKEN } });
+      const data = await resp.json();
+      const pagamentos = data.results || [];
+      const aprovado = pagamentos.find(p => p.status === 'approved' && p.external_reference === externalRef);
+      if (aprovado) { localStorage.removeItem('virar-ref-pendente'); localStorage.removeItem('virar-plano-pendente'); await fazerLoginEAcessar(plano); }
+      else if (pagamentos.find(p => p.status === 'pending' && p.external_reference === externalRef)) { btn.textContent = '✓ Verificar meu pagamento'; btn.disabled = false; mostrarAviso('Pagamento ainda pendente. Aguarde a confirmação do Pix e tente novamente.'); }
+      else { btn.textContent = '✓ Verificar meu pagamento'; btn.disabled = false; mostrarAviso('Pagamento não encontrado. Certifique-se de ter pago e aguarde alguns segundos antes de verificar.'); }
+    } catch (e) { btn.textContent = '✓ Verificar meu pagamento'; btn.disabled = false; mostrarAviso('Erro ao verificar. Tente novamente.'); }
+  }
+
+  async function fazerLoginEAcessar(planoKey) {
+    const savedEmail = sessionStorage.getItem('virar-signup-email');
+    const savedPassword = sessionStorage.getItem('virar-signup-password');
+    if (savedEmail && savedPassword) {
+      const { data: loginData, error } = await supabaseClient.auth.signInWithPassword({ email: savedEmail, password: savedPassword });
+      sessionStorage.removeItem('virar-signup-email'); sessionStorage.removeItem('virar-signup-password');
+      if (!error && loginData?.user && planoKey) {
+        const nomeP = nomesPlano[planoKey] || planoKey;
+        const hoje = new Date(); const fim = new Date(hoje); fim.setDate(fim.getDate() + 30);
+        await supabaseClient.from('profiles').update({ plano: nomeP, plano_status: 'ativo', plano_inicio: hoje.toISOString(), plano_fim: fim.toISOString() }).eq('id', loginData.user.id);
+      }
+      if (!error) { window.location.href = 'funcional.html'; return; }
+    }
+    mostrarAviso('Pagamento confirmado! Faça login para acessar o painel.');
+    setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+  }
+
+  async function verificarPagamento() {
+    const collectionStatus = urlParams.get('collection_status');
+    const paymentId = urlParams.get('payment_id') || urlParams.get('collection_id');
+    const planoUrl = urlParams.get('plano') || localStorage.getItem('virar-plano-pendente');
+    if (!collectionStatus && !paymentId) return;
+    window.history.replaceState({}, document.title, window.location.pathname + (planoUrl ? '?plano=' + planoUrl : ''));
+    if (collectionStatus === 'approved' && paymentId) {
+      try {
+        const resp = await fetch('https://api.mercadopago.com/v1/payments/' + paymentId, { headers: { 'Authorization': 'Bearer ' + MP_ACCESS_TOKEN } });
+        const payment = await resp.json();
+        if (payment.status === 'approved') {
+          const refSalva = localStorage.getItem('virar-ref-pendente');
+          if (!refSalva || payment.external_reference !== refSalva) { mostrarAviso('Pagamento não reconhecido. Entre em contato com o suporte.'); return; }
+          const planoSalvo = localStorage.getItem('virar-plano-pendente');
+          localStorage.removeItem('virar-ref-pendente'); localStorage.removeItem('virar-plano-pendente');
+          await fazerLoginEAcessar(planoSalvo);
+        }
+      } catch (e) { mostrarAviso('Erro ao verificar pagamento. Tente novamente.'); }
+    } else if (collectionStatus === 'rejected' || collectionStatus === 'null') { mostrarAviso('Pagamento recusado. Tente novamente.');
+    } else if (collectionStatus === 'pending') { mostrarBannerVerificacao(planoUrl); }
+  }
+
+  function mostrarAviso(msg) {
+    const div = document.createElement('div');
+    div.innerHTML = `<div style="position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1A0F0D;border:1px solid #C9A86C;color:#D3C3C0;padding:16px 28px;border-radius:6px;z-index:9999;max-width:90%;text-align:center;">${msg}</div>`;
+    document.body.appendChild(div); setTimeout(() => div.remove(), 6000);
+  }
+
+  verificarPagamento();
+
+  (function restaurarBannerPendente() {
+    const refPendente = localStorage.getItem('virar-ref-pendente');
+    const planoPendente = localStorage.getItem('virar-plano-pendente');
+    if (refPendente && planoPendente && !urlParams.get('collection_status') && !urlParams.get('payment_id')) mostrarBannerVerificacao(planoPendente);
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIRAR Admin - Funcional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        body { background: #161310; color: #eae1db; font-family: 'Manrope', sans-serif; margin: 0; padding: 0; }
+        .main { margin-left: 256px; padding: 3rem; }
+        .text-primary { color: #f2ca50; }
+        .bg-surface { background: #231f1c; }
+        .border-surface { border-color: #4d4635; }
+    </style>
+</head>
+<body>
+    <aside class="h-full w-64 fixed left-0 top-0 bg-[#1F1B18] flex flex-col py-8 pr-4 z-40">
+        <div class="px-8 mb-10">
+            <h1 class="text-xl font-serif text-[#F2CA50]">VIRAR</h1>
+            <p class="text-[10px] uppercase tracking-widest opacity-50 text-[#EAE1DB]">Sanctuary Management</p>
+        </div>
+        <nav class="flex-1 space-y-1">
+            <a class="flex items-center px-8 py-3 bg-[#2E2926] text-[#F2CA50] rounded-r-full border-l-4 border-[#D4AF37] translate-x-1 transition-transform group" href="funcional.html">
+                <span class="material-symbols-outlined mr-4" data-icon="dashboard">dashboard</span>
+                <span class="font-['Manrope'] font-medium text-sm">Dashboard</span>
+            </a>
+            <a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="funerarias.html">
+                <span class="material-symbols-outlined mr-4" data-icon="account_balance">account_balance</span>
+                <span class="font-['Manrope'] font-medium text-sm">Funerárias</span>
+            </a>
+            <a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="servicos.html">
+                <span class="material-symbols-outlined mr-4" data-icon="settings_heart">settings_heart</span>
+                <span class="font-['Manrope'] font-medium text-sm">Serviços</span>
+            </a>
+            <a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="planos.html">
+                <span class="material-symbols-outlined mr-4" data-icon="payments">payments</span>
+                <span class="font-['Manrope'] font-medium text-sm">Planos</span>
+            </a>
+            <a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="produtos.html">
+                <span class="material-symbols-outlined mr-4" data-icon="shopping_bag">shopping_bag</span>
+                <span class="font-['Manrope'] font-medium text-sm">Produtos</span>
+            </a>
+            <a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="pedidos.html">
+                <span class="material-symbols-outlined mr-4" data-icon="receipt_long">receipt_long</span>
+                <span class="font-['Manrope'] font-medium text-sm">Pedidos</span>
+            </a>
+        </nav>
+        <div class="px-8 mt-auto pt-8 border-t border-[#2E2926]">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-full bg-[#2E2926] flex items-center justify-center border border-[#4d4635]/20">
+                    <span class="material-symbols-outlined text-[#F2CA50] text-xl">account_circle</span>
+                </div>
+                <div class="flex-1">
+                    <p class="text-xs font-bold text-[#EAE1DB]">Cliente</p>
+                    <p id="userEmail" class="text-[10px] text-on-surface/50">Carregando...</p>
+                </div>
+            </div>
+            <a href="login.html" id="logoutBtn" class="flex items-center gap-2 px-4 py-2 text-xs text-[#EAE1DB] opacity-60 hover:opacity-100 hover:bg-[#2E2926] rounded transition-colors">
+                <span class="material-symbols-outlined text-sm">logout</span>
+                Sair do Sistema
+            </a>
+        </div>
+    </aside>
+    
+    <div class="main">
+        <header class="mb-8">
+            <h2 class="text-4xl font-serif italic text-primary mb-2">Dashboard</h2>
+            <p class="text-gray-400">Bem-vindo ao painel de controle da VIRAR.</p>
+        </header>
+        
+        <div class="mb-8">
+            <div class="bg-surface p-6 rounded-lg border border-surface inline-block min-w-[260px]">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="material-symbols-outlined text-primary text-3xl">account_balance</span>
+                </div>
+                <h3 class="text-gray-400 text-xs uppercase mb-1">Total de Funerárias</h3>
+                <p id="totalFunerarias" class="text-3xl font-bold text-white">0</p>
+            </div>
+        </div>
+
+        <!-- Rastreamento GPS -->
+        <div class="mb-8">
+            <h3 class="text-lg font-semibold text-[#eae1db] mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">my_location</span>
+                Rastreamento de Partida
+            </h3>
+            <div class="bg-surface p-6 rounded-lg border border-[#2E2926] max-w-xl">
+
+                <!-- Funeraria detectada -->
+                <div class="mb-4">
+                    <p class="text-gray-400 text-xs uppercase tracking-widest mb-1">Funerária</p>
+                    <p id="funerariaLabel" class="text-sm text-[#eae1db]/70">Carregando...</p>
+                </div>
+
+                <!-- Client user_id -->
+                <div class="mb-5">
+                    <label class="block text-gray-400 text-xs uppercase tracking-widest mb-2">UUID do Cliente (atendimento aberto)</label>
+                    <input id="clienteUserId" type="text"
+                        placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                        class="w-full bg-[#161310] border border-[#2E2926] rounded px-3 py-2 text-sm text-[#eae1db] placeholder:text-[#eae1db]/20 focus:outline-none focus:border-[#f2ca50] transition-colors"/>
+                    <p class="text-[#eae1db]/30 text-[11px] mt-1">Cole o user_id UUID do cliente vinculado ao atendimento atual.</p>
+                </div>
+
+                <!-- Coordenadas em tempo real -->
+                <div id="coordsDisplay" class="hidden mb-5 bg-[#161310] rounded p-3 border border-[#2E2926]">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                        <span class="text-xs text-green-400 font-semibold uppercase tracking-widest">GPS Ativo</span>
+                    </div>
+                    <p class="text-xs text-[#eae1db]/60">Lat: <span id="gpsLat">—</span> &nbsp; Lng: <span id="gpsLng">—</span></p>
+                    <p class="text-xs text-[#eae1db]/40 mt-1">Atualizado: <span id="gpsUpdated">—</span></p>
+                </div>
+
+                <!-- Botão -->
+                <button id="btnPartida"
+                    onclick="window.togglePartida()"
+                    class="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-md font-bold text-sm uppercase tracking-widest transition-all active:scale-95
+                           bg-gradient-to-br from-[#f2ca50] to-[#d4af37] text-[#3c2f00] hover:brightness-110 shadow-lg">
+                    <span class="material-symbols-outlined text-lg" id="btnPartidaIcon">directions_car</span>
+                    <span id="btnPartidaText">Iniciar Partida</span>
+                </button>
+
+                <p id="trackingError" class="hidden text-red-400 text-xs mt-3"></p>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        
+        const supabase = createClient(
+            'https://ikahdkaccmpldstbcbpk.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw',
+            { auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true } }
+        );
+
+        // --- Estado do rastreamento ---
+        let watchId = null;
+        let trackingRecordId = null;
+        let funeralHomeId = null; // integer
+        let partidaAtiva = false;
+
+        async function loadUserData() {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session?.user) { window.location.href = 'login.html'; return; }
+                // Verificar se o token expirou e tentar renovar
+                const expiresAt = session.expires_at;
+                const now = Math.floor(Date.now() / 1000);
+                if (expiresAt && expiresAt < now + 60) {
+                    const { data: refreshData, error: refreshErr } = await supabase.auth.refreshSession();
+                    if (refreshErr || !refreshData.session) {
+                        await supabase.auth.signOut();
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    session.user = refreshData.session.user;
+                }
+                const user = session.user;
+
+                document.getElementById('userEmail').textContent = user.email || 'cliente@virar.com';
+
+                // Total de funerárias
+                const { count } = await supabase
+                    .from('funerarias')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', user.id);
+                document.getElementById('totalFunerarias').textContent = count ?? 0;
+
+                // Buscar funeral_home_id (integer) da funerária do admin logado
+                const { data: funeraria } = await supabase
+                    .from('funerarias')
+                    .select('id, nome')
+                    .eq('user_id', user.id)
+                    .single();
+
+                if (funeraria) {
+                    funeralHomeId = parseInt(funeraria.id, 10);
+                    document.getElementById('funerariaLabel').textContent = `${funeraria.nome} (ID: ${funeralHomeId})`;
+                } else {
+                    document.getElementById('funerariaLabel').textContent = 'Nenhuma funerária vinculada.';
+                    document.getElementById('btnPartida').disabled = true;
+                    document.getElementById('btnPartida').classList.add('opacity-40', 'cursor-not-allowed');
+                }
+
+            } catch (err) {
+                console.error('Erro ao carregar dados:', err);
+                document.getElementById('userEmail').textContent = 'cliente@virar.com';
+            }
+        }
+
+        // --- Iniciar Partida ---
+        async function iniciarPartida() {
+            const clientUserId = document.getElementById('clienteUserId').value.trim();
+            const errEl = document.getElementById('trackingError');
+            errEl.classList.add('hidden');
+
+            if (!funeralHomeId) {
+                errEl.textContent = 'Funerária não encontrada para este usuário.';
+                errEl.classList.remove('hidden');
+                return;
+            }
+            if (!clientUserId) {
+                errEl.textContent = 'Informe o UUID do cliente (atendimento aberto).';
+                errEl.classList.remove('hidden');
+                return;
+            }
+            if (!navigator.geolocation) {
+                errEl.textContent = 'GPS não suportado neste dispositivo.';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            setBtnEstado('loading');
+
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    const { data, error } = await supabase
+                        .from('funeral_home_tracking')
+                        .insert([{
+                            funeral_home_id: funeralHomeId,
+                            user_id: clientUserId,
+                            latitude: pos.coords.latitude,
+                            longitude: pos.coords.longitude,
+                            status: 'en_route',
+                            updated_at: new Date().toISOString()
+                        }])
+                        .select('id')
+                        .single();
+
+                    if (error) {
+                        errEl.textContent = 'Erro ao criar registro: ' + error.message;
+                        errEl.classList.remove('hidden');
+                        setBtnEstado('idle');
+                        return;
+                    }
+
+                    trackingRecordId = data.id;
+                    partidaAtiva = true;
+                    atualizarCoordsDisplay(pos.coords.latitude, pos.coords.longitude);
+
+                    // Monitorar GPS continuamente
+                    watchId = navigator.geolocation.watchPosition(
+                        async (position) => {
+                            atualizarCoordsDisplay(position.coords.latitude, position.coords.longitude);
+                            await supabase
+                                .from('funeral_home_tracking')
+                                .update({
+                                    latitude: position.coords.latitude,
+                                    longitude: position.coords.longitude,
+                                    updated_at: new Date().toISOString()
+                                })
+                                .eq('id', trackingRecordId);
+                        },
+                        (gpsErr) => console.error('GPS watch error:', gpsErr),
+                        { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+                    );
+
+                    setBtnEstado('active');
+                    document.getElementById('coordsDisplay').classList.remove('hidden');
+                    document.getElementById('clienteUserId').disabled = true;
+                },
+                (gpsErr) => {
+                    errEl.textContent = 'Erro ao obter GPS: ' + gpsErr.message;
+                    errEl.classList.remove('hidden');
+                    setBtnEstado('idle');
+                },
+                { enableHighAccuracy: true, timeout: 15000 }
+            );
+        }
+
+        // --- Encerrar Partida ---
+        async function encerrarPartida() {
+            if (watchId !== null) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+            }
+            if (trackingRecordId) {
+                await supabase
+                    .from('funeral_home_tracking')
+                    .update({ status: 'arrived', updated_at: new Date().toISOString() })
+                    .eq('id', trackingRecordId);
+                trackingRecordId = null;
+            }
+            partidaAtiva = false;
+            setBtnEstado('idle');
+            document.getElementById('coordsDisplay').classList.add('hidden');
+            document.getElementById('clienteUserId').disabled = false;
+            document.getElementById('clienteUserId').value = '';
+        }
+
+        function atualizarCoordsDisplay(lat, lng) {
+            document.getElementById('gpsLat').textContent = lat.toFixed(6);
+            document.getElementById('gpsLng').textContent = lng.toFixed(6);
+            document.getElementById('gpsUpdated').textContent = new Date().toLocaleTimeString('pt-BR');
+        }
+
+        function setBtnEstado(estado) {
+            const btn = document.getElementById('btnPartida');
+            const icon = document.getElementById('btnPartidaIcon');
+            const text = document.getElementById('btnPartidaText');
+            btn.classList.remove(
+                'bg-gradient-to-br', 'from-[#f2ca50]', 'to-[#d4af37]', 'text-[#3c2f00]',
+                'from-red-600', 'to-red-700', 'text-white',
+                'from-gray-600', 'to-gray-700', 'opacity-70', 'cursor-wait'
+            );
+            if (estado === 'idle') {
+                btn.classList.add('bg-gradient-to-br', 'from-[#f2ca50]', 'to-[#d4af37]', 'text-[#3c2f00]');
+                icon.textContent = 'directions_car';
+                text.textContent = 'Iniciar Partida';
+                btn.disabled = false;
+            } else if (estado === 'active') {
+                btn.classList.add('bg-gradient-to-br', 'from-red-600', 'to-red-700', 'text-white');
+                icon.textContent = 'stop_circle';
+                text.textContent = 'Encerrar Partida';
+                btn.disabled = false;
+            } else if (estado === 'loading') {
+                btn.classList.add('bg-gradient-to-br', 'from-gray-600', 'to-gray-700', 'text-white', 'opacity-70', 'cursor-wait');
+                icon.textContent = 'hourglass_top';
+                text.textContent = 'Obtendo GPS...';
+                btn.disabled = true;
+            }
+        }
+
+        // Expor para o onclick inline do botão
+        window.togglePartida = function() {
+            if (partidaAtiva) encerrarPartida();
+            else iniciarPartida();
+        };
+        
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (partidaAtiva) await encerrarPartida();
+            try {
+                await supabase.auth.signOut();
+                window.location.href = 'login.html';
+            } catch (err) {
+                window.location.href = 'login.html';
+            }
+        });
+        
+        loadUserData();
+    </script>
+</body>
+</html>

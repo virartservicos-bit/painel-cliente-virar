@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIRAR Admin - Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #161310;
+            color: #eae1db;
+            font-family: 'Manrope', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .title {
+            color: #f2ca50;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-family: 'Noto Serif', serif;
+        }
+        
+        .subtitle {
+            color: #d0c5af;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .status {
+            background: #231f1c;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #4d4635;
+            margin: 1rem 0;
+        }
+        
+        .success {
+            color: #4ade80;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #f2ca50 0%, #d4af37 100%);
+            color: #554300;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.25rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">VIRAR</h1>
+        <p class="subtitle">Sistema Administrativo</p>
+        
+        <div class="status success">
+            ✅ HTML está carregando corretamente
+        </div>
+        
+        <div class="status">
+            📁 Arquivos estáticos carregados
+        </div>
+        
+        <div class="status">
+            🎨 CSS aplicado com sucesso
+        </div>
+        
+        <button class="btn" onclick="testJS()">
+            Testar JavaScript
+        </button>
+        
+        <div id="js-result"></div>
+    </div>
+    
+    <script>
+        function testJS() {
+            document.getElementById('js-result').innerHTML = 
+                '<div class="status success">✅ JavaScript está funcionando!</div>';
+        }
+        
+        // Teste automático
+        setTimeout(() => {
+            testJS();
+        }, 1000);
+    </script>
+</body>
+</html>

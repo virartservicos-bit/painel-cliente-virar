@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Regiões - VIRAR</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "on-surface": "#eae1db",
+              "surface-bright": "#3d3835",
+              "on-primary-fixed-variant": "#574500",
+              "on-secondary-fixed-variant": "#4d453e",
+              "surface-dim": "#161310",
+              "secondary-container": "#4d453e",
+              "outline": "#99907c",
+              "surface-tint": "#e9c349",
+              "secondary": "#d0c4bb",
+              "on-tertiary-fixed": "#231a0e",
+              "on-primary": "#3c2f00",
+              "on-secondary-fixed": "#211a15",
+              "tertiary-container": "#c0b09d",
+              "primary-fixed": "#ffe088",
+              "on-tertiary-fixed-variant": "#504536",
+              "on-primary-container": "#554300",
+              "surface-container-lowest": "#110d0b",
+              "surface-container-high": "#2e2926",
+              "on-tertiary": "#392f21",
+              "on-surface-variant": "#d0c5af",
+              "error-container": "#93000a",
+              "on-error": "#690005",
+              "on-secondary": "#362f29",
+              "tertiary-fixed-dim": "#d5c4b1",
+              "surface-container-low": "#1f1b18",
+              "on-secondary-container": "#bfb3aa",
+              "surface-variant": "#393430",
+              "surface-container": "#231f1c",
+              "background": "#161310",
+              "on-background": "#eae1db",
+              "tertiary-fixed": "#f1e0cc",
+              "inverse-on-surface": "#342f2c",
+              "secondary-fixed": "#ede0d6",
+              "inverse-primary": "#735c00",
+              "surface": "#161310",
+              "outline-variant": "#4d4635",
+              "on-tertiary-container": "#4e4334",
+              "error": "#ffb4ab",
+              "surface-container-highest": "#393430",
+              "primary-container": "#d4af37",
+              "tertiary": "#dccbb8",
+              "primary-fixed-dim": "#e9c349",
+              "primary": "#f2ca50",
+              "inverse-surface": "#eae1db",
+              "secondary-fixed-dim": "#d0c4bb",
+              "on-primary-fixed": "#241a00"
+            },
+            fontFamily: {
+              "headline": ["Noto Serif"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #161310;
+            color: #eae1db;
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased overflow-x-hidden">
+<!-- SideNavBar (Shared Component) -->
+<aside class="h-full w-64 fixed left-0 top-0 bg-[#1F1B18] flex flex-col py-8 pr-4 z-40">
+<div class="px-8 mb-10">
+<h1 class="text-xl font-serif text-[#F2CA50]">VIRAR</h1>
+<p class="text-[10px] uppercase tracking-widest opacity-50 text-[#EAE1DB]">Sanctuary Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="funcional.html">
+<span class="material-symbols-outlined mr-4 text-lg">dashboard</span>
+<span class="font-['Manrope'] font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="funerarias.html">
+<span class="material-symbols-outlined mr-4 text-lg">account_balance</span>
+<span class="font-['Manrope'] font-medium text-sm">Funerárias</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="servicos.html">
+<span class="material-symbols-outlined mr-4 text-lg">settings_heart</span>
+<span class="font-['Manrope'] font-medium text-sm">Serviços</span>
+</a>
+<!-- Active Tab: Regiões -->
+<a class="flex items-center px-8 py-3 bg-[#2E2926] text-[#F2CA50] rounded-r-full border-l-4 border-[#D4AF37] translate-x-1 transition-transform" href="regioes.html">
+<span class="material-symbols-outlined mr-4 text-lg">map</span>
+<span class="font-['Manrope'] font-medium text-sm">Regiões</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="planos.html">
+<span class="material-symbols-outlined mr-4 text-lg">payments</span>
+<span class="font-['Manrope'] font-medium text-sm">Planos</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="produtos.html">
+<span class="material-symbols-outlined mr-4 text-lg">shopping_bag</span>
+<span class="font-['Manrope'] font-medium text-sm">Produtos</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="pedidos.html">
+<span class="material-symbols-outlined mr-4 text-lg">receipt_long</span>
+<span class="font-['Manrope'] font-medium text-sm">Pedidos</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="usuarios.html">
+<span class="material-symbols-outlined mr-4 text-lg">group</span>
+<span class="font-['Manrope'] font-medium text-sm">Usuários</span>
+</a>
+</nav>
+<div class="px-8 mt-auto pt-8 border-t border-[#2E2926]">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-10 h-10 rounded-full bg-[#2E2926] flex items-center justify-center border border-[#4d4635]/20">
+<span class="material-symbols-outlined text-[#F2CA50] text-xl">account_circle</span>
+</div>
+<div class="flex-1">
+<p class="text-xs font-bold text-[#EAE1DB]">Cliente</p>
+<p id="userEmail" class="text-[10px] text-[#EAE1DB]/50">Carregando...</p>
+</div>
+</div>
+<a href="login.html" id="logoutBtn" class="flex items-center gap-2 px-4 py-2 text-xs text-[#EAE1DB] opacity-60 hover:opacity-100 hover:bg-[#2E2926] rounded transition-colors">
+<span class="material-symbols-outlined text-sm">logout</span>
+Sair do Sistema
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen p-8 lg:p-12">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
+<div>
+<h2 class="text-4xl font-headline text-on-surface mb-2 tracking-tight">Regiões</h2>
+<p class="text-on-surface-variant font-body text-sm max-w-md opacity-80 leading-relaxed">
+                    Gerencie a hierarquia geográfica e monitore a densidade de parceiros em cada localidade.
+                </p>
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold px-6 py-3 rounded-md flex items-center gap-2 shadow-lg hover:brightness-110 transition-all duration-300">
+<span class="material-symbols-outlined">add_location_alt</span>
+<span class="text-sm tracking-wide">Adicionar Região</span>
+</button>
+</header>
+<!-- Stats Overview (Bento Style) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<div class="bg-surface-container-low p-6 rounded-lg border-l-2 border-primary/20">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary text-3xl">public</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-primary-fixed-dim">Estados Ativos</span>
+</div>
+<div class="text-3xl font-headline">12</div>
+<div class="text-xs text-on-surface-variant mt-2">Cobertura em 45% do território</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg border-l-2 border-primary/20">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary text-3xl">location_city</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-primary-fixed-dim">Cidades</span>
+</div>
+<div class="text-3xl font-headline">142</div>
+<div class="text-xs text-on-surface-variant mt-2">+8 novas este mês</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg border-l-2 border-primary/20">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary text-3xl">home_pin</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-primary-fixed-dim">Bairros</span>
+</div>
+<div class="text-3xl font-headline">856</div>
+<div class="text-xs text-on-surface-variant mt-2">Média de 6 funerárias por bairro</div>
+</div>
+</section>
+<!-- Regional Table -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden shadow-2xl">
+<div class="p-6 bg-surface-container-high border-b border-outline-variant/10 flex justify-between items-center">
+<h3 class="font-headline text-lg italic">Estrutura Hierárquica</h3>
+<div class="flex gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm opacity-40">search</span>
+<input class="bg-surface-container-highest border-none rounded-sm pl-10 text-xs w-64 focus:ring-1 focus:ring-primary placeholder:opacity-30" placeholder="Filtrar região..." type="text"/>
+</div>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">
+<th class="px-8 py-5">Região / Localidade</th>
+<th class="px-8 py-5">Tipo</th>
+<th class="px-8 py-5">Parceiros (Funerárias)</th>
+<th class="px-8 py-5">Status</th>
+<th class="px-8 py-5 text-right">Ações</th>
+</tr>
+</thead>
+<tbody class="text-sm font-body">
+<!-- State Row -->
+<tr class="group border-t border-outline-variant/5 hover:bg-surface-container-high transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-lg">expand_more</span>
+<span class="font-semibold text-on-surface">São Paulo (SP)</span>
+</div>
+</td>
+<td class="px-8 py-6 text-on-surface-variant">Estado</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="w-12 h-1.5 bg-surface-container-highest rounded-full overflow-hidden inline-block">
+<span class="block h-full bg-primary w-4/5"></span>
+</span>
+<span class="text-xs">342</span>
+</div>
+</td>
+<td class="px-8 py-6">
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase font-bold tracking-tighter">Operacional</span>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">more_vert</span></button>
+</td>
+</tr>
+<!-- City Row (Indented) -->
+<tr class="group border-t border-outline-variant/5 bg-surface-container-low/50 hover:bg-surface-container-high transition-colors">
+<td class="px-8 py-5 pl-16">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary/40 text-sm">subdirectory_arrow_right</span>
+<span class="font-medium text-on-surface">São Paulo (Capital)</span>
+</div>
+</td>
+<td class="px-8 py-5 text-on-surface-variant opacity-70">Cidade</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2">
+<span class="w-12 h-1.5 bg-surface-container-highest rounded-full overflow-hidden inline-block">
+<span class="block h-full bg-primary w-2/3"></span>
+</span>
+<span class="text-xs">128</span>
+</div>
+</td>
+<td class="px-8 py-5">
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase font-bold tracking-tighter">Operacional</span>
+</td>
+<td class="px-8 py-5 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">settings</span></button>
+</td>
+</tr>
+<!-- Neighborhood Row (Deeply Indented) -->
+<tr class="group border-t border-outline-variant/5 bg-surface-container-low/30 hover:bg-surface-container-high transition-colors">
+<td class="px-8 py-4 pl-24">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary/20 text-xs">subdirectory_arrow_right</span>
+<span class="text-on-surface-variant">Vila Mariana</span>
+</div>
+</td>
+<td class="px-8 py-4 text-on-surface-variant opacity-50">Bairro</td>
+<td class="px-8 py-4 text-xs">12</td>
+<td class="px-8 py-4">
+<span class="px-2 py-0.5 rounded-full bg-primary/5 text-primary/70 text-[10px] uppercase font-bold tracking-tighter">Ativo</span>
+</td>
+<td class="px-8 py-4 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">edit_note</span></button>
+</td>
+</tr>
+<tr class="group border-t border-outline-variant/5 bg-surface-container-low/30 hover:bg-surface-container-high transition-colors">
+<td class="px-8 py-4 pl-24">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary/20 text-xs">subdirectory_arrow_right</span>
+<span class="text-on-surface-variant">Jardins</span>
+</div>
+</td>
+<td class="px-8 py-4 text-on-surface-variant opacity-50">Bairro</td>
+<td class="px-8 py-4 text-xs">8</td>
+<td class="px-8 py-4">
+<span class="px-2 py-0.5 rounded-full bg-primary/5 text-primary/70 text-[10px] uppercase font-bold tracking-tighter">Ativo</span>
+</td>
+<td class="px-8 py-4 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">edit_note</span></button>
+</td>
+</tr>
+<!-- Another State Row -->
+<tr class="group border-t border-outline-variant/5 hover:bg-surface-container-high transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-lg">chevron_right</span>
+<span class="font-semibold text-on-surface">Rio de Janeiro (RJ)</span>
+</div>
+</td>
+<td class="px-8 py-6 text-on-surface-variant">Estado</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="w-12 h-1.5 bg-surface-container-highest rounded-full overflow-hidden inline-block">
+<span class="block h-full bg-primary w-2/5"></span>
+</span>
+<span class="text-xs">184</span>
+</div>
+</td>
+<td class="px-8 py-6">
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] uppercase font-bold tracking-tighter">Operacional</span>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">more_vert</span></button>
+</td>
+</tr>
+<!-- State Under Development -->
+<tr class="group border-t border-outline-variant/5 hover:bg-surface-container-high transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant/30 text-lg">chevron_right</span>
+<span class="font-semibold text-on-surface opacity-60 italic">Minas Gerais (MG)</span>
+</div>
+</td>
+<td class="px-8 py-6 text-on-surface-variant opacity-60">Estado</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="w-12 h-1.5 bg-surface-container-highest rounded-full overflow-hidden inline-block">
+<span class="block h-full bg-outline-variant w-1/12"></span>
+</span>
+<span class="text-xs opacity-50">4</span>
+</div>
+</td>
+<td class="px-8 py-6">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant text-[10px] uppercase font-bold tracking-tighter opacity-50">Em Expansão</span>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">more_vert</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer / Pagination -->
+<div class="px-8 py-6 bg-surface-container-low flex justify-between items-center text-xs text-on-surface-variant/60 font-body">
+<div>Mostrando 5 de 12 Estados</div>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded border border-outline-variant/20 flex items-center justify-center hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded bg-primary text-on-primary flex items-center justify-center font-bold">1</button>
+<button class="w-8 h-8 rounded border border-outline-variant/20 flex items-center justify-center hover:bg-surface-container-high transition-colors">2</button>
+<button class="w-8 h-8 rounded border border-outline-variant/20 flex items-center justify-center hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Density Heatmap Visualization Placeholder -->
+<section class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
+<div class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
+<div class="flex items-center justify-between mb-8">
+<h4 class="font-headline text-xl">Mapa de Densidade</h4>
+<span class="text-[10px] font-bold uppercase tracking-widest text-primary">Região Sudeste</span>
+</div>
+<div class="aspect-video relative rounded-lg bg-surface-container overflow-hidden group">
+<img class="w-full h-full object-cover opacity-30 grayscale hover:scale-105 transition-transform duration-700" data-alt="stylized abstract map visualization with glowing data points representing urban density and funeral home locations in a dark aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQU_ITpVfC42Guyj3a88K8Dkm0HnoBf3RqzYb-RtoEl-Mv9_xmXQCS3ryHwWinfCCNAs2jT_T9Ak7FbJttS7UNbG3p4-AJXUnmCoRpkEOTAhalkDcnJMT25S1tVfqoazBKE55Ma6O6vXk_4eF9Jkrs-1TjiNZryQ4NzjxUYak41PmUi6RxV4mp8PdPxkSDyW1qWSDAJ5TtRNvmmATwIZRzCP9kNOzk8rLhxL_lMhZ5NTAdIOQChrkJSZymjcwcDpp7ELbaBL6_RkEQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-60"></div>
+<div class="absolute bottom-4 left-4 flex gap-4">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-[10px] text-on-surface uppercase tracking-tighter">Alta Densidade</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span class="text-[10px] text-on-surface uppercase tracking-tighter">Média</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
+<h4 class="font-headline text-xl mb-6">Regiões em Destaque</h4>
+<div class="space-y-6">
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-surface-container-highest flex items-center justify-center text-primary font-serif">SP</div>
+<div>
+<p class="text-sm font-semibold">Grande São Paulo</p>
+<p class="text-[10px] opacity-50 uppercase">Região Metropolitana</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-headline">84 Funerárias</p>
+<p class="text-[10px] text-primary">+12% anual</p>
+</div>
+</div>
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-surface-container-highest flex items-center justify-center text-primary font-serif">RJ</div>
+<div>
+<p class="text-sm font-semibold">Baixada Fluminense</p>
+<p class="text-[10px] opacity-50 uppercase">Zona Periférica</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-headline">31 Funerárias</p>
+<p class="text-[10px] text-on-error">-3% anual</p>
+</div>
+</div>
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-surface-container-highest flex items-center justify-center text-primary font-serif">MG</div>
+<div>
+<p class="text-sm font-semibold">Belo Horizonte</p>
+<p class="text-[10px] opacity-50 uppercase">Capital</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-headline">0 Funerárias</p>
+<p class="text-[10px] text-primary-fixed-dim italic">Aguardando Credenciamento</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-8 py-3 text-xs uppercase font-bold tracking-widest text-primary border border-primary/20 hover:bg-primary/5 transition-all">Ver Relatório Geográfico Completo</button>
+</div>
+</section>
+</main>
+<!-- Footer (Shared Component Simplified for Admin) -->
+<footer class="ml-64 bg-[#161310] border-t border-[#EAE1DB]/5 py-12 px-8">
+<div class="flex flex-col md:flex-row justify-between items-center gap-8 max-w-7xl mx-auto">
+<div class="font-serif text-lg text-[#F2CA50]">VIRAR</div>
+<div class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50">
+                © 2024 VIRAR. Todos os direitos reservados.
+            </div>
+<div class="flex gap-6">
+<a class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Privacidade</a>
+<a class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Termos</a>
+</div>
+</div>
+</footer>
+<script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const supabase = createClient('https://ikahdkaccmpldstbcbpk.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw', { auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true } });
+    async function loadUserData() {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            document.getElementById('userEmail').textContent = (user && user.email) ? user.email : 'cliente@virar.com';
+        } catch (err) { document.getElementById('userEmail').textContent = 'cliente@virar.com'; }
+    }
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await supabase.auth.signOut();
+        window.location.href = 'login.html';
+    });
+    loadUserData();
+</script>
+</body></html>

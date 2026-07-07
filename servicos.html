@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Serviços - VIRAR</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "on-surface": "#eae1db",
+              "surface-bright": "#3d3835",
+              "on-primary-fixed-variant": "#574500",
+              "on-secondary-fixed-variant": "#4d453e",
+              "surface-dim": "#161310",
+              "secondary-container": "#4d453e",
+              "outline": "#99907c",
+              "surface-tint": "#e9c349",
+              "secondary": "#d0c4bb",
+              "on-tertiary-fixed": "#231a0e",
+              "on-primary": "#3c2f00",
+              "on-secondary-fixed": "#211a15",
+              "tertiary-container": "#c0b09d",
+              "primary-fixed": "#ffe088",
+              "on-tertiary-fixed-variant": "#504536",
+              "on-primary-container": "#554300",
+              "surface-container-lowest": "#110d0b",
+              "surface-container-high": "#2e2926",
+              "on-tertiary": "#392f21",
+              "on-surface-variant": "#d0c5af",
+              "error-container": "#93000a",
+              "on-error": "#690005",
+              "on-secondary": "#362f29",
+              "tertiary-fixed-dim": "#d5c4b1",
+              "surface-container-low": "#1f1b18",
+              "on-secondary-container": "#bfb3aa",
+              "surface-variant": "#393430",
+              "surface-container": "#231f1c",
+              "background": "#161310",
+              "on-background": "#eae1db",
+              "tertiary-fixed": "#f1e0cc",
+              "inverse-on-surface": "#342f2c",
+              "secondary-fixed": "#ede0d6",
+              "inverse-primary": "#735c00",
+              "surface": "#161310",
+              "outline-variant": "#4d4635",
+              "on-tertiary-container": "#4e4334",
+              "error": "#ffb4ab",
+              "surface-container-highest": "#393430",
+              "primary-container": "#d4af37",
+              "tertiary": "#dccbb8",
+              "primary-fixed-dim": "#e9c349",
+              "primary": "#f2ca50",
+              "inverse-surface": "#eae1db",
+              "secondary-fixed-dim": "#d0c4bb",
+              "on-primary-fixed": "#241a00"
+            },
+            fontFamily: {
+              "headline": ["Noto Serif"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .premium-gradient {
+            background: linear-gradient(135deg, #F2CA50 0%, #D4AF37 100%);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #161310;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2E2926;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body overflow-x-hidden">
+<!-- Shared SideNavBar Component -->
+<aside class="h-full w-64 fixed left-0 top-0 bg-[#1F1B18] flex flex-col py-8 pr-4 z-40">
+<div class="px-8 mb-10">
+<h1 class="text-xl font-serif text-[#F2CA50]">VIRAR</h1>
+<p class="text-[10px] uppercase tracking-widest opacity-50 text-[#EAE1DB]">Sanctuary Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="funcional.html">
+<span class="material-symbols-outlined mr-4 text-lg">dashboard</span>
+<span class="font-['Manrope'] font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="funerarias.html">
+<span class="material-symbols-outlined mr-4 text-lg">account_balance</span>
+<span class="font-['Manrope'] font-medium text-sm">Funerárias</span>
+</a>
+<!-- Active State: Serviços -->
+<a class="flex items-center px-8 py-3 bg-[#2E2926] text-[#F2CA50] rounded-r-full border-l-4 border-[#D4AF37] translate-x-1 transition-transform group" href="servicos.html">
+<span class="material-symbols-outlined mr-4 text-lg">settings_heart</span>
+<span class="font-['Manrope'] font-medium text-sm">Serviços</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="planos.html">
+<span class="material-symbols-outlined mr-4 text-lg">payments</span>
+<span class="font-['Manrope'] font-medium text-sm">Planos</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="produtos.html">
+<span class="material-symbols-outlined mr-4 text-lg">shopping_bag</span>
+<span class="font-['Manrope'] font-medium text-sm">Produtos</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="pedidos.html">
+<span class="material-symbols-outlined mr-4 text-lg">receipt_long</span>
+<span class="font-['Manrope'] font-medium text-sm">Pedidos</span>
+</a>
+</nav>
+<div class="px-8 mt-auto pt-8 border-t border-[#2E2926]">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-10 h-10 rounded-full bg-[#2E2926] flex items-center justify-center border border-[#4d4635]/20">
+<span class="material-symbols-outlined text-[#F2CA50] text-xl">account_circle</span>
+</div>
+<div class="flex-1">
+<p class="text-xs font-bold text-[#EAE1DB]">Cliente</p>
+<p id="userEmail" class="text-[10px] text-[#EAE1DB]/50">Carregando...</p>
+</div>
+</div>
+<a href="login.html" id="logoutBtn" class="flex items-center gap-2 px-4 py-2 text-xs text-[#EAE1DB] opacity-60 hover:opacity-100 hover:bg-[#2E2926] rounded transition-colors">
+<span class="material-symbols-outlined text-sm">logout</span>
+Sair do Sistema
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen p-10 bg-surface">
+<header class="flex justify-between items-end mb-10">
+  <div>
+    <h2 class="text-4xl font-headline font-normal text-on-surface mb-2">Serviços</h2>
+    <p class="text-on-surface-variant text-sm">Serviços cadastrados na sua funerária.</p>
+  </div>
+  <button onclick="abrirModal()" class="premium-gradient text-on-primary-container px-6 py-3 rounded-md flex items-center gap-2 font-bold text-sm hover:opacity-90 transition-all shadow-lg active:scale-95">
+    <span class="material-symbols-outlined text-lg">add</span>
+    Adicionar Serviço
+  </button>
+</header>
+
+<!-- Stat: Total de Serviços -->
+<section class="mb-8">
+  <div class="bg-surface-container-low p-6 rounded-lg border-b border-primary/20 inline-block min-w-[200px]">
+    <p class="text-xs text-on-surface/50 uppercase tracking-widest mb-2 font-bold">Total de Serviços</p>
+    <h3 id="totalServicos" class="text-3xl font-headline text-primary">0</h3>
+  </div>
+</section>
+
+<!-- Tabela de serviços -->
+<div class="bg-surface-container-low rounded-lg overflow-hidden border border-outline-variant/10">
+  <div class="p-6 flex items-center bg-surface-container-high/40 border-b border-outline-variant/10">
+    <div class="flex items-center gap-4 bg-surface-container-highest px-4 py-2 rounded-sm border border-outline-variant/10 min-w-[320px]">
+      <span class="material-symbols-outlined text-on-surface-variant text-sm">search</span>
+      <input id="inputFiltro" class="bg-transparent border-none focus:ring-0 text-sm text-on-surface w-full p-0 placeholder:text-on-surface-variant/50" placeholder="Filtrar serviços..." type="text" oninput="filtrarServicos()"/>
+    </div>
+  </div>
+  <table class="w-full text-left border-collapse">
+    <thead>
+      <tr class="text-on-surface/40 text-[11px] uppercase tracking-[0.15em] border-b border-outline-variant/10">
+        <th class="px-8 py-5 font-bold">Serviço</th>
+        <th class="px-8 py-5 font-bold">Categoria</th>
+        <th class="px-8 py-5 font-bold text-center">Status</th>
+        <th class="px-8 py-5 font-bold text-right">Ações</th>
+      </tr>
+    </thead>
+    <tbody id="servicosTbody" class="divide-y divide-outline-variant/5">
+      <tr id="servicosLoading">
+        <td colspan="4" class="px-8 py-10 text-center text-on-surface-variant text-sm">Carregando...</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</main>
+
+<!-- Modal Adicionar Serviço -->
+<div id="modalServico" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center">
+  <div class="bg-surface-container-low rounded-xl w-full max-w-lg mx-4 shadow-2xl border border-outline-variant/20 max-h-[90vh] flex flex-col">
+    <div class="flex items-center justify-between p-6 border-b border-outline-variant/10 flex-shrink-0">
+      <div>
+        <h3 id="modalTitulo" class="text-2xl font-headline text-on-surface">Adicionar Serviço</h3>
+        <p class="text-sm text-on-surface-variant mt-1">Selecione ou descreva o serviço</p>
+      </div>
+      <button onclick="fecharModal()" class="p-2 hover:bg-surface-container-high rounded-lg transition-colors">
+        <span class="material-symbols-outlined text-on-surface-variant">close</span>
+      </button>
+    </div>
+    <form id="formServico" class="p-6 space-y-5 overflow-y-auto flex-1">
+      <input type="hidden" id="servicoEditId"/>
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Serviço *</label>
+        <select id="inputServicoNome" required onchange="aoSelecionarServico(this)"
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+          <option value="">Selecione um serviço...</option>
+          <optgroup label="Sepultamento e Cremação">
+            <option value="Sepultamento" data-cat="Sepultamento">Sepultamento</option>
+            <option value="Cremação" data-cat="Cremação">Cremação</option>
+            <option value="Translado" data-cat="Logística">Translado</option>
+            <option value="Repatriação" data-cat="Logística">Repatriação</option>
+          </optgroup>
+          <optgroup label="Cerimônia">
+            <option value="Velório" data-cat="Cerimônia">Velório</option>
+            <option value="Missa de Corpo Presente" data-cat="Cerimônia">Missa de Corpo Presente</option>
+            <option value="Cortejo Fúnebre" data-cat="Cerimônia">Cortejo Fúnebre</option>
+          </optgroup>
+          <optgroup label="Preparação">
+            <option value="Embalsamento" data-cat="Preparação">Embalsamento</option>
+            <option value="Tanatopraxia" data-cat="Preparação">Tanatopraxia</option>
+            <option value="Urna Funerária" data-cat="Preparação">Urna Funerária</option>
+          </optgroup>
+          <optgroup label="Digital e Memorial">
+            <option value="Memorial Digital" data-cat="Digital">Memorial Digital</option>
+            <option value="Transmissão Online" data-cat="Digital">Transmissão Online</option>
+          </optgroup>
+          <optgroup label="Outros">
+            <option value="Flores e Coroas" data-cat="Outros">Flores e Coroas</option>
+            <option value="Documentação e Registro" data-cat="Outros">Documentação e Registro</option>
+            <option value="Outro" data-cat="Outros">Outro (especificar)</option>
+          </optgroup>
+        </select>
+      </div>
+      <div id="campoNomeCustom" class="hidden">
+        <label class="block text-sm font-semibold text-on-surface mb-2">Nome do Serviço *</label>
+        <input type="text" id="inputNomeCustom"
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+          placeholder="Ex: Assistência Pós-Óbito"/>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Categoria</label>
+        <select id="inputCategoria"
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+          <option value="">Selecione uma categoria...</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Descrição</label>
+        <textarea id="inputDescricao" rows="2"
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
+          placeholder="Detalhes opcionais do serviço"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Status *</label>
+        <select id="inputStatus" required
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+          <option value="ativo">Ativo</option>
+          <option value="inativo">Inativo</option>
+        </select>
+      </div>
+    </form>
+    <div class="flex items-center justify-end gap-3 p-6 border-t border-outline-variant/10 flex-shrink-0">
+      <button onclick="fecharModal()" type="button" class="px-6 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all font-semibold text-sm">Cancelar</button>
+      <button onclick="salvarServico()" type="button" class="px-6 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all font-bold text-sm flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">save</span>
+        <span id="btnSalvarTexto">Adicionar</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="ml-64 w-auto py-12 px-8 bg-[#161310] border-t border-[#EAE1DB]/5">
+<div class="flex flex-col md:flex-row justify-between items-center gap-8 max-w-7xl mx-auto">
+<div class="font-serif text-lg text-[#F2CA50]">VIRAR</div>
+<p class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50">© 2024 VIRAR. Todos os direitos reservados.</p>
+<div class="flex gap-6">
+<a class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Políticas de Privacidade</a>
+<a class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Compliance</a>
+</div>
+</div>
+</footer>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const supabase = createClient(
+    'https://ikahdkaccmpldstbcbpk.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw',
+    { auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true } }
+);
+
+let usuarioAtual = null;
+let todosServicos = [];
+
+async function init() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) { window.location.href = 'login.html'; return; }
+    // Verificar se o token expirou e tentar renovar
+    const expiresAt = session.expires_at;
+    const now = Math.floor(Date.now() / 1000);
+    if (expiresAt && expiresAt < now + 60) {
+        const { data: refreshData, error: refreshErr } = await supabase.auth.refreshSession();
+        if (refreshErr || !refreshData.session) {
+            await supabase.auth.signOut();
+            window.location.href = 'login.html';
+            return;
+        }
+    }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { window.location.href = 'login.html'; return; }
+    usuarioAtual = user;
+    document.getElementById('userEmail').textContent = user.email || 'cliente@virar.com';
+    await Promise.all([carregarServicos(), carregarCategorias()]);
+}
+
+async function carregarCategorias() {
+    const categoriasPadrao = ['Sepultamento', 'Cremação', 'Logística', 'Cerimônia', 'Preparação', 'Digital', 'Outros'];
+    const { data } = await supabase
+        .from('servicos')
+        .select('categoria')
+        .eq('user_id', usuarioAtual.id)
+        .not('categoria', 'is', null);
+
+    const doDb = [...new Set((data || []).map(r => r.categoria).filter(Boolean))];
+    const todas = [...new Set([...categoriasPadrao, ...doDb])].sort();
+
+    const sel = document.getElementById('inputCategoria');
+    sel.innerHTML = '<option value="">Selecione uma categoria...</option>';
+    todas.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        sel.appendChild(opt);
+    });
+}
+
+async function carregarServicos() {
+    const { data, error } = await supabase
+        .from('servicos')
+        .select('*')
+        .eq('user_id', usuarioAtual.id)
+        .order('created_at', { ascending: false });
+
+    document.getElementById('servicosLoading').style.display = 'none';
+    todosServicos = data || [];
+    renderizarServicos(todosServicos);
+}
+
+function renderizarServicos(lista) {
+    const tbody = document.getElementById('servicosTbody');
+    document.getElementById('totalServicos').textContent = lista.length;
+
+    if (!lista.length) {
+        tbody.innerHTML = `<tr><td colspan="4" class="px-8 py-12 text-center text-on-surface-variant text-sm">Nenhum serviço cadastrado. Clique em "Adicionar Serviço" para começar.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = lista.map(s => `
+        <tr class="hover:bg-surface-container-high/30 transition-colors group">
+            <td class="px-8 py-5">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-surface-container rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary text-lg">settings_heart</span>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-on-surface text-sm">${s.nome}</p>
+                        ${s.descricao ? `<p class="text-xs text-on-surface-variant opacity-70">${s.descricao}</p>` : ''}
+                    </div>
+                </div>
+            </td>
+            <td class="px-8 py-5">
+                <span class="text-xs text-on-surface-variant bg-surface-container px-2 py-1 rounded-sm border border-outline-variant/20">${s.categoria || '—'}</span>
+            </td>
+            <td class="px-8 py-5 text-center">
+                <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${s.status === 'ativo' ? 'text-[#4ADE80] bg-[#4ADE80]/5 border-[#4ADE80]/20' : 'text-outline bg-outline/5 border-outline/20'}">
+                    <span class="w-1 h-1 rounded-full ${s.status === 'ativo' ? 'bg-[#4ADE80]' : 'bg-outline'}"></span>
+                    ${s.status === 'ativo' ? 'Ativo' : 'Inativo'}
+                </span>
+            </td>
+            <td class="px-8 py-5 text-right">
+                <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="editarServico('${s.id}')" class="p-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-primary/5 rounded">
+                        <span class="material-symbols-outlined text-xl">edit</span>
+                    </button>
+                    <button onclick="apagarServico('${s.id}')" class="p-2 text-on-surface-variant hover:text-error transition-colors hover:bg-error/5 rounded">
+                        <span class="material-symbols-outlined text-xl">delete</span>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+window.filtrarServicos = function() {
+    const q = document.getElementById('inputFiltro').value.toLowerCase();
+    renderizarServicos(q ? todosServicos.filter(s => s.nome.toLowerCase().includes(q) || (s.categoria || '').toLowerCase().includes(q)) : todosServicos);
+};
+
+window.aoSelecionarServico = function(sel) {
+    const opt = sel.options[sel.selectedIndex];
+    const cat = opt.getAttribute('data-cat') || '';
+    const catSelect = document.getElementById('inputCategoria');
+    if (cat) {
+        const existing = Array.from(catSelect.options).find(o => o.value === cat);
+        if (!existing) {
+            const newOpt = document.createElement('option');
+            newOpt.value = cat;
+            newOpt.textContent = cat;
+            catSelect.appendChild(newOpt);
+        }
+        catSelect.value = cat;
+    }
+    document.getElementById('campoNomeCustom').classList.toggle('hidden', sel.value !== 'Outro');
+};
+
+window.abrirModal = function() {
+    document.getElementById('servicoEditId').value = '';
+    document.getElementById('formServico').reset();
+    document.getElementById('campoNomeCustom').classList.add('hidden');
+    document.getElementById('modalTitulo').textContent = 'Adicionar Serviço';
+    document.getElementById('btnSalvarTexto').textContent = 'Adicionar';
+    document.getElementById('modalServico').classList.remove('hidden');
+    document.getElementById('modalServico').classList.add('flex');
+};
+
+window.fecharModal = function() {
+    document.getElementById('modalServico').classList.add('hidden');
+    document.getElementById('modalServico').classList.remove('flex');
+};
+
+window.editarServico = function(id) {
+    const s = todosServicos.find(x => x.id === id);
+    if (!s) return;
+    document.getElementById('servicoEditId').value = s.id;
+    document.getElementById('inputServicoNome').value = s.nome;
+    document.getElementById('inputCategoria').value = s.categoria || '';
+    document.getElementById('inputDescricao').value = s.descricao || '';
+    document.getElementById('inputStatus').value = s.status || 'ativo';
+    document.getElementById('campoNomeCustom').classList.add('hidden');
+    document.getElementById('modalTitulo').textContent = 'Editar Serviço';
+    document.getElementById('btnSalvarTexto').textContent = 'Salvar';
+    document.getElementById('modalServico').classList.remove('hidden');
+    document.getElementById('modalServico').classList.add('flex');
+};
+
+window.salvarServico = async function() {
+    const editId = document.getElementById('servicoEditId').value;
+    const selNome = document.getElementById('inputServicoNome').value;
+    const nomeCustom = document.getElementById('inputNomeCustom').value.trim();
+    const nome = selNome === 'Outro' ? nomeCustom : selNome;
+    const categoria = document.getElementById('inputCategoria').value.trim();
+    const descricao = document.getElementById('inputDescricao').value.trim();
+    const status = document.getElementById('inputStatus').value;
+
+    if (!nome) { alert('Selecione ou informe um serviço.'); return; }
+
+    const payload = { nome, categoria, descricao, status, user_id: usuarioAtual.id };
+
+    if (editId) {
+        const { error } = await supabase.from('servicos').update(payload).eq('id', editId);
+        if (error) { alert('Erro ao salvar: ' + error.message); return; }
+    } else {
+        const { error } = await supabase.from('servicos').insert([payload]);
+        if (error) { alert('Erro ao adicionar: ' + error.message); return; }
+    }
+    fecharModal();
+    await carregarServicos();
+};
+
+window.apagarServico = async function(id) {
+    if (!confirm('Tem certeza que deseja remover este serviço?')) return;
+    const { error } = await supabase.from('servicos').delete().eq('id', id);
+    if (error) { alert('Erro ao apagar: ' + error.message); return; }
+    await carregarServicos();
+};
+
+document.getElementById('modalServico').addEventListener('click', function(e) {
+    if (e.target === this) fecharModal();
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await supabase.auth.signOut();
+    window.location.href = 'login.html';
+});
+
+init();
+</script>
+</body></html>

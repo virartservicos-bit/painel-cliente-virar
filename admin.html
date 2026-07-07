@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-container": "#4d453e",
+                        "on-surface-variant": "#d0c5af",
+                        "on-secondary-fixed": "#211a15",
+                        "on-tertiary-fixed-variant": "#504536",
+                        "surface-container-highest": "#393430",
+                        "on-secondary-container": "#bfb3aa",
+                        "primary-fixed-dim": "#e9c349",
+                        "on-tertiary-container": "#4e4334",
+                        "on-tertiary": "#392f21",
+                        "tertiary-fixed": "#f1e0cc",
+                        "on-primary-fixed": "#241a00",
+                        "on-primary-fixed-variant": "#574500",
+                        "surface-tint": "#e9c349",
+                        "primary-container": "#d4af37",
+                        "inverse-on-surface": "#342f2c",
+                        "surface-dim": "#161310",
+                        "primary-fixed": "#ffe088",
+                        "surface-container": "#231f1c",
+                        "outline-variant": "#4d4635",
+                        "secondary-fixed-dim": "#d0c4bb",
+                        "surface-container-high": "#2e2926",
+                        "inverse-surface": "#eae1db",
+                        "on-secondary-fixed-variant": "#4d453e",
+                        "on-secondary": "#362f29",
+                        "on-surface": "#eae1db",
+                        "error": "#ffb4ab",
+                        "on-background": "#eae1db",
+                        "on-primary": "#3c2f00",
+                        "tertiary-fixed-dim": "#d5c4b1",
+                        "primary": "#f2ca50",
+                        "surface-container-low": "#1f1b18",
+                        "on-primary-container": "#554300",
+                        "tertiary": "#dccbb8",
+                        "error-container": "#93000a",
+                        "tertiary-container": "#c0b09d",
+                        "background": "#161310",
+                        "on-error": "#690005",
+                        "secondary": "#d0c4bb",
+                        "surface-variant": "#393430",
+                        "surface": "#161310",
+                        "surface-bright": "#3d3835",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed": "#ede0d6",
+                        "on-tertiary-fixed": "#231a0e",
+                        "inverse-primary": "#735c00",
+                        "outline": "#99907c",
+                        "surface-container-lowest": "#110d0b"
+                    },
+                    fontFamily: {
+                        "headline": ["Noto Serif"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #161310;
+            color: #eae1db;
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar (Authority: JSON) -->
+<aside class="h-full w-64 fixed left-0 top-0 bg-[#1F1B18] flex flex-col py-8 pr-4 z-40">
+<div class="px-8 mb-10">
+<h1 class="text-xl font-serif text-[#F2CA50]">Admin Portal</h1>
+<p class="font-['Manrope'] font-medium text-xs text-[#EAE1DB] opacity-50 uppercase tracking-widest mt-1">Sanctuary Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Dashboard (Active) -->
+<a class="flex items-center gap-4 py-3 px-8 bg-[#2E2926] text-[#F2CA50] rounded-r-full border-l-4 border-[#D4AF37] transition-transform translate-x-1" href="admin.html">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-['Manrope'] font-medium text-sm">Dashboard</span>
+</a>
+<!-- Funerárias -->
+<a class="flex items-center gap-4 py-3 px-8 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="funerarias.html">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="font-['Manrope'] font-medium text-sm">Funerárias</span>
+</a>
+<!-- Serviços -->
+<a class="flex items-center gap-4 py-3 px-8 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="servicos.html">
+<span class="material-symbols-outlined" data-icon="settings_heart">settings_heart</span>
+<span class="font-['Manrope'] font-medium text-sm">Serviços</span>
+</a>
+<!-- Regiões -->
+<a class="flex items-center gap-4 py-3 px-8 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="regioes.html">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-['Manrope'] font-medium text-sm">Regiões</span>
+</a>
+<!-- Planos -->
+<a class="flex items-center gap-4 py-3 px-8 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="planos.html">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-['Manrope'] font-medium text-sm">Planos</span>
+</a>
+<!-- Produtos -->
+<a class="flex items-center gap-4 py-3 px-8 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="produtos.html">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-['Manrope'] font-medium text-sm">Produtos</span>
+</a>
+<!-- Pedidos -->
+<a class="flex items-center gap-4 py-3 px-8 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="pedidos.html">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-['Manrope'] font-medium text-sm">Pedidos</span>
+</a>
+<!-- Usuários -->
+<a class="flex items-center gap-4 py-3 px-8 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="usuarios.html">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-['Manrope'] font-medium text-sm">Usuários</span>
+</a>
+</nav>
+<div class="px-8 mt-auto pt-8 border-t border-[#2E2926]">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant/20 overflow-hidden">
+<img alt="Administrator Profile" class="w-full h-full object-cover" data-alt="Close-up portrait of a professional administrator in a dark studio setting with warm directional lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVkyi2s42_fBUkBXCNatZ_auUnuD20oRm2BeEnN5c1FTDVV5wN-wV5OS8wgh8p0s7n6-obbyieMEoq5vRHzyu7D45U22XG3KnJYhFBIWMBU0fTeZm4VdWk5rcMCdcEE-KALjYU8cXxyVX4YbPg8vung-WZxg60DNe2u7Jz67NwYFETLd9M0hMtL3w_LxrL-lUTz4r0dFHIz2h3JRclFPvPCtUiRiERxEUtvhy3vs-ibRCKUndtCxgGFRX_IJCPNe5ninq3TVLkBksH"/>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Diretor Executivo</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Status: Online</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 ml-64 p-12 bg-surface min-h-screen">
+<!-- Header Section -->
+<header class="mb-16 flex justify-between items-end">
+<div>
+<h2 class="text-4xl font-headline italic text-primary mb-2">Visão Geral do Santuário</h2>
+<p class="text-on-surface-variant max-w-xl font-body text-lg">Bem-vindo ao painel de controle da Eterna Sanctuary. Monitore o crescimento e a gestão das parcerias institucionais.</p>
+</div>
+<div class="flex gap-4">
+<button class="px-6 py-2.5 bg-surface-container-high border border-outline-variant/20 text-on-surface font-label text-sm rounded-md hover:bg-surface-bright transition-colors">
+                    Exportar Relatório
+                </button>
+<button class="px-6 py-2.5 bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-bold text-sm rounded-md shadow-lg shadow-primary/10">
+                    Novo Cadastro
+                </button>
+</div>
+</header>
+<!-- Metrics Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<!-- Total Funerárias -->
+<div class="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5 hover:border-primary/20 transition-all group">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="account_balance">account_balance</span>
+<span class="text-xs font-bold text-primary px-2 py-1 bg-primary/10 rounded tracking-wider">+12%</span>
+</div>
+<h3 class="text-on-surface-variant font-label text-xs uppercase tracking-[0.2em] mb-1">Total de Funerárias</h3>
+<p class="text-4xl font-headline font-bold text-on-surface">1,284</p>
+</div>
+<!-- Assinaturas Ativas -->
+<div class="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5 hover:border-primary/20 transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="verified_user">verified_user</span>
+<span class="text-xs font-bold text-primary px-2 py-1 bg-primary/10 rounded tracking-wider">+5%</span>
+</div>
+<h3 class="text-on-surface-variant font-label text-xs uppercase tracking-[0.2em] mb-1">Assinaturas Ativas</h3>
+<p class="text-4xl font-headline font-bold text-on-surface">942</p>
+</div>
+<!-- Receita Mensal -->
+<div class="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5 hover:border-primary/20 transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="payments">payments</span>
+<span class="text-xs font-bold text-primary px-2 py-1 bg-primary/10 rounded tracking-wider">+24%</span>
+</div>
+<h3 class="text-on-surface-variant font-label text-xs uppercase tracking-[0.2em] mb-1">Receita Mensal</h3>
+<p class="text-4xl font-headline font-bold text-on-surface">R$ 428.5k</p>
+</div>
+</section>
+<!-- Growth Chart Section -->
+<section class="bg-surface-container-low rounded-xl p-8 mb-12 border border-outline-variant/5">
+<div class="flex justify-between items-center mb-10">
+<div>
+<h3 class="text-2xl font-headline text-on-surface mb-1">Crescimento da Receita</h3>
+<p class="text-sm text-on-surface-variant">Desempenho financeiro consolidado nos últimos 6 meses.</p>
+</div>
+<div class="flex gap-2 bg-surface-container-highest p-1 rounded-lg">
+<button class="px-4 py-1.5 text-xs font-bold text-primary bg-surface-container-high rounded shadow-sm">Mensal</button>
+<button class="px-4 py-1.5 text-xs font-bold text-on-surface-variant hover:text-on-surface">Anual</button>
+</div>
+</div>
+<!-- SVG Line Chart Mockup -->
+<div class="h-64 w-full relative">
+<svg class="w-full h-full drop-shadow-[0_10px_15px_rgba(242,202,80,0.1)]" viewbox="0 0 1000 200">
+<defs>
+<lineargradient id="chartGradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#F2CA50;stop-opacity:0.2"></stop>
+<stop offset="100%" style="stop-color:#F2CA50;stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,180 Q100,160 200,170 T400,100 T600,80 T800,40 T1000,20" fill="transparent" stroke="#F2CA50" stroke-linecap="round" stroke-width="3"></path>
+<path d="M0,180 Q100,160 200,170 T400,100 T600,80 T800,40 T1000,20 L1000,200 L0,200 Z" fill="url(#chartGradient)"></path>
+</svg>
+<!-- Labels -->
+<div class="flex justify-between mt-6 text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant opacity-40">
+<span>Jan</span>
+<span>Fev</span>
+<span>Mar</span>
+<span>Abr</span>
+<span>Mai</span>
+<span>Jun</span>
+</div>
+</div>
+</section>
+<!-- Latest Entities Table -->
+<section class="bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5">
+<div class="px-8 py-6 border-b border-outline-variant/10 flex justify-between items-center">
+<h3 class="text-xl font-headline text-on-surface">Últimas Funerárias Cadastradas</h3>
+<a class="text-xs font-bold text-primary uppercase tracking-widest hover:underline transition-all" href="#">Ver Todas</a>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-highest/30">
+<tr>
+<th class="px-8 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Instituição</th>
+<th class="px-8 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Cidade/UF</th>
+<th class="px-8 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Plano</th>
+<th class="px-8 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Status</th>
+<th class="px-8 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest text-right">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container-highest/20 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary font-serif italic">S</div>
+<span class="font-bold text-on-surface">Memorial Santa Luzia</span>
+</div>
+</td>
+<td class="px-8 py-6 text-sm text-on-surface-variant">São Paulo, SP</td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full border border-primary/20">PREMIUM GOLD</span>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="text-xs text-on-surface">Ativo</span>
+</div>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="more_vert">more_vert</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-highest/20 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary font-serif italic">V</div>
+<span class="font-bold text-on-surface">Vale do Silêncio</span>
+</div>
+</td>
+<td class="px-8 py-6 text-sm text-on-surface-variant">Curitiba, PR</td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 bg-on-surface-variant/10 text-on-surface-variant text-[10px] font-bold rounded-full border border-outline-variant/20">ESSENTIAL</span>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+<span class="text-xs text-on-surface">Pendente</span>
+</div>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="more_vert">more_vert</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-highest/20 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary font-serif italic">E</div>
+<span class="font-bold text-on-surface">Eterno Descanso Ltda</span>
+</div>
+</td>
+<td class="px-8 py-6 text-sm text-on-surface-variant">Salvador, BA</td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full border border-primary/20">PLATINUM PLUS</span>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="text-xs text-on-surface">Ativo</span>
+</div>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="more_vert">more_vert</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Footer (Authority: JSON) -->
+<footer class="mt-20 py-12 px-8 border-t border-[#EAE1DB]/5 bg-[#161310] flex flex-col md:flex-row justify-between items-center gap-8 max-w-7xl mx-auto">
+<div class="text-2xl font-serif italic text-[#D4AF37]">VIRAR</div>
+<div class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50">
+                &copy; 2024 VIRAR. Todos os direitos reservados.
+            </div>
+<div class="flex gap-6">
+<a class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Políticas de Privacidade</a>
+<a class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Termos de Uso</a>
+<a class="font-['Manrope'] text-xs tracking-widest text-[#EAE1DB] opacity-50 hover:text-[#F2CA50] transition-colors" href="#">Compliance</a>
+</div>
+</footer>
+</main>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    // Configuração do Supabase
+    const supabaseUrl = 'https://ikahdkaccmpldstbcbpk.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, { auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true } });
+
+    // Verificar autenticação e autorização (apenas clientes)
+    async function checkAuth() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session?.user) {
+            window.location.href = 'login.html';
+            return;
+        }
+        // Verificar se o token expirou e tentar renovar
+        const expiresAt = session.expires_at;
+        const now = Math.floor(Date.now() / 1000);
+        if (expiresAt && expiresAt < now + 60) {
+            const { data: refreshData, error: refreshErr } = await supabaseClient.auth.refreshSession();
+            if (refreshErr || !refreshData.session) {
+                await supabaseClient.auth.signOut();
+                window.location.href = 'login.html';
+                return;
+            }
+            session.user = refreshData.session.user;
+        }
+        try {
+            const { data: profiles, error: profError } = await supabaseClient
+                .from('profiles')
+                .select('is_client')
+                .eq('id', session.user.id)
+                .limit(1);
+            if (profError) throw profError;
+            const isClient = Array.isArray(profiles) && profiles[0]?.is_client === true;
+            if (!isClient) {
+                alert('Acesso restrito a clientes. Você será desconectado.');
+                await supabaseClient.auth.signOut();
+                window.location.href = 'login.html';
+                return;
+            }
+        } catch (e) {
+            console.error('Erro ao verificar perfil do usuário:', e);
+            alert('Não foi possível verificar seu acesso. Faça login novamente.');
+            await supabaseClient.auth.signOut();
+            window.location.href = 'login.html';
+            return;
+        }
+        updateUserInfo(session.user);
+    }
+
+    // Atualizar informações do usuário na interface
+    function updateUserInfo(user) {
+        const userNameElement = document.querySelector('.font-bold.text-on-surface');
+        const statusElement = document.querySelector('.text-[10px].text-on-surface-variant');
+        
+        if (userNameElement) {
+            userNameElement.textContent = user.email || 'Administrador';
+        }
+        
+        if (statusElement) {
+            statusElement.textContent = 'Status: Online';
+        }
+    }
+
+    // Função de logout
+    function logout() {
+        supabaseClient.auth.signOut()
+            .then(() => {
+                window.location.href = 'login.html';
+            })
+            .catch((error) => {
+                console.error('Erro ao fazer logout:', error);
+            });
+    }
+
+    // Adicionar evento de logout ao perfil do usuário
+    document.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        const userProfile = document.querySelector('.px-8.mt-auto.pt-8.border-t');
+        if (userProfile) {
+            userProfile.style.cursor = 'pointer';
+            userProfile.addEventListener('click', () => {
+                if (confirm('Deseja sair do sistema?')) {
+                    logout();
+                }
+            });
+        }
+    });
+</script>
+
+</body></html>

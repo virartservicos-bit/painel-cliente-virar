@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login - VIRAR</title>
+<script src="https://cdn.tailwindcss.com?plugins=container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body { background-color: #161310; color: #eae1db; font-family: 'Manrope', sans-serif; }
+  .bg-login-hero {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuB-zCY85qtpLhtkwQ7mRRwdcx44TWHcWJ63bBsNvm94WTpVVUQ4gsS5G_210RtaaFwmp8p8lQ9v5y9KutbLtWAoOOKl_koNz4Vfk8t7waLqj2BtDEMM9Vqs7LoUWtksKwcsc2RwqzJXUaC8aWS8gRL5GdB8DgwMJl6uWgYno08pgTh6kdKPpBqnGYJsIOfwtcN9NqRO4ODNnBGt8g8kstYs0tBE6k9FvXOTP-wCOg9RTAocWp3oCyXxiO3qxzC6pSBm6XT4Q-053kNl);
+    background-size: cover;
+    background-position: center;
+  }
+  .inp { width:100%; background:#393430; border-bottom:1px solid rgba(77,70,53,0.3); border-radius:2px; padding:12px 16px; color:#eae1db; outline:none; transition:border-color .2s; color-scheme: dark; }
+  .inp:focus { border-color:#f2ca50; }
+  .inp::placeholder { color:rgba(234,225,219,0.2); }
+  .lbl { display:block; font-size:10px; text-transform:uppercase; letter-spacing:.15em; color:rgba(234,225,219,0.4); margin-bottom:4px; margin-left:4px; }
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:#161310; }
+  ::-webkit-scrollbar-thumb { background:#2E2926; border-radius:10px; }
+</style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row">
+<!-- Left Side: Atmospheric Hero -->
+<div class="hidden md:flex md:w-1/2 lg:w-2/5 relative bg-login-hero flex-shrink-0">
+<div class="absolute inset-0 bg-[#1E1A17]/85 mix-blend-multiply"></div><div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#1E1A17]/40 to-[#1E1A17]"></div>
+<div class="relative z-10 p-24 flex flex-col justify-between h-full">
+<div>
+<h1 class="text-[#f2ca50] text-3xl font-serif italic tracking-wider">VIRAR Parceiros</h1>
+</div>
+<div class="max-w-md">
+<p class="text-[#eae1db]/80 font-serif italic text-4xl leading-relaxed">Um santuário digital para preservar legados e honrar memórias.</p>
+</div>
+<div class="flex gap-4">
+<div class="w-12 h-[1px] bg-[#f2ca50]/50 mt-3"></div>
+</div>
+</div>
+</div>
+<!-- Right Side: Login/Signup Form -->
+<div class="flex-1 overflow-y-auto bg-[#161310]">
+  <div class="min-h-full flex items-start justify-center p-8 md:p-12">
+    <div class="w-full max-w-[480px]">
+      <div class="md:hidden mb-12 text-center">
+        <h1 class="text-[#f2ca50] text-4xl font-serif italic tracking-wider">VIRAR Parceiros</h1>
+      </div>
+      <div class="bg-[#1f1b18] p-10 rounded-lg shadow-2xl">
+        <div class="flex items-center justify-between border-b border-[#4d4635]/20 mb-6">
+          <button type="button" class="pb-4 px-2 text-[#f2ca50] border-b border-[#d4af37] transition-all font-semibold text-sm uppercase tracking-widest">Login</button>
+          <a href="signup.html" class="pb-4 px-2 text-[#eae1db]/40 hover:text-[#eae1db]/70 transition-all font-medium text-sm uppercase tracking-widest">Criar Conta</a>
+        </div>
+        <h2 class="text-2xl font-serif text-[#eae1db] mb-1">Bem-vindo de volta</h2>
+        <p class="text-[#eae1db]/60 text-sm leading-relaxed mb-6">Acesse o seu portal e continue preservando a história da sua família.</p>
+        <form id="loginForm" class="space-y-4">
+          <div>
+            <label class="lbl" for="email">E-mail</label>
+            <input class="inp" id="email" placeholder="seu@email.com" type="email" required/>
+          </div>
+          <div>
+            <label class="lbl" for="password">Senha</label>
+            <div class="relative">
+              <input class="inp" id="password" placeholder="••••••••" type="password" required style="padding-right:48px"/>
+              <button type="button" id="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#eae1db]/40 hover:text-[#eae1db]/80 transition-colors">
+                <span class="material-symbols-outlined text-lg" id="eyeIcon">visibility</span>
+              </button>
+            </div>
+            <div class="flex justify-end mt-2">
+              <a id="forgotPasswordLink" class="text-[10px] uppercase tracking-widest text-[#f2ca50]/70 hover:text-[#f2ca50] transition-colors" href="#">Esqueceu sua senha?</a>
+            </div>
+          </div>
+          <button class="w-full bg-gradient-to-br from-[#f2ca50] to-[#d4af37] text-[#3c2f00] font-bold py-4 rounded-md shadow-lg shadow-[#f2ca50]/10 hover:brightness-110 active:scale-[0.98] transition-all uppercase tracking-widest text-xs mt-2" type="submit" id="submitBtn">
+            Entrar na Plataforma
+          </button>
+        </form>
+      </div>
+      <div class="mt-12 flex flex-col items-center gap-4">
+        <p class="text-[10px] uppercase tracking-widest text-[#eae1db]/30">© 2024 VIRAR Parceiros</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const supabaseUrl = 'https://ikahdkaccmpldstbcbpk.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw';
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session?.user) {
+      window.location.href = 'funcional.html';
+      return;
+    }
+
+    document.getElementById('togglePassword').addEventListener('click', () => {
+      const pwd = document.getElementById('password');
+      const icon = document.getElementById('eyeIcon');
+      if (pwd.type === 'password') { pwd.type = 'text'; icon.textContent = 'visibility_off'; }
+      else { pwd.type = 'password'; icon.textContent = 'visibility'; }
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const btn = document.getElementById('submitBtn');
+      btn.textContent = 'Processando...';
+      btn.disabled = true;
+      try {
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        window.location.href = 'funcional.html';
+      } catch (err) {
+        let msg = 'Falha no login: ' + err.message;
+        if (err.message.includes('Invalid login')) msg = 'E-mail ou senha incorretos.';
+        else if (err.message.includes('Invalid email')) msg = 'E-mail inválido.';
+        alert(msg);
+        btn.textContent = 'Entrar na Plataforma';
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
+      e.preventDefault();
+      const email = prompt('Digite seu e-mail para redefinir a senha:');
+      if (email) {
+        supabaseClient.auth.resetPasswordForEmail(email)
+          .then(() => alert('E-mail de redefinição enviado!'))
+          .catch(() => alert('Erro ao enviar e-mail de redefinição.'));
+      }
+    });
+  });
+</script>
+</body></html>
