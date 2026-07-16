@@ -110,8 +110,38 @@
       btn.textContent = 'Processando...';
       btn.disabled = true;
       try {
-        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        const { data: authData, error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        
+        // Verificar status da empresa
+        const { data: empresa, error: empError } = await supabaseClient
+          .from('empresas')
+          .select('status')
+          .eq('user_id', authData.user.id)
+          .single();
+        
+        if (empError || !empresa) {
+          // Se não tem empresa, pode ser admin ou erro - permite acesso
+          window.location.href = 'funcional.html';
+          return;
+        }
+        
+        if (empresa.status === 'pendente') {
+          await supabaseClient.auth.signOut();
+          alert('⏳ Seu cadastro está em análise.\n\nA equipe VIRAR analisará seus dados e documentos.\nVocê receberá um e-mail assim que seu acesso for liberado.\n\nAguarde algumas horas.');
+          btn.textContent = 'Entrar na Plataforma';
+          btn.disabled = false;
+          return;
+        }
+        
+        if (empresa.status === 'rejeitado') {
+          await supabaseClient.auth.signOut();
+          alert('❌ Seu cadastro foi rejeitado.\n\nEntre em contato com a equipe VIRAR para mais informações.');
+          btn.textContent = 'Entrar na Plataforma';
+          btn.disabled = false;
+          return;
+        }
+        
         window.location.href = 'funcional.html';
       } catch (err) {
         let msg = 'Falha no login: ' + err.message;

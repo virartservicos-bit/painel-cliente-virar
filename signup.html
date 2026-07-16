@@ -289,10 +289,11 @@
 <!-- Modal de Sucesso (apenas para cadastros sem plano) -->
 <div id="modalSucesso" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-6">
   <div class="bg-[#1f1b18] rounded-2xl p-10 max-w-lg w-full text-center border border-[#4d4635]/30 shadow-2xl">
-    <span class="material-symbols-outlined text-5xl text-[#f2ca50] mb-4 block">check_circle</span>
-    <h3 class="text-2xl font-serif text-[#eae1db] mb-4">Cadastro Recebido!</h3>
-    <p class="text-[#eae1db]/70 mb-6 leading-relaxed">Seu cadastro foi recebido com sucesso! Nossa equipe analisará seus dados e documentos em até <strong class="text-[#f2ca50]">24 horas</strong> e entrará em contato pelo e-mail informado.</p>
-    <p class="text-[#eae1db]/50 text-sm mb-8">Fique de olho na sua caixa de entrada — você receberá uma resposta em breve.</p>
+    <span class="material-symbols-outlined text-5xl text-[#f2ca50] mb-4 block">schedule</span>
+    <h3 class="text-2xl font-serif text-[#eae1db] mb-4">Cadastro em Análise</h3>
+    <p class="text-[#eae1db]/70 mb-6 leading-relaxed">Seu cadastro foi recebido com sucesso! A equipe VIRAR analisará seus dados e documentos em até <strong class="text-[#f2ca50]">24 horas</strong>.</p>
+    <p class="text-[#eae1db]/50 text-sm mb-4">⚠️ <strong>Seu acesso está temporariamente bloqueado</strong> até a aprovação.</p>
+    <p class="text-[#eae1db]/50 text-sm mb-8">Você receberá um e-mail assim que seu acesso for liberado. Após a aprovação, você poderá fazer login normalmente.</p>
     <a href="login.html" class="inline-flex items-center gap-2 bg-[#f2ca50] text-[#3c2f00] font-bold py-3 px-8 rounded-lg hover:brightness-110 transition-all">
       <span class="material-symbols-outlined text-lg">login</span>
       Ir para Login
@@ -387,6 +388,15 @@
 
   async function enviarEmailNotificacao(d) {
     try {
+      let docsSection = '';
+      if (d.docCnpj || d.docIdentidade || d.docEndereco || d.docContrato) {
+        docsSection = '\nDOCUMENTOS ENVIADOS\n';
+        if (d.docCnpj) docsSection += `CNPJ: ${d.docCnpj}\n`;
+        if (d.docIdentidade) docsSection += `Identidade: ${d.docIdentidade}\n`;
+        if (d.docEndereco) docsSection += `Comprovante de Endereço: ${d.docEndereco}\n`;
+        if (d.docContrato) docsSection += `Contrato: ${d.docContrato}\n`;
+      }
+
       const corpo = `NOVO CADASTRO VIRAR PARCEIROS\n`
         + `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`
         + `DADOS DA EMPRESA\n`
@@ -410,6 +420,7 @@
         + `Rua: ${d.rua}, ${d.numero} — ${d.complemento}\n`
         + `Bairro: ${d.bairro}\n`
         + `Cidade: ${d.cidade} / ${d.estado}\n\n`
+        + docsSection
         + `ACESSO AO SISTEMA\n`
         + `E-mail: ${d.emailAcesso}\n`
         + `Código Parceiro: ${d.codigoParceiro}\n`;
@@ -458,12 +469,19 @@
             const ext = file.name.split('.').pop();
             const path = `empresas/${userId}/${field}_${Date.now()}.${ext}`;
             const { error: upErr } = await supabaseClient.storage.from('documentos').upload(path, file);
-            if (!upErr) docs[field] = path;
+            if (upErr) {
+              console.error(`Erro ao upload ${field}:`, upErr);
+              alert(`Erro ao fazer upload do documento ${field}: ${upErr.message}`);
+            } else {
+              docs[field] = path;
+              console.log(`Upload ${field} OK: ${path}`);
+            }
           }
         }
+        console.log('Documentos salvos:', docs);
 
         // Salvar dados da empresa
-        await supabaseClient.from('empresas').insert([{
+        const empresaData = {
           user_id: userId,
           razao_social: document.getElementById('razaoSocial').value.trim(),
           nome_fantasia: document.getElementById('nomeFantasia').value.trim(),
@@ -491,7 +509,15 @@
           doc_endereco: docs.docEndereco || null,
           doc_contrato: docs.docContrato || null,
           status: 'pendente'
-        }]);
+        };
+        console.log('Dados da empresa a salvar:', empresaData);
+        const { error: insertErr } = await supabaseClient.from('empresas').insert([empresaData]);
+        if (insertErr) {
+          console.error('Erro ao salvar empresa:', insertErr);
+          alert('Erro ao salvar dados da empresa: ' + insertErr.message);
+          throw insertErr;
+        }
+        console.log('Empresa salva com sucesso');
 
         // Salvar perfil
         const profileData = { id: userId, email, is_admin: false, is_client: true, profile_type: 'client' };
@@ -499,6 +525,13 @@
         await supabaseClient.from('profiles').upsert([profileData], { onConflict: 'id' });
 
         // Enviar notificação por e-mail
+        const docUrls = {};
+        for (const field of ['docCnpj','docIdentidade','docEndereco','docContrato']) {
+          if (docs[field]) {
+            const { data: urlData } = supabaseClient.storage.from('documentos').getPublicUrl(docs[field]);
+            docUrls[field] = urlData?.publicUrl || docs[field];
+          }
+        }
         await enviarEmailNotificacao({
           razaoSocial: document.getElementById('razaoSocial').value.trim(),
           nomeFantasia: document.getElementById('nomeFantasia').value.trim(),
@@ -522,7 +555,11 @@
           redesSociais: document.getElementById('redesSociais').value.trim() || '—',
           descricao: document.getElementById('descricaoEmpresa').value.trim() || '—',
           emailAcesso: email,
-          codigoParceiro: partnerCode || '—'
+          codigoParceiro: partnerCode || '—',
+          docCnpj: docUrls.docCnpj || null,
+          docIdentidade: docUrls.docIdentidade || null,
+          docEndereco: docUrls.docEndereco || null,
+          docContrato: docUrls.docContrato || null
         });
       }
 
@@ -535,12 +572,9 @@
         submitBtn.disabled = false;
       } else {
         if (mpWindow) mpWindow.close();
-        const { error: loginError } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (loginError) { alert('Conta criada! Faça login para continuar.'); window.location.href = 'login.html'; }
-        else {
-          document.getElementById('modalSucesso').classList.remove('hidden');
-          document.getElementById('modalSucesso').classList.add('flex');
-        }
+        // Não faz login automático - mostra mensagem de análise
+        document.getElementById('modalSucesso').classList.remove('hidden');
+        document.getElementById('modalSucesso').classList.add('flex');
       }
     } catch (error) {
       if (mpWindow) mpWindow.close();
