@@ -205,33 +205,33 @@
           <p class="sec-label"><span class="material-symbols-outlined text-base">folder</span>Documentos Obrigatórios</p>
           <p class="text-[11px] text-[#eae1db]/40 -mt-2 mb-2">PDF ou imagem. Máx. 5MB cada.</p>
           <div>
-            <label class="lbl">Cartão CNPJ *</label>
+            <label class="lbl">Cartão CNPJ</label>
             <label class="file-btn">
-              <input type="file" id="docCnpj" accept=".pdf,.jpg,.jpeg,.png" class="hidden" required/>
+              <input type="file" id="docCnpj" accept=".pdf,.jpg,.jpeg,.png" class="hidden"/>
               <span class="material-symbols-outlined text-[#f2ca50]/60">upload_file</span>
               <span id="docCnpjName">Clique para enviar</span>
             </label>
           </div>
           <div>
-            <label class="lbl">Documento de Identidade do Responsável *</label>
+            <label class="lbl">Documento de Identidade do Responsável</label>
             <label class="file-btn">
-              <input type="file" id="docIdentidade" accept=".pdf,.jpg,.jpeg,.png" class="hidden" required/>
+              <input type="file" id="docIdentidade" accept=".pdf,.jpg,.jpeg,.png" class="hidden"/>
               <span class="material-symbols-outlined text-[#f2ca50]/60">badge</span>
               <span id="docIdentidadeName">Clique para enviar</span>
             </label>
           </div>
           <div>
-            <label class="lbl">Comprovante de Endereço da Empresa *</label>
+            <label class="lbl">Comprovante de Endereço da Empresa</label>
             <label class="file-btn">
-              <input type="file" id="docEndereco" accept=".pdf,.jpg,.jpeg,.png" class="hidden" required/>
+              <input type="file" id="docEndereco" accept=".pdf,.jpg,.jpeg,.png" class="hidden"/>
               <span class="material-symbols-outlined text-[#f2ca50]/60">home</span>
               <span id="docEnderecoName">Clique para enviar</span>
             </label>
           </div>
           <div>
-            <label class="lbl">Contrato Social ou Certificado de MEI *</label>
+            <label class="lbl">Contrato Social ou Certificado de MEI</label>
             <label class="file-btn">
-              <input type="file" id="docContrato" accept=".pdf,.jpg,.jpeg,.png" class="hidden" required/>
+              <input type="file" id="docContrato" accept=".pdf,.jpg,.jpeg,.png" class="hidden"/>
               <span class="material-symbols-outlined text-[#f2ca50]/60">description</span>
               <span id="docContratoName">Clique para enviar</span>
             </label>
@@ -386,54 +386,43 @@
     } catch (err) { partnerStatus.textContent = ''; return false; }
   }
 
+  const WEB3FORMS_KEY = "5efdddda-0e43-4794-bdbc-ecc9dfc489d4";
+
   async function enviarEmailNotificacao(d) {
     try {
-      let docsSection = '';
-      if (d.docCnpj || d.docIdentidade || d.docEndereco || d.docContrato) {
-        docsSection = '\nDOCUMENTOS ENVIADOS\n';
-        if (d.docCnpj) docsSection += `CNPJ: ${d.docCnpj}\n`;
-        if (d.docIdentidade) docsSection += `Identidade: ${d.docIdentidade}\n`;
-        if (d.docEndereco) docsSection += `Comprovante de Endereço: ${d.docEndereco}\n`;
-        if (d.docContrato) docsSection += `Contrato: ${d.docContrato}\n`;
-      }
-
-      const corpo = `NOVO CADASTRO VIRAR PARCEIROS\n`
-        + `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`
-        + `DADOS DA EMPRESA\n`
-        + `Razão Social: ${d.razaoSocial}\n`
-        + `Nome Fantasia: ${d.nomeFantasia}\n`
-        + `CNPJ: ${d.cnpj}\n`
-        + `Data de Fundação: ${d.dataFundacao}\n`
-        + `Segmento: ${d.segmento}\n`
-        + `Funcionários: ${d.funcionarios}\n`
-        + `Site: ${d.site}\n`
-        + `Redes Sociais: ${d.redesSociais}\n`
-        + `Descrição: ${d.descricao}\n\n`
-        + `RESPONSÁVEL\n`
-        + `Nome: ${d.nomeResponsavel}\n`
-        + `CPF: ${d.cpfResponsavel}\n`
-        + `Cargo: ${d.cargoResponsavel}\n`
-        + `Telefone/WhatsApp: ${d.telefoneResponsavel}\n`
-        + `E-mail Corporativo: ${d.emailCorporativo}\n\n`
-        + `ENDEREÇO\n`
-        + `CEP: ${d.cep}\n`
-        + `Rua: ${d.rua}, ${d.numero} — ${d.complemento}\n`
-        + `Bairro: ${d.bairro}\n`
-        + `Cidade: ${d.cidade} / ${d.estado}\n\n`
-        + docsSection
-        + `ACESSO AO SISTEMA\n`
-        + `E-mail: ${d.emailAcesso}\n`
-        + `Código Parceiro: ${d.codigoParceiro}\n`;
-
-      await fetch('https://formsubmit.co/ajax/virar.t.servicos@gmail.com', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          _subject: `[VIRAR] Novo Cadastro: ${d.razaoSocial}`,
-          _template: 'box',
-          message: corpo
+          access_key: WEB3FORMS_KEY,
+          subject: `Novo cadastro: ${d.razaoSocial}`,
+          razaoSocial: d.razaoSocial,
+          nomeFantasia: d.nomeFantasia,
+          cnpj: d.cnpj,
+          dataFundacao: d.dataFundacao,
+          nomeCompleto: d.nomeResponsavel,
+          cpf: d.cpfResponsavel,
+          cargo: d.cargoResponsavel,
+          telefone: d.telefoneResponsavel,
+          emailCorporativo: d.emailCorporativo,
+          endereco: `${d.rua}, ${d.numero} ${d.complemento} - ${d.bairro}, ${d.cidade}/${d.estado} - CEP ${d.cep}`,
+          segmento: d.segmento,
+          qtdFuncionarios: d.funcionarios,
+          siteOficial: d.site,
+          redesSociais: d.redesSociais,
+          descricao: d.descricao,
+          emailAcesso: d.emailAcesso,
+          docCnpj: d.docCnpj || '',
+          docIdentidade: d.docIdentidade || '',
+          docEndereco: d.docEndereco || '',
+          docContrato: d.docContrato || ''
         })
       });
+
+      const data = await res.json();
+      if (!data.success) {
+        console.error('Erro ao enviar e-mail via Web3Forms:', data.message);
+      }
     } catch (err) {
       console.error('Erro ao enviar e-mail de notificação:', err);
     }
