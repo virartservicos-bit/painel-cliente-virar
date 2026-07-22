@@ -136,7 +136,7 @@
         try {
           const funerarias = await carregarFunerariasUsuario();
           if (!funerarias.length) {
-            document.getElementById('produtos-tbody').innerHTML = '<tr><td colspan="6" class="px-8 py-12 text-center text-on-surface-variant">Nenhuma funerária vinculada. Crie uma funerária primeiro.</td></tr>';
+            document.getElementById('produtos-tbody').innerHTML = '<tr><td colspan="6" class="px-8 py-12 text-center text-on-surface-variant">Nenhum estabelecimento vinculado. Crie um estabelecimento primeiro.</td></tr>';
             return;
           }
           const funerariaIds = funerarias.map(f => f.id);
@@ -161,7 +161,7 @@
                     <div>
                       <p class="font-headline text-lg">${produto.nome || 'Produto'}</p>
                       <p class="text-xs text-on-surface-variant">${produto.categoria || 'Sem categoria'}</p>
-                      <p class="text-[10px] text-on-surface-variant/60 mt-0.5">${produto.funeraria_nome || 'Funerária'}</p>
+                      <p class="text-[10px] text-on-surface-variant/60 mt-0.5">${produto.funeraria_nome || 'Estabelecimento'}</p>
                     </div>
                   </div>
                 </td>
@@ -246,7 +246,7 @@ Sair do Sistema
 <div class="flex justify-between items-end mb-16">
 <div class="space-y-4">
 <h2 class="text-5xl font-headline font-normal text-on-surface tracking-tight">Gestão de Produtos</h2>
-<p class="text-on-surface-variant max-w-xl font-light leading-relaxed">Cadastre produtos para a loja da funerária. Eles aparecerão no app para os clientes.</p>
+<p class="text-on-surface-variant max-w-xl font-light leading-relaxed">Cadastre produtos para a loja do estabelecimento. Eles aparecerão no app para os clientes.</p>
 </div>
 <button id="btnNovoProduto" onclick="abrirModalNovoProduto()" class="bg-gold-gradient text-on-primary px-8 py-3 rounded-md font-label font-bold text-sm tracking-wide shadow-xl flex items-center gap-2 hover:scale-[1.02] transition-transform">
 <span class="material-symbols-outlined text-sm">add</span>
@@ -286,9 +286,9 @@ Novo Produto
     </div>
     <form id="formProduto" data-id="" class="p-6 space-y-5 overflow-y-auto flex-1">
       <div>
-        <label class="block text-sm font-semibold text-on-surface mb-2">Funerária *</label>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Estabelecimento *</label>
         <select id="inputFuneraria" required class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary">
-          <option value="">Selecione a funerária...</option>
+          <option value="">Selecione o estabelecimento...</option>
         </select>
       </div>
       <div>
@@ -362,7 +362,7 @@ Novo Produto
 
   async function preencherFunerariasDropdown(selecionarId) {
     const select = document.getElementById('inputFuneraria');
-    select.innerHTML = '<option value="">Selecione a funerária...</option>';
+    select.innerHTML = '<option value="">Selecione o estabelecimento...</option>';
     const funerarias = await carregarFunerariasUsuario();
     funerarias.forEach(f => {
       const opt = document.createElement('option');
@@ -442,7 +442,7 @@ Novo Produto
     const imagemAtual = document.getElementById('imagemPreview').src;
 
     if (!funeraria_id || !nome || !categoria || preco === null) {
-      alert('Preencha funerária, nome, categoria e preço.');
+      alert('Preencha estabelecimento, nome, categoria e preço.');
       return;
     }
 
@@ -453,7 +453,7 @@ Novo Produto
 
     try {
       const { data: funeraria, error: fErr } = await supabaseClient.from('funerarias').select('id').eq('id', funeraria_id).eq('user_id', user.id).single();
-      if (fErr || !funeraria) { alert('Você não tem permissão para cadastrar produtos nesta funerária.'); return; }
+      if (fErr || !funeraria) { alert('Você não tem permissão para cadastrar produtos neste estabelecimento.'); return; }
 
       let imagem = imagemAtual || null;
       if (imagemFile) {
