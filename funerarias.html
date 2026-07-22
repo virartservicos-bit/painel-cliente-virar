@@ -301,10 +301,10 @@
 <span class="material-symbols-outlined mr-4 text-lg">dashboard</span>
 <span class="font-['Manrope'] font-medium text-sm">Dashboard</span>
 </a>
-<!-- Active State: Funerárias -->
+<!-- Active State: Estabelecimentos -->
 <a class="flex items-center px-8 py-3 bg-[#2E2926] text-[#F2CA50] rounded-r-full border-l-4 border-[#D4AF37] translate-x-1 transition-transform" href="funerarias.html">
 <span class="material-symbols-outlined mr-4 text-lg" style="font-variation-settings: 'FILL' 1;">account_balance</span>
-<span class="font-['Manrope'] font-medium text-sm">Funerárias</span>
+<span class="font-['Manrope'] font-medium text-sm">Estabelecimentos</span>
 </a>
 <a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out" href="servicos.html">
 <span class="material-symbols-outlined mr-4 text-lg">settings_heart</span>
@@ -346,14 +346,14 @@ Sair do Sistema
 <!-- Page Header -->
 <div class="flex justify-between items-end mb-16">
 <div class="space-y-4">
-<h2 class="text-5xl font-headline font-normal text-on-surface tracking-tight">Gestão de Funerárias</h2>
+<h2 class="text-5xl font-headline font-normal text-on-surface tracking-tight">Gestão de Estabelecimentos</h2>
 <p class="text-on-surface-variant max-w-xl font-light leading-relaxed">
                         Administre a rede de parceiros e santuários digitais. Garanta a excelência no atendimento e a integridade das homenagens prestadas.
                     </p>
 </div>
 <button id="btnNovaFuneraria" onclick="abrirModalNovaFuneraria()" class="bg-gold-gradient text-on-primary px-8 py-3 rounded-md font-label font-bold text-sm tracking-wide shadow-xl flex items-center gap-2 hover:scale-[1.02] transition-transform">
 <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'wght' 600;">add</span>
-                    Nova Funerária
+                    Novo Estabelecimento
                 </button>
 </div>
 <!-- Filters Section -->
@@ -425,26 +425,26 @@ Sair do Sistema
 </footer>
 </main>
 
-<!-- Modal de Nova Funerária -->
+<!-- Modal de Novo Estabelecimento -->
 <div id="modalNovaFuneraria" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center">
   <div class="bg-surface-container-low rounded-xl w-full max-w-2xl mx-4 shadow-2xl border border-outline-variant/20 animate-fadeIn max-h-[90vh] flex flex-col">
     <!-- Modal Header -->
     <div class="flex items-center justify-between p-6 border-b border-outline-variant/10 flex-shrink-0">
       <div>
-        <h3 id="modalTitulo" class="text-2xl font-headline text-on-surface">Nova Funerária</h3>
-        <p id="modalSubtitulo" class="text-sm text-on-surface-variant mt-1">Cadastre uma nova funerária no sistema</p>
+        <h3 id="modalTitulo" class="text-2xl font-headline text-on-surface">Novo Estabelecimento</h3>
+        <p id="modalSubtitulo" class="text-sm text-on-surface-variant mt-1">Cadastre um novo estabelecimento no sistema</p>
       </div>
       <button onclick="fecharModal()" class="p-2 hover:bg-surface-container-high rounded-lg transition-colors">
         <span class="material-symbols-outlined text-on-surface-variant">close</span>
       </button>
     </div>
-    
+
     <!-- Modal Body -->
     <form id="formNovaFuneraria" data-id="" class="p-6 space-y-5 overflow-y-auto flex-1">
 
       <!-- Nome -->
       <div>
-        <label class="block text-sm font-semibold text-on-surface mb-2">Nome da Funerária *</label>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Nome *</label>
         <input type="text" id="inputNome" required
           class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
           placeholder="Ex: Funerária São João"/>
@@ -452,10 +452,10 @@ Sair do Sistema
 
       <!-- Descrição -->
       <div>
-        <label class="block text-sm font-semibold text-on-surface mb-2">Descrição da Funerária <span id="descricaoLabel" class="text-on-surface-variant font-normal">(opcional)</span></label>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Descrição <span id="descricaoLabel" class="text-on-surface-variant font-normal">(opcional)</span></label>
         <textarea id="inputDescricao" rows="4"
           class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
-          placeholder="Descreva a funerária, sua história, diferenciais e serviços principais..."></textarea>
+          placeholder="Descreva o estabelecimento, sua história, diferenciais e serviços principais..."></textarea>
       </div>
 
       <!-- Subcategoria -->
@@ -649,7 +649,7 @@ Sair do Sistema
 
       <!-- Imagem Principal -->
       <div>
-        <label class="block text-sm font-semibold text-on-surface mb-2">Imagem Principal da Funerária <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Imagem Principal <span class="text-on-surface-variant font-normal">(opcional)</span></label>
         <label for="inputImagem" class="relative flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-outline-variant/30 rounded-lg cursor-pointer hover:border-primary/50 transition-all overflow-hidden">
           <div id="imagemPlaceholder" class="flex flex-col items-center gap-1 pointer-events-none">
             <span class="material-symbols-outlined text-2xl text-on-surface-variant">add_photo_alternate</span>
@@ -676,7 +676,7 @@ Sair do Sistema
 
       <!-- Plano -->
       <div class="pt-3 border-t border-outline-variant/10">
-        <label class="block text-sm font-semibold text-on-surface mb-2">Plano da Funerária</label>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Plano</label>
         <select id="inputPlano"
           class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
           <option value="Essencial">Essencial — R$ 165,00/mês</option>
