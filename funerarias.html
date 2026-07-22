@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Funerárias - VIRAR Admin</title>
+<title>Estabelecimentos - VIRAR Admin</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -118,9 +118,9 @@
         return refreshData.session.user;
       }
 
-      // Excluir funerária
+      // Excluir estabelecimento
       async function excluirFuneraria(id, nome) {
-        if (!confirm(`Tem certeza que deseja excluir a funerária "${nome}"?\n\nEsta ação não pode ser desfeita.`)) return;
+        if (!confirm(`Tem certeza que deseja excluir o estabelecimento "${nome}"?\n\nEsta ação não pode ser desfeita.`)) return;
 
         const user = await verificarAutenticacao();
         if (!user) return;
@@ -133,22 +133,22 @@
             .eq('user_id', user.id);
 
           if (error) {
-            console.error('Erro ao excluir funerária:', error);
-            alert('Erro ao excluir funerária: ' + error.message);
+            console.error('Erro ao excluir estabelecimento:', error);
+            alert('Erro ao excluir estabelecimento: ' + error.message);
             return;
           }
 
-          alert('Funerária excluída com sucesso!');
+          alert('Estabelecimento excluído com sucesso!');
           carregarFunerarias();
         } catch (err) {
           console.error('Erro ao excluir:', err);
-          alert('Erro ao excluir funerária: ' + err.message);
+          alert('Erro ao excluir estabelecimento: ' + err.message);
         }
       }
 
-      // Carregar funerárias do usuário logado
+      // Carregar estabelecimentos do usuário logado
       async function carregarFunerarias() {
-        console.log('Iniciando carregamento de funerárias...');
+        console.log('Iniciando carregamento de estabelecimentos...');
         
         // Verificar se usuário está autenticado
         const user = await verificarAutenticacao();
@@ -157,7 +157,7 @@
         console.log('Usuário autenticado:', user.email);
         
         try {
-          // Buscar APENAS funerárias do usuário logado
+          // Buscar APENAS estabelecimentos do usuário logado
           const { data, error } = await supabaseClient
             .from('funerarias')
             .select('*')
@@ -166,19 +166,19 @@
           console.log('Resposta do Supabase:', { data, error });
           
           if (error) {
-            console.error('Erro ao carregar funerárias:', error);
-            alert('Erro ao carregar funerárias: ' + error.message);
+            console.error('Erro ao carregar estabelecimentos:', error);
+            alert('Erro ao carregar estabelecimentos: ' + error.message);
             return;
           }
           
           const tbody = document.querySelector('#funerarias-tbody');
           tbody.innerHTML = '';
           
-          console.log('Número de funerárias encontradas:', data ? data.length : 0);
+          console.log('Número de estabelecimentos encontrados:', data ? data.length : 0);
           
           if (data && data.length > 0) {
             data.forEach(funeraria => {
-              console.log('Processando funerária:', funeraria);
+              console.log('Processando estabelecimento:', funeraria);
               const tr = document.createElement('tr');
               tr.className = 'group hover:bg-surface-container-low transition-colors';
               tr.innerHTML = `
@@ -225,7 +225,7 @@
             tbody.innerHTML = `
               <tr>
                 <td colspan="5" class="px-8 py-12 text-center text-on-surface-variant">
-                  Nenhuma funerária cadastrada no momento.
+                  Nenhum estabelecimento cadastrado no momento.
                 </td>
               </tr>
             `;
@@ -236,9 +236,9 @@
         }
       }
 
-      // Função para abrir modal de nova funerária
+      // Função para abrir modal de novo estabelecimento
       function abrirModalNovaFuneraria() {
-        const nome = prompt('Nome da Funerária:');
+        const nome = prompt('Nome do Estabelecimento:');
         if (!nome) return;
         
         const plano = prompt('Plano (Standard/Premium/Enterprise):') || 'Standard';
@@ -246,7 +246,7 @@
         criarFuneraria(nome, plano);
       }
       
-      // Função para criar funerária no Supabase
+      // Função para criar estabelecimento no Supabase
       async function criarFuneraria(nome, plano, status = 'ativo', cnpj = '', endereco = '') {
         const user = await verificarAutenticacao();
         if (!user) return;
@@ -269,16 +269,16 @@
             .select();
           
           if (error) {
-            console.error('Erro ao criar funerária:', error);
-            alert('Erro ao criar funerária: ' + error.message);
+            console.error('Erro ao criar estabelecimento:', error);
+            alert('Erro ao criar estabelecimento: ' + error.message);
             return;
           }
           
-          alert('Funerária criada com sucesso!');
+          alert('Estabelecimento criado com sucesso!');
           carregarFunerarias();
         } catch (err) {
           console.error('Erro:', err);
-          alert('Erro ao criar funerária: ' + err.message);
+          alert('Erro ao criar estabelecimento: ' + err.message);
         }
       }
 
@@ -394,7 +394,7 @@ Sair do Sistema
 </table>
 <!-- Pagination -->
 <div class="px-8 py-6 border-t border-outline-variant/10 flex items-center justify-between">
-<p class="text-xs text-on-surface-variant">Exibindo 3 de 42 funerárias cadastradas</p>
+<p class="text-xs text-on-surface-variant">Exibindo 3 de 42 estabelecimentos cadastrados</p>
 <div class="flex gap-2">
 <button class="p-2 border border-outline-variant/20 rounded-lg hover:bg-surface-container-high transition-colors">
 <span class="material-symbols-outlined text-sm">chevron_left</span>
@@ -712,7 +712,7 @@ Sair do Sistema
         class="px-6 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all font-bold text-sm flex items-center gap-2"
       >
         <span id="btnSalvarIcone" class="material-symbols-outlined text-sm">add</span>
-        <span id="btnSalvarTexto">Criar Funerária</span>
+        <span id="btnSalvarTexto">Criar Estabelecimento</span>
       </button>
     </div>
   </div>
@@ -722,10 +722,10 @@ Sair do Sistema
 <div id="modalIdGerado" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center">
   <div class="bg-[#1f1b18] rounded-xl w-full max-w-sm mx-4 shadow-2xl border border-[#4d4635]/30 p-8 text-center">
     <span class="material-symbols-outlined text-5xl text-[#f2ca50] mb-4 block" style="font-variation-settings:'FILL' 1">check_circle</span>
-    <h3 class="text-xl font-serif text-[#eae1db] mb-1">Funerária Criada!</h3>
+    <h3 class="text-xl font-serif text-[#eae1db] mb-1">Estabelecimento Criado!</h3>
     <p id="idGeradoNome" class="text-sm text-[#eae1db]/50 mb-5"></p>
     <div class="mb-6">
-      <p class="text-[10px] uppercase tracking-widest text-[#eae1db]/40 mb-2">ID da Funerária</p>
+      <p class="text-[10px] uppercase tracking-widest text-[#eae1db]/40 mb-2">ID do Estabelecimento</p>
       <div class="flex items-center gap-2 bg-[#161310] border border-[#2E2926] rounded-lg px-4 py-3">
         <span id="idGeradoValor" class="flex-1 text-2xl font-bold text-[#f2ca50] text-center tracking-widest"></span>
         <button onclick="copiarId()" title="Copiar ID"
