@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-br">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Advocacia - VIRAR Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "on-surface": "#eae1db",
+              "surface-bright": "#3d3835",
+              "on-primary-fixed-variant": "#574500",
+              "on-secondary-fixed-variant": "#4d453e",
+              "surface-dim": "#161310",
+              "secondary-container": "#4d453e",
+              "outline": "#99907c",
+              "surface-tint": "#e9c349",
+              "secondary": "#d0c4bb",
+              "on-tertiary-fixed": "#231a0e",
+              "on-primary": "#3c2f00",
+              "on-secondary-fixed": "#211a15",
+              "tertiary-container": "#c0b09d",
+              "primary-fixed": "#ffe088",
+              "on-tertiary-fixed-variant": "#504536",
+              "on-primary-container": "#554300",
+              "surface-container-lowest": "#110d0b",
+              "surface-container-high": "#2e2926",
+              "on-tertiary": "#392f21",
+              "on-surface-variant": "#d0c5af",
+              "error-container": "#93000a",
+              "on-error": "#690005",
+              "on-secondary": "#362f29",
+              "tertiary-fixed-dim": "#d5c4b1",
+              "surface-container-low": "#1f1b18",
+              "on-secondary-container": "#bfb3aa",
+              "surface-variant": "#393430",
+              "surface-container": "#231f1c",
+              "background": "#161310",
+              "on-background": "#eae1db",
+              "tertiary-fixed": "#f1e0cc",
+              "inverse-on-surface": "#342f2c",
+              "secondary-fixed": "#ede0d6",
+              "inverse-primary": "#735c00",
+              "surface": "#161310",
+              "outline-variant": "#4d4635",
+              "on-tertiary-container": "#4e4334",
+              "error": "#ffb4ab",
+              "surface-container-highest": "#393430",
+              "primary-container": "#d4af37",
+              "tertiary": "#dccbb8",
+              "primary-fixed-dim": "#e9c349",
+              "primary": "#f2ca50",
+              "inverse-surface": "#eae1db",
+              "secondary-fixed-dim": "#d0c4bb",
+              "on-primary-fixed": "#241a00"
+            },
+            fontFamily: {
+              "headline": ["Noto Serif"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      }
+      .bg-gold-gradient {
+        background: linear-gradient(135deg, #F2CA50 0%, #D4AF37 100%);
+      }
+    </style>
+<script>
+      // Configuração do Supabase
+      const { createClient } = supabase;
+      const supabaseClient = createClient(
+        'https://ikahdkaccmpldstbcbpk.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYWhka2FjY21wbGRzdGJjYnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODgyMTEsImV4cCI6MjA4OTI2NDIxMX0.C1CBpGFAHobaEiaeABrJQNOjjrXsxR0AMgyViPR39gw',
+        { auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true } }
+      );
+
+      // Verificar autenticação ao carregar página
+      async function verificarAutenticacao() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session?.user) {
+          console.log('Usuário não autenticado, redirecionando para login...');
+          window.location.href = 'login.html';
+          return null;
+        }
+        // Sempre tentar renovar a sessão para garantir token válido
+        const { data: refreshData, error: refreshErr } = await supabaseClient.auth.refreshSession();
+        if (refreshErr || !refreshData.session) {
+          // Se falhou ao renovar, verificar se o token atual ainda é válido
+          const expiresAt = session.expires_at;
+          const now = Math.floor(Date.now() / 1000);
+          if (expiresAt && expiresAt < now) {
+            console.log('Token expirado e renovação falhou, redirecionando para login...');
+            await supabaseClient.auth.signOut();
+            window.location.href = 'login.html';
+            return null;
+          }
+          // Token ainda válido, continuar com a sessão atual
+          return session.user;
+        }
+        return refreshData.session.user;
+      }
+
+      // Excluir escritório
+      async function excluirEscritorio(id, nome) {
+        if (!confirm(`Tem certeza que deseja excluir "${nome}"?\n\nEsta ação não pode ser desfeita.`)) return;
+
+        const user = await verificarAutenticacao();
+        if (!user) return;
+
+        try {
+          const { error } = await supabaseClient
+            .from('escritorio')
+            .delete()
+            .eq('id', id)
+            .eq('user_id', user.id);
+
+          if (error) {
+            console.error('Erro ao excluir:', error);
+            alert('Erro ao excluir: ' + error.message);
+            return;
+          }
+
+          alert('Escritório excluído com sucesso!');
+          carregarEscritorios();
+        } catch (err) {
+          console.error('Erro ao excluir:', err);
+          alert('Erro ao excluir: ' + err.message);
+        }
+      }
+
+      // Carregar escritórios do usuário logado
+      async function carregarEscritorios() {
+        console.log('Iniciando carregamento de escritórios...');
+        
+        // Verificar se usuário está autenticado
+        const user = await verificarAutenticacao();
+        if (!user) return;
+        
+        console.log('Usuário autenticado:', user.email);
+        
+        try {
+          // Buscar APENAS escritórios do usuário logado
+          const { data, error } = await supabaseClient
+            .from('escritorio')
+            .select('*')
+            .eq('user_id', user.id);
+          
+          console.log('Resposta do Supabase:', { data, error });
+          
+          if (error) {
+            console.error('Erro ao carregar escritórios:', error);
+            alert('Erro ao carregar escritórios: ' + error.message);
+            return;
+          }
+          
+          const tbody = document.querySelector('#advocacia-tbody');
+          tbody.innerHTML = '';
+          
+          console.log('Número de escritórios encontrados:', data ? data.length : 0);
+          
+          if (data && data.length > 0) {
+            data.forEach(escritorio => {
+              console.log('Processando escritório:', escritorio);
+              const tr = document.createElement('tr');
+              tr.className = 'group hover:bg-surface-container-low transition-colors';
+              tr.innerHTML = `
+                <td class="px-8 py-6">
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center text-primary-fixed-dim">
+                      <span class="material-symbols-outlined">gavel</span>
+                    </div>
+                    <div>
+                      <p class="font-headline text-lg">${escritorio.nome || 'Nome não informado'}</p>
+                      <p class="text-xs text-on-surface-variant">ID: ${escritorio.id || 'N/A'}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-8 py-6">
+                  <span class="text-sm font-medium text-on-surface/80">${escritorio.endereco || 'Endereço não informado'}</span>
+                </td>
+                <td class="px-8 py-6">
+                  <span class="text-sm font-medium text-on-surface/80">${escritorio.telefone || 'Telefone não informado'}</span>
+                </td>
+                <td class="px-8 py-6 text-right">
+                  <div class="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="editarEscritorio('${escritorio.id}')" class="p-2 text-outline hover:text-primary transition-colors">
+                      <span class="material-symbols-outlined text-lg">edit</span>
+                    </button>
+                    <button onclick="excluirEscritorio('${escritorio.id}', '${escritorio.nome?.replace(/'/g, "\\'") || ''}')" class="p-2 text-outline hover:text-error transition-colors">
+                      <span class="material-symbols-outlined text-lg">delete</span>
+                    </button>
+                  </div>
+                </td>
+              `;
+              tbody.appendChild(tr);
+            });
+          } else {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="4" class="px-8 py-12 text-center text-on-surface-variant">
+                  Nenhum escritório cadastrado no momento.
+                </td>
+              </tr>
+            `;
+          }
+        } catch (err) {
+          console.error('Erro ao processar dados:', err);
+          alert('Erro ao processar dados: ' + err.message);
+        }
+      }
+
+      // Função para abrir modal de novo escritório
+      function abrirModalNovoEscritorio() {
+        document.getElementById('formEscritorio').reset();
+        document.getElementById('formEscritorio').setAttribute('data-id', '');
+        document.getElementById('modalTitulo').textContent = 'Novo Escritório de Advocacia';
+        document.getElementById('modalSubtitulo').textContent = 'Cadastre um novo escritório';
+        document.getElementById('btnSalvarTexto').textContent = 'Criar Escritório';
+        document.getElementById('btnSalvarIcone').textContent = 'add';
+        
+        // Limpar previews de imagem
+        document.getElementById('logomarcaPreview').src = '';
+        document.getElementById('logomarcaPreview').classList.add('hidden');
+        document.getElementById('logomarcaPlaceholder').classList.remove('hidden');
+        document.getElementById('fotoFachadaPreview').src = '';
+        document.getElementById('fotoFachadaPreview').classList.add('hidden');
+        document.getElementById('fotoFachadaPlaceholder').classList.remove('hidden');
+        document.getElementById('galeriaPreview').innerHTML = '';
+        
+        document.getElementById('modalAdvocacia').classList.remove('hidden');
+        document.getElementById('modalAdvocacia').classList.add('flex');
+      }
+
+      // Função para editar escritório
+      async function editarEscritorio(id) {
+        const user = await verificarAutenticacao();
+        if (!user) return;
+
+        try {
+          const { data, error } = await supabaseClient
+            .from('escritorio')
+            .select('*')
+            .eq('id', id)
+            .eq('user_id', user.id)
+            .single();
+
+          if (error || !data) {
+            alert('Erro ao carregar escritório: ' + (error?.message || 'Escritório não encontrado'));
+            return;
+          }
+
+          // Preencher formulário
+          document.getElementById('formEscritorio').setAttribute('data-id', id);
+          document.getElementById('modalTitulo').textContent = 'Editar Escritório';
+          document.getElementById('modalSubtitulo').textContent = 'Edite as informações do escritório';
+          document.getElementById('btnSalvarTexto').textContent = 'Salvar Alterações';
+          document.getElementById('btnSalvarIcone').textContent = 'save';
+
+          document.getElementById('inputNome').value = data.nome || '';
+          document.getElementById('inputApresentacao').value = data.apresentacao || '';
+          document.getElementById('inputEndereco').value = data.endereco || '';
+          document.getElementById('inputTelefone').value = data.telefone || '';
+          document.getElementById('inputHorarioAtendimento').value = data.horario_atendimento || '';
+
+          // Imagens
+          if (data.logomarca_url) {
+            document.getElementById('logomarcaPreview').src = data.logomarca_url;
+            document.getElementById('logomarcaPreview').classList.remove('hidden');
+            document.getElementById('logomarcaPlaceholder').classList.add('hidden');
+          }
+          if (data.foto_fachada_url) {
+            document.getElementById('fotoFachadaPreview').src = data.foto_fachada_url;
+            document.getElementById('fotoFachadaPreview').classList.remove('hidden');
+            document.getElementById('fotoFachadaPlaceholder').classList.add('hidden');
+          }
+
+          // Galeria
+          if (data.fotos_internas_url && Array.isArray(data.fotos_internas_url)) {
+            const galeriaPreview = document.getElementById('galeriaPreview');
+            galeriaPreview.innerHTML = '';
+            data.fotos_internas_url.forEach(url => {
+              const div = document.createElement('div');
+              div.className = 'relative w-full h-20 rounded-lg overflow-hidden';
+              div.innerHTML = `<img src="${url}" class="w-full h-full object-cover"/>`;
+              galeriaPreview.appendChild(div);
+            });
+          }
+
+          document.getElementById('modalAdvocacia').classList.remove('hidden');
+          document.getElementById('modalAdvocacia').classList.add('flex');
+        } catch (err) {
+          console.error('Erro ao carregar escritório:', err);
+          alert('Erro ao carregar escritório: ' + err.message);
+        }
+      }
+
+      // Função para salvar escritório
+      async function salvarEscritorio() {
+        const user = await verificarAutenticacao();
+        if (!user) return;
+
+        const editandoId = document.getElementById('formEscritorio').getAttribute('data-id');
+        
+        // Coletar dados do formulário
+        const nome = document.getElementById('inputNome').value;
+        const apresentacao = document.getElementById('inputApresentacao').value;
+        const endereco = document.getElementById('inputEndereco').value;
+        const telefone = document.getElementById('inputTelefone').value;
+        const horarioAtendimento = document.getElementById('inputHorarioAtendimento').value;
+
+        // Imagens
+        const logomarcaPreview = document.getElementById('logomarcaPreview').src;
+        const fotoFachadaPreview = document.getElementById('fotoFachadaPreview').src;
+        
+        // Galeria
+        const galeriaUrls = [];
+        document.querySelectorAll('#galeriaPreview img').forEach(img => {
+          galeriaUrls.push(img.src);
+        });
+
+        if (!nome) {
+          alert('Preencha o nome do escritório.');
+          return;
+        }
+
+        const btn = document.getElementById('btnSalvarAdvocacia');
+        if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
+
+        try {
+          const dados = {
+            nome,
+            apresentacao,
+            endereco,
+            telefone,
+            horario_atendimento: horarioAtendimento,
+            logomarca_url: logomarcaPreview && !logomarcaPreview.includes('data:') ? logomarcaPreview : null,
+            foto_fachada_url: fotoFachadaPreview && !fotoFachadaPreview.includes('data:') ? fotoFachadaPreview : null,
+            fotos_internas_url: galeriaUrls.length > 0 ? galeriaUrls : null,
+            user_id: user.id
+          };
+
+          let result;
+          if (editandoId) {
+            result = await supabaseClient
+              .from('escritorio')
+              .update(dados)
+              .eq('id', editandoId)
+              .eq('user_id', user.id)
+              .select();
+          } else {
+            result = await supabaseClient
+              .from('escritorio')
+              .insert([dados])
+              .select();
+          }
+
+          if (result.error) {
+            console.error('Erro ao salvar:', result.error);
+            alert('Erro ao salvar: ' + result.error.message);
+            return;
+          }
+
+          alert('Escritório salvo com sucesso!');
+          fecharModal();
+          carregarEscritorios();
+        } catch (err) {
+          console.error('Erro ao salvar:', err);
+          alert('Erro ao salvar: ' + err.message);
+        } finally {
+          if (btn) { btn.disabled = false; btn.innerHTML = '<span class="material-symbols-outlined text-sm" id="btnSalvarIcone">save</span><span id="btnSalvarTexto">Salvar Alterações</span>'; }
+        }
+      }
+
+      // Função para fechar modal
+      function fecharModal() {
+        document.getElementById('modalAdvocacia').classList.add('hidden');
+        document.getElementById('modalAdvocacia').classList.remove('flex');
+      }
+
+      // Funções para preview de imagens
+      function atualizarPreviewLogomarca(input) {
+        if (input.files && input.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            document.getElementById('logomarcaPreview').src = e.target.result;
+            document.getElementById('logomarcaPreview').classList.remove('hidden');
+            document.getElementById('logomarcaPlaceholder').classList.add('hidden');
+          };
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+
+      function atualizarPreviewFotoFachada(input) {
+        if (input.files && input.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            document.getElementById('fotoFachadaPreview').src = e.target.result;
+            document.getElementById('fotoFachadaPreview').classList.remove('hidden');
+            document.getElementById('fotoFachadaPlaceholder').classList.add('hidden');
+          };
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+
+      function atualizarGaleriaImagens(input) {
+        const galeriaPreview = document.getElementById('galeriaPreview');
+        galeriaPreview.innerHTML = '';
+        
+        if (input.files) {
+          Array.from(input.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              const div = document.createElement('div');
+              div.className = 'relative w-full h-20 rounded-lg overflow-hidden';
+              div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover"/>`;
+              galeriaPreview.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+      }
+
+      // Carregar dados quando a página for carregada
+      document.addEventListener('DOMContentLoaded', carregarEscritorios);
+      
+setInterval(carregarEscritorios, 10000);
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body min-h-screen">
+<!-- SideNavBar Anchor -->
+<aside class="h-full w-64 fixed left-0 top-0 bg-[#1F1B18] z-40 flex flex-col py-8 pr-4">
+<div class="px-8 mb-10">
+<h1 class="text-xl font-serif text-[#F2CA50]">VIRAR</h1>
+<p class="text-[10px] uppercase tracking-widest opacity-50 text-[#EAE1DB]">Sanctuary Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="funcional.html">
+<span class="material-symbols-outlined mr-4 text-lg">dashboard</span>
+<span class="font-['Manrope'] font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="funerarias.html">
+<span class="material-symbols-outlined mr-4 text-lg">account_balance</span>
+<span class="font-['Manrope'] font-medium text-sm">Negócios</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="psicologia.html">
+<span class="material-symbols-outlined mr-4 text-lg">psychology</span>
+<span class="font-['Manrope'] font-medium text-sm">Psicologia</span>
+</a>
+<!-- Active State: Advocacia -->
+<a class="flex items-center px-8 py-3 bg-[#2E2926] text-[#F2CA50] rounded-r-full border-l-4 border-[#D4AF37] translate-x-1 transition-transform" href="advocacia.html">
+<span class="material-symbols-outlined mr-4 text-lg" style="font-variation-settings: 'FILL' 1;">gavel</span>
+<span class="font-['Manrope'] font-medium text-sm">Advocacia</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="servicos.html">
+<span class="material-symbols-outlined mr-4 text-lg">settings_heart</span>
+<span class="font-['Manrope'] font-medium text-sm">Serviços</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="planos.html">
+<span class="material-symbols-outlined mr-4 text-lg">payments</span>
+<span class="font-['Manrope'] font-medium text-sm">Planos</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="produtos.html">
+<span class="material-symbols-outlined mr-4 text-lg">shopping_bag</span>
+<span class="font-['Manrope'] font-medium text-sm">Produtos</span>
+</a>
+<a class="flex items-center px-8 py-3 text-[#EAE1DB] opacity-60 hover:bg-[#2E2926] hover:opacity-100 transition-colors duration-200 ease-in-out group" href="pedidos.html">
+<span class="material-symbols-outlined mr-4 text-lg">receipt_long</span>
+<span class="font-['Manrope'] font-medium text-sm">Pedidos</span>
+</a>
+</nav>
+<div class="px-8 mt-auto pt-8 border-t border-[#2E2926]">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-10 h-10 rounded-full bg-[#2E2926] flex items-center justify-center border border-[#4d4635]/20">
+<span class="material-symbols-outlined text-[#F2CA50] text-xl">account_circle</span>
+</div>
+<div class="flex-1">
+<p class="text-xs font-bold text-[#EAE1DB]">Cliente</p>
+<p id="userEmail" class="text-[10px] text-[#EAE1DB]/50">Carregando...</p>
+</div>
+</div>
+<a href="login.html" id="logoutBtn" class="flex items-center gap-2 px-4 py-2 text-xs text-[#EAE1DB] opacity-60 hover:opacity-100 hover:bg-[#2E2926] rounded transition-colors">
+<span class="material-symbols-outlined text-sm">logout</span>
+Sair do Sistema
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 min-h-screen p-10 bg-surface">
+<!-- Content Area -->
+<div class="max-w-7xl">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-16">
+<div class="space-y-4">
+<h2 class="text-5xl font-headline font-normal text-on-surface tracking-tight">Gestão de Advocacia</h2>
+<p class="text-on-surface-variant max-w-xl font-light leading-relaxed">
+                        Cadastre escritórios de advocacia especializados em direito sucessório e testamentário. Ofereça suporte jurídico para inventários, testamentos e alvarás.
+                    </p>
+</div>
+<button onclick="abrirModalNovoEscritorio()" class="bg-gold-gradient text-on-primary px-8 py-3 rounded-md font-label font-bold text-sm tracking-wide shadow-xl flex items-center gap-2 hover:scale-[1.02] transition-transform">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'wght' 600;">add</span>
+                    Novo Escritório
+                </button>
+</div>
+<!-- Data Table -->
+<div class="bg-surface-container rounded-xl overflow-hidden">
+<table class="w-full border-collapse text-left">
+<thead>
+<tr class="bg-surface-container-high text-[10px] uppercase tracking-[0.2em] text-on-surface-variant font-bold">
+<th class="px-8 py-5 font-medium">Nome do Escritório</th>
+<th class="px-8 py-5 font-medium">Endereço</th>
+<th class="px-8 py-5 font-medium">Telefone</th>
+<th class="px-8 py-5 font-medium text-right">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5" id="advocacia-tbody">
+<!-- Os dados serão carregados dinamicamente pelo JavaScript -->
+</tbody>
+</table>
+<!-- Pagination -->
+<div class="px-8 py-6 border-t border-outline-variant/10 flex items-center justify-between">
+<p class="text-xs text-on-surface-variant">Exibindo escritórios cadastrados</p>
+</div>
+</div>
+</div>
+</main>
+
+<!-- Modal de Advocacia -->
+<div id="modalAdvocacia" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center">
+  <div class="bg-surface-container-low rounded-xl w-full max-w-3xl mx-4 shadow-2xl border border-outline-variant/20 animate-fadeIn max-h-[90vh] flex flex-col">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between p-6 border-b border-outline-variant/10 flex-shrink-0">
+      <div>
+        <h3 id="modalTitulo" class="text-2xl font-headline text-on-surface">Novo Escritório de Advocacia</h3>
+        <p id="modalSubtitulo" class="text-sm text-on-surface-variant mt-1">Cadastre um novo escritório</p>
+      </div>
+      <button onclick="fecharModal()" class="p-2 hover:bg-surface-container-high rounded-lg transition-colors">
+        <span class="material-symbols-outlined text-on-surface-variant">close</span>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <form id="formEscritorio" data-id="" class="p-6 space-y-5 overflow-y-auto flex-1">
+
+      <!-- Nome -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Nome do Escritório *</label>
+        <input type="text" id="inputNome" required
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+          placeholder="Ex: Advocacia Silva & Associados"/>
+      </div>
+
+      <!-- Apresentação -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Apresentação <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+        <textarea id="inputApresentacao" rows="4"
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
+          placeholder="Descreva o escritório, área de atuação, experiência..."></textarea>
+      </div>
+
+      <!-- Logomarca -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Logomarca <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+        <label for="inputLogomarca" class="relative flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-outline-variant/30 rounded-lg cursor-pointer hover:border-primary/50 transition-all overflow-hidden">
+          <div id="logomarcaPlaceholder" class="flex flex-col items-center gap-1 pointer-events-none">
+            <span class="material-symbols-outlined text-2xl text-on-surface-variant">business</span>
+            <span class="text-xs text-on-surface-variant">Clique para selecionar</span>
+          </div>
+          <img id="logomarcaPreview" src="" alt="Preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-md"/>
+          <input type="file" id="inputLogomarca" accept="image/*" class="hidden" onchange="atualizarPreviewLogomarca(this)"/>
+        </label>
+      </div>
+
+      <!-- Foto da Fachada -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Foto da Fachada <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+        <label for="inputFotoFachada" class="relative flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-outline-variant/30 rounded-lg cursor-pointer hover:border-primary/50 transition-all overflow-hidden">
+          <div id="fotoFachadaPlaceholder" class="flex flex-col items-center gap-1 pointer-events-none">
+            <span class="material-symbols-outlined text-2xl text-on-surface-variant">store</span>
+            <span class="text-xs text-on-surface-variant">Clique para selecionar</span>
+          </div>
+          <img id="fotoFachadaPreview" src="" alt="Preview" class="hidden absolute inset-0 w-full h-full object-cover rounded-md"/>
+          <input type="file" id="inputFotoFachada" accept="image/*" class="hidden" onchange="atualizarPreviewFotoFachada(this)"/>
+        </label>
+      </div>
+
+      <!-- Galeria de Fotos Internas -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Fotos Internas (Equipe + Ambiente) <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+        <label for="inputGaleria" class="relative flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-outline-variant/30 rounded-lg cursor-pointer hover:border-primary/50 transition-all">
+          <div class="flex flex-col items-center gap-1 pointer-events-none">
+            <span class="material-symbols-outlined text-2xl text-on-surface-variant">photo_library</span>
+            <span class="text-xs text-on-surface-variant">Clique para selecionar múltiplas imagens</span>
+          </div>
+          <input type="file" id="inputGaleria" accept="image/*" multiple class="hidden" onchange="atualizarGaleriaImagens(this)"/>
+        </label>
+        <div id="galeriaPreview" class="grid grid-cols-4 gap-2 mt-3"></div>
+      </div>
+
+      <!-- Endereço -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Endereço <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+        <input type="text" id="inputEndereco"
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+          placeholder="Rua, número, bairro, cidade, estado"/>
+      </div>
+
+      <!-- Telefone -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Telefone <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+        <input type="tel" id="inputTelefone"
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+          placeholder="(00) 0000-0000"/>
+      </div>
+
+      <!-- Horário de Atendimento -->
+      <div>
+        <label class="block text-sm font-semibold text-on-surface mb-2">Horário de Atendimento <span class="text-on-surface-variant font-normal">(opcional)</span></label>
+        <input type="text" id="inputHorarioAtendimento"
+          class="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+          placeholder="Ex: Segunda a Sexta, 9h às 18h"/>
+      </div>
+
+    </form>
+
+    <!-- Modal Footer -->
+    <div class="flex justify-end gap-3 p-6 border-t border-outline-variant/10 flex-shrink-0">
+      <button onclick="fecharModal()" class="px-6 py-3 bg-surface-container-highest text-on-surface rounded-lg hover:bg-surface-container transition-colors font-semibold text-sm">
+        Cancelar
+      </button>
+      <button 
+        id="btnSalvarAdvocacia"
+        onclick="salvarEscritorio()" 
+        type="button"
+        class="px-6 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all font-bold text-sm flex items-center gap-2"
+      >
+        <span id="btnSalvarIcone" class="material-symbols-outlined text-sm">add</span>
+        <span id="btnSalvarTexto">Criar Escritório</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
